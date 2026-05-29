@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fluxo: Autorização — Liquidação Transacional</title>
+  <meta name="description" content="Fluxo síncrono de autorização: sequência, caminhos de falha, garantias transacionais e exemplos.">
+  <link rel="stylesheet" href="../design-system/tokens.css">
+  <link rel="stylesheet" href="../design-system/components.css">
+</head>
+<body>
+  <div class="shell">
+    <aside id="sidebar" class="sidebar" aria-label="Navegação"></aside>
+
+    <main id="main" class="main">
+      <nav class="breadcrumb" aria-label="Caminho">
+        <ol>
+          <li><a href="index.html">Início</a></li>
+          <li>Fluxo: Autorização</li>
+        </ol>
+      </nav>
+
+      <header class="hero">
+        <span class="hero__eyebrow">Fluxo Transacional · 07</span>
+        <h1 class="hero__title">Autori<span class="accent-word">zação</span></h1>
+        <p class="hero__subtitle">
+          Fluxo principal do serviço. Síncrono na entrada, síncrono na saída.
+          Coordena 3 dependências externas e produz um evento no outbox.
+        </p>
+      </header>
+
+      <h2 class="section-eyebrow">Visão Geral</h2>
+      <p class="prose">
+        O canal envia um <code class="code-inline">POST /autorizar</code> com <code class="code-inline">Idempotency-Key</code>.
+        O serviço verifica idempotência, consulta saldo, consulta antifraude, persiste a decisão
+        e o evento dentro de uma transação atômica, devolve a resposta. <strong>Tudo em até 500ms p95.</strong>
+      </p>
+
+      <p class="prose">
+        Quando algo dá errado em uma das dependências, o caminho diverge — mas a regra
+        é sempre <em>fail-secure</em>: preferir recusar uma transação válida a aceitar uma fraudulenta.
+      </p>
+
+      <h2 class="section-eyebrow">Caminho Feliz</h2>
+      <figure class="diagram-figure">
+        <div class="diagram-viewer" data-diagram="fluxo-feliz"></div>
+        <figcaption>Figura 1 — Sequência completa do caminho feliz.</figcaption>
+      </figure>
+
+      <p class="prose">
+        Decomposição da latência alvo (p95 &lt; 500ms):
+      </p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Passo</th><th>Operação</th><th>Latência alvo</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>Idempotency check (Redis)</td><td>5 ms</td></tr>
+          <tr><td>2</td><td>Consulta saldo (HTTPS)</td><td>80 ms</td></tr>
+          <tr><td>3</td><td>Consulta antifraude (TCP)</td><td>200 ms</td></tr>
+          <tr><td>4</td><td>Persistência (DB BEGIN+INSERT×2+COMMIT)</td><td>15 ms</td></tr>
+          <tr><td>5</td><td>Cache resposta (Redis SET)</td><td>5 ms</td></tr>
+          <tr><td>—</td><td>Serialização + middleware + buffer</td><td>~195 ms</td></tr>
+          <tr><td>—</td><td><strong>Total</strong></td><td><strong>~500 ms</strong></td></tr>
+        </tbody>
+      </table>
+
+      <h2 class="section-eyebrow">Caminhos de Falha</h2>
+      <figure class="diagram-figure">
+        <div class="diagram-viewer" data-diagram="fluxo-falhas"></div>
+        <figcaption>Figura 2 — Árvore de decisão dos caminhos de falha.</figcaption>
+      </figure>
+
+      <h3>Idempotency Hit</h3>
+      <p class="prose">
+        Mesmo <code class="code-inline">Idempotency-Key</code> chega novamente.
+        Não consultamos saldo nem antifraude — devolvemos a resposta cacheada com latência sub-10ms.
+        Validamos hash do payload: se diferente, retornamos <code class="code-inline">409 Conflict</code>.
+      </p>
+
+      <h3>Saldo Insuficiente</h3>
+      <p class="prose">
+        Sistema de Saldos retornou <code class="code-inline">balance &lt; amount</code>.
+        Recusamos sem consultar antifraude (economia de latência e custo).
+        <code class="code-inline">reasonCode = SALDO_INSUFICIENTE</code>.
+      </p>
+
+      <h3>Saldos Indisponível</h3>
+      <p class="prose">
+        Circuit breaker aberto ou timeout. <strong>Recusamos com 503</strong> —
+        saldo é dependência crítica sem fallback aceitável. Operações de débito sem confirmação
+        de saldo geram risco financeiro inaceitável.
+      </p>
+
+      <h3>Antifraude Negou</h3>
+      <p class="prose">
+        Score abaixo do threshold do canal, ou <code class="code-inline">advice = DECLINE</code>.
+        Recusamos com <code class="code-inline">reasonCode = ANTIFRAUDE_LOW_SCORE</code> ou
+        <code class="code-inline">ANTIFRAUDE_BLOCKED_LIST</code>.
+      </p>
+
+      <h3>Antifraude Indisponível → Contingência</h3>
+      <p class="prose">
+        Circuit breaker aberto ou timeout no antifraude.
+        Entramos em modo contingência — aplica os limites locais de
+        <a href="04-configuracoes.html#contingencia">Configurações §&nbsp;Limites de Contingência</a>.
+        Detalhes em <a href="09-fluxo-contingencia.html">Fluxo: Contingência</a>.
+      </p>
+
+      <h2 class="section-eyebrow">Garantias Transacionais</h2>
+
+      <aside class="decision-callout" role="note">
+        <div class="decision-callout__icon" aria-hidden="true">▲</div>
+        <div class="decision-callout__body">
+          <div class="decision-callout__label">Atomicidade decisão ↔ evento</div>
+          <p>
+            <code class="code-inline">INSERT autorizacao</code> e <code class="code-inline">INSERT outbox_event</code>
+            ocorrem na mesma transação do PostgreSQL. Ou ambas persistem ou nenhuma.
+            Resultado: <strong>nunca</strong> existe decisão sem evento correspondente
+            (Outbox Pattern — ADR-0001).
+          </p>
+        </div>
+      </aside>
+
+      <aside class="decision-callout" role="note">
+        <div class="decision-callout__icon" aria-hidden="true">▲</div>
+        <div class="decision-callout__body">
+          <div class="decision-callout__label">Idempotência end-to-end</div>
+          <p>
+            A mesma <code class="code-inline">Idempotency-Key</code> com mesmo payload retorna
+            <strong>byte-a-byte a mesma resposta</strong> dentro de 24h.
+            Verificado por hash SHA-256 do body do request armazenado no Redis junto com a resposta.
+          </p>
+        </div>
+      </aside>
+
+      <aside class="decision-callout" role="note">
+        <div class="decision-callout__icon" aria-hidden="true">▲</div>
+        <div class="decision-callout__body">
+          <div class="decision-callout__label">Eventual consistency com consumers</div>
+          <p>
+            Consumers downstream (auditoria, notificações) recebem o evento via SNS
+            em média <strong>&lt; 5 segundos após o COMMIT</strong> (poll do relay a cada 2s + latência SNS).
+            Casos extremos (SNS indisponível) podem estender essa janela — registrado em
+            <a href="adr/0001-outbox-pattern.html">ADR-0001</a>.
+          </p>
+        </div>
+      </aside>
+
+      <h2 class="section-eyebrow">Exemplos de Payload</h2>
+
+      <h3>Request</h3>
+      <div class="code-block">
+        <div class="code-block__header"><span>POST /autorizar · application/json</span></div>
+<pre><code>POST /autorizar HTTP/1.1
+Host: liquidacao.btg.com.br
+Authorization: Bearer eyJhbGciOiJSUzI1NiIs...
+Content-Type: application/json
+Idempotency-Key: 7a1f3c2e-4d8b-4f1a-9c3d-8e2b1a5f6c7d
+X-Correlation-ID: 0c1b9d7e-2f4a-4b6c-8d9e-1a2b3c4d5e6f
+X-Channel-Origin: POS-001
+
+{
+  "externalTransactionId": "a3f1e2b4-7c8d-4e5f-9a1b-2c3d4e5f6a7b",
+  "pan": "411111******1234",
+  "customerAcctNumber": "00012345678",
+  "customerCpf": "12345678901",
+  "transactionAmount": 247.50,
+  "currencyCode": "BRL",
+  "merchantId": "BTGCOMERCIO0001",
+  "merchantCategoryCode": "5411",
+  "channelType": "POS",
+  "transactionTimestamp": "2026-05-29T18:42:11Z"
+}</code></pre>
+      </div>
+
+      <h3>Resposta autorizada</h3>
+      <div class="code-block">
+        <div class="code-block__header"><span>200 OK</span></div>
+<pre><code>{
+  "decisionId": "b4c2d3e5-8f9a-4b1c-7d2e-3f4a5b6c7d8e",
+  "status": "AUTORIZADO",
+  "scoringResult": 87,
+  "adviceCode": "APPROVE",
+  "authorizationCode": "ABC123",
+  "decidedAt": "2026-05-29T18:42:11.247Z"
+}</code></pre>
+      </div>
+
+      <h3>Resposta negada por antifraude</h3>
+      <div class="code-block">
+        <div class="code-block__header"><span>422 Unprocessable Entity · application/problem+json</span></div>
+<pre><code>{
+  "type": "https://liquidacao.btg.com.br/problems/recusa-antifraude",
+  "title": "Transação recusada pelo motor antifraude",
+  "status": 422,
+  "detail": "Score 23 abaixo do mínimo de 40 para canal POS",
+  "decisionId": "b4c2d3e5-8f9a-4b1c-7d2e-3f4a5b6c7d8e",
+  "scoringResult": 23,
+  "reasonCode": "ANTIFRAUDE_LOW_SCORE",
+  "decidedAt": "2026-05-29T18:42:11.198Z"
+}</code></pre>
+      </div>
+
+      <h3>Evento publicado no outbox</h3>
+      <div class="code-block">
+        <div class="code-block__header"><span>SNS · liquidacao-decisao</span></div>
+<pre><code>{
+  "eventId": "c5d3e4f6-9a8b-4c2d-8e3f-4a5b6c7d8e9f",
+  "eventType": "AutorizacaoCriada",
+  "eventVersion": "1.0",
+  "aggregateId": "b4c2d3e5-8f9a-4b1c-7d2e-3f4a5b6c7d8e",
+  "occurredAt": "2026-05-29T18:42:11.247Z",
+  "correlationId": "0c1b9d7e-2f4a-4b6c-8d9e-1a2b3c4d5e6f",
+  "payload": {
+    "decisionId": "b4c2d3e5-8f9a-4b1c-7d2e-3f4a5b6c7d8e",
+    "externalTransactionId": "a3f1e2b4-7c8d-4e5f-9a1b-2c3d4e5f6a7b",
+    "customerAcctNumber": "00012345678",
+    "amount": 247.50,
+    "currency": "BRL",
+    "status": "AUTORIZADO",
+    "scoringResult": 87,
+    "merchantId": "BTGCOMERCIO0001",
+    "channelType": "POS"
+  }
+}</code></pre>
+      </div>
+
+      <h2 class="section-eyebrow">Observabilidade do Fluxo</h2>
+      <p class="prose">
+        Cada execução produz:
+      </p>
+      <ul class="prose">
+        <li>1 trace no X-Ray com spans por dependência (saldos, antifraude, DB).</li>
+        <li>1 log estruturado no início e 1 no fim, com <code class="code-inline">correlationId</code> e <code class="code-inline">decisionId</code>.</li>
+        <li>Métricas <code class="code-inline">liquidacao.autorizar.duration</code>, <code class="code-inline">liquidacao.autorizar.outcome</code> (label: autorizado/negado/contingencia).</li>
+        <li>Métrica <code class="code-inline">liquidacao.antifraude.score</code> (histogram).</li>
+      </ul>
+
+      <h2 class="section-eyebrow">Próximas Leituras</h2>
+      <div class="doc-grid">
+        <a class="doc-card" href="08-fluxo-estorno.html">
+          <div class="doc-card__icon" aria-hidden="true">↩️</div>
+          <div class="doc-card__title">Fluxo: Estorno</div>
+          <div class="doc-card__desc">
+            Como reverter uma autorização confirmada anteriormente.
+          </div>
+        </a>
+        <a class="doc-card" href="09-fluxo-contingencia.html">
+          <div class="doc-card__icon" aria-hidden="true">🆘</div>
+          <div class="doc-card__title">Fluxo: Contingência</div>
+          <div class="doc-card__desc">
+            Detalhamento do modo degradado quando o antifraude está indisponível.
+          </div>
+        </a>
+        <a class="doc-card" href="03-dados.html">
+          <div class="doc-card__icon" aria-hidden="true">📊</div>
+          <div class="doc-card__title">Dados Trafegados</div>
+          <div class="doc-card__desc">
+            Estrutura de cada campo que aparece nos exemplos acima.
+          </div>
+        </a>
+      </div>
+    </main>
+  </div>
+
+  <script type="text/mermaid" data-id="fluxo-feliz">
+sequenceDiagram
+    autonumber
+    actor C as Canal
+    participant API as API
+    participant IDEM as Idempotency
+    participant SAL as Saldos
+    participant AF as Antifraude
+    participant DB as PostgreSQL
+    participant OUT as Outbox
+
+    C->>API: POST /autorizar (Idempotency-Key)
+    API->>IDEM: SETNX idem:K
+    IDEM-->>API: nova requisição
+    API->>SAL: GET saldo do cliente
+    SAL-->>API: saldo suficiente
+    API->>AF: solicitar scoring
+    AF-->>API: scoring 87 + advice APPROVE
+    API->>DB: BEGIN TX
+    API->>DB: INSERT autorizacao
+    API->>OUT: INSERT outbox_event
+    API->>DB: COMMIT
+    API->>IDEM: SET resposta (TTL 24h)
+    API-->>C: 200 Autorizado
+
+    Note over OUT: assíncrono — relay publica em ~2s
+  </script>
+
+  <script type="text/mermaid" data-id="fluxo-falhas">
+flowchart TB
+    classDef step    fill:#ffffff,stroke:#1f2937,color:#0a0c12,stroke-width:1.5px
+    classDef ok      fill:#1c4e93,stroke:#0a0c12,color:#ffffff,stroke-width:2px
+    classDef bad     fill:#e85a5a,stroke:#0a0c12,color:#ffffff,stroke-width:2px
+    classDef cont    fill:#e6a946,stroke:#0a0c12,color:#0a0c12,stroke-width:2px
+
+    Start(["Request entra"]):::step
+    Idem{"Idempotency-Key<br/>já vista?"}:::step
+    Hit["200 OK (cacheada)"]:::ok
+    Conflict["409 Conflict<br/>payload divergente"]:::bad
+
+    Sal{"Saldo suficiente?"}:::step
+    NoSal["422 SALDO_INSUFICIENTE"]:::bad
+    SalDown["503 Service Unavailable"]:::bad
+
+    AF{"Antifraude responde?"}:::step
+    AFDown["Modo Contingência"]:::cont
+    AFOk{"Score &gt;= threshold<br/>e advice = APPROVE?"}:::step
+    AFNo["422 ANTIFRAUDE_LOW_SCORE<br/>ou BLOCKED_LIST"]:::bad
+
+    DB["Persistir + publicar evento"]:::ok
+    Ok["200 AUTORIZADO"]:::ok
+
+    Start --> Idem
+    Idem -->|"sim, mesmo payload"| Hit
+    Idem -->|"sim, payload diferente"| Conflict
+    Idem -->|"não"| Sal
+    Sal -->|"saldos OK"| AF
+    Sal -->|"insuficiente"| NoSal
+    Sal -->|"indisponível"| SalDown
+    AF -->|"OK"| AFOk
+    AF -->|"timeout / circuit aberto"| AFDown
+    AFOk -->|"sim"| DB
+    AFOk -->|"não"| AFNo
+    DB --> Ok
+  </script>
+
+  <script src="sidebar.js"></script>
+  <script src="diagram-viewer.js"></script>
+</body>
+</html>

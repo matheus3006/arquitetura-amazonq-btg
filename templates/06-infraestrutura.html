@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Infraestrutura — Liquidação Transacional</title>
+  <meta name="description" content="Topologia AWS, ambientes, pipeline de deploy, observabilidade e disaster recovery.">
+  <link rel="stylesheet" href="../design-system/tokens.css">
+  <link rel="stylesheet" href="../design-system/components.css">
+</head>
+<body>
+  <div class="shell">
+    <aside id="sidebar" class="sidebar" aria-label="Navegação"></aside>
+
+    <main id="main" class="main">
+      <nav class="breadcrumb" aria-label="Caminho">
+        <ol>
+          <li><a href="index.html">Início</a></li>
+          <li>Infraestrutura</li>
+        </ol>
+      </nav>
+
+      <header class="hero">
+        <span class="hero__eyebrow">Arquitetura · 06</span>
+        <h1 class="hero__title">Infra<span class="accent-word">estrutura</span></h1>
+        <p class="hero__subtitle">
+          Topologia AWS, ambientes, pipeline de deploy, observabilidade e recuperação de desastre.
+          O que existe, onde existe e quem mantém.
+        </p>
+      </header>
+
+      <h2 class="section-eyebrow">Topologia AWS</h2>
+      <p class="prose">
+        Conta dedicada por ambiente, região primária <code class="code-inline">sa-east-1</code> (São Paulo),
+        região DR <code class="code-inline">us-east-1</code> (N. Virginia). Multi-AZ em todos os componentes
+        com estado persistente.
+      </p>
+
+      <figure class="diagram-figure">
+        <div class="diagram-viewer" data-diagram="topologia-aws"></div>
+        <figcaption>Figura 1 — Topologia de produção (sa-east-1).</figcaption>
+      </figure>
+
+      <h2 class="section-eyebrow">Componentes</h2>
+      <table class="data-table">
+        <thead>
+          <tr><th>Componente</th><th>Serviço AWS</th><th>Spec</th><th>Owner</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>API + Worker</td><td>ECS Fargate</td><td>2 vCPU · 4 GB · min 2 / max 10 tasks (autoscaling por CPU)</td><td>Squad Liquidação</td></tr>
+          <tr><td>Outbox Relay</td><td>ECS Fargate</td><td>0.5 vCPU · 1 GB · 1 task (singleton)</td><td>Squad Liquidação</td></tr>
+          <tr><td>Banco transacional</td><td>RDS Aurora PostgreSQL 15</td><td><code class="code-inline">db.r6g.large</code> · Multi-AZ · 1 read replica</td><td>SRE Plataforma</td></tr>
+          <tr><td>Cache (idempotency, tokens)</td><td>ElastiCache Redis 7</td><td><code class="code-inline">cache.r6g.large</code> · cluster mode</td><td>SRE Plataforma</td></tr>
+          <tr><td>Mensageria</td><td>SNS + SQS</td><td>1 topic, 3 subscriptions, 1 DLQ por subscription</td><td>Squad Liquidação</td></tr>
+          <tr><td>Load Balancer</td><td>ALB</td><td>HTTPS, certificado ACM, healthcheck <code class="code-inline">/health</code></td><td>SRE Plataforma</td></tr>
+          <tr><td>WAF</td><td>AWS WAF</td><td>Regras gerenciadas + rate limit por canal</td><td>Segurança</td></tr>
+          <tr><td>Secrets</td><td>Secrets Manager</td><td>Rotação automática 90 dias para credenciais de DB</td><td>SRE Plataforma</td></tr>
+          <tr><td>Logs e métricas</td><td>CloudWatch + X-Ray</td><td>Retenção 30 dias (90 em prod), tracing 100% amostragem</td><td>Squad Liquidação</td></tr>
+        </tbody>
+      </table>
+
+      <h2 class="section-eyebrow">Ambientes</h2>
+      <table class="data-table">
+        <thead>
+          <tr><th>Ambiente</th><th>Conta AWS</th><th>Região</th><th>Promoção</th><th>Dados</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>dev</strong></td>
+            <td><code class="code-inline">btg-liquidacao-dev</code></td>
+            <td>sa-east-1</td>
+            <td>Direto do branch <code class="code-inline">develop</code></td>
+            <td>Sintéticos. Reset semanal.</td>
+          </tr>
+          <tr>
+            <td><strong>staging</strong></td>
+            <td><code class="code-inline">btg-liquidacao-stg</code></td>
+            <td>sa-east-1</td>
+            <td>Após merge em <code class="code-inline">main</code></td>
+            <td>Cópia anonimizada de prod (LGPD-compliant). Reset mensal.</td>
+          </tr>
+          <tr>
+            <td><strong>production</strong></td>
+            <td><code class="code-inline">btg-liquidacao-prd</code></td>
+            <td>sa-east-1 (primária) + us-east-1 (DR)</td>
+            <td>Tag <code class="code-inline">v*</code> com aprovação manual</td>
+            <td>Reais. Backup diário, retenção 7 anos (BACEN).</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 class="section-eyebrow">Pipeline de Deploy</h2>
+      <p class="prose">
+        Build e deploy em <strong>Azure Pipelines</strong>. Estratégia <strong>blue/green via CodeDeploy</strong>
+        em produção. Smoke tests sintéticos rodam antes do traffic shifting.
+      </p>
+
+      <figure class="diagram-figure">
+        <div class="diagram-viewer" data-diagram="pipeline-deploy"></div>
+        <figcaption>Figura 2 — Pipeline de deploy.</figcaption>
+      </figure>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Estágio</th><th>Duração média</th><th>Gate</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Build + testes unitários</td><td>4 min</td><td>Coverage &gt; 80%, sem testes vermelhos</td></tr>
+          <tr><td>Architecture tests (NetArchTest)</td><td>30 s</td><td>Todas as fitness functions verdes</td></tr>
+          <tr><td>Build da imagem Docker</td><td>2 min</td><td>Trivy scan: zero CRITICAL, zero HIGH não-aceitas</td></tr>
+          <tr><td>Deploy em dev</td><td>3 min</td><td>Healthcheck OK</td></tr>
+          <tr><td>Integration tests (Testcontainers)</td><td>6 min</td><td>Todos verdes</td></tr>
+          <tr><td>Deploy em staging</td><td>5 min</td><td>Smoke tests sintéticos passando</td></tr>
+          <tr><td>Aprovação manual para prod</td><td>—</td><td>Tech Lead + SRE on-call</td></tr>
+          <tr><td>Deploy blue/green em prod</td><td>15 min</td><td>5xx rate &lt; 0.1% durante traffic shifting</td></tr>
+        </tbody>
+      </table>
+
+      <aside class="decision-callout" role="note">
+        <div class="decision-callout__icon" aria-hidden="true">▲</div>
+        <div class="decision-callout__body">
+          <div class="decision-callout__label">Janela de deploy em produção</div>
+          <p>
+            Seg-qui, 10h-17h horário de Brasília. Sex e feriados: apenas emergência
+            com aprovação do Tech Lead. Hotfixes seguem o mesmo pipeline mas pulam staging
+            apenas com aprovação explícita do SRE on-call.
+          </p>
+        </div>
+      </aside>
+
+      <h2 class="section-eyebrow">Observabilidade</h2>
+      <p class="prose">
+        Três pilares: logs estruturados, métricas e traces distribuídos.
+        Todos correlacionados pelo <code class="code-inline">X-Correlation-ID</code>.
+      </p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Pilar</th><th>Ferramenta</th><th>O que captura</th><th>Dashboard</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Logs</strong></td>
+            <td>Serilog → CloudWatch Logs</td>
+            <td>Estruturados em JSON. Todo log carrega <code class="code-inline">correlationId</code> e <code class="code-inline">decisionId</code></td>
+            <td><a href="#">CW Logs Insights — Liquidacao/API</a></td>
+          </tr>
+          <tr>
+            <td><strong>Métricas</strong></td>
+            <td>OpenTelemetry → CloudWatch Metrics</td>
+            <td>Latência por endpoint, taxa de 5xx, score médio do antifraude, backlog do outbox</td>
+            <td><a href="#">Dashboard Liquidacao-Prod</a></td>
+          </tr>
+          <tr>
+            <td><strong>Traces</strong></td>
+            <td>X-Ray</td>
+            <td>Span por chamada externa. Mostra latência de cada hop (saldos, antifraude, DB)</td>
+            <td><a href="#">X-Ray Service Map</a></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 class="section-eyebrow">Alarmes Críticos</h2>
+      <table class="data-table">
+        <thead>
+          <tr><th>Alarme</th><th>Threshold</th><th>Severidade</th><th>Aciona</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>5xx rate</td><td>&gt; 1% por 5 min</td><td>P1</td><td>On-call primário via PagerDuty</td></tr>
+          <tr><td>Latência p95</td><td>&gt; 800ms por 10 min</td><td>P2</td><td>On-call primário (Slack)</td></tr>
+          <tr><td>Outbox backlog</td><td>&gt; 1000 eventos pendentes por &gt; 5 min</td><td>P1</td><td>On-call primário</td></tr>
+          <tr><td>DLQ não vazia</td><td>Qualquer mensagem</td><td>P1</td><td>On-call primário</td></tr>
+          <tr><td>RDS CPU</td><td>&gt; 80% por 15 min</td><td>P2</td><td>SRE Plataforma</td></tr>
+          <tr><td>Modo contingência ativo</td><td>&gt; 5% das requisições por 10 min</td><td>P2</td><td>Tech Lead + on-call</td></tr>
+          <tr><td>Token Cognito inválido</td><td>&gt; 50 em 5 min</td><td>P3</td><td>Segurança (Slack)</td></tr>
+        </tbody>
+      </table>
+
+      <h2 class="section-eyebrow">Disaster Recovery</h2>
+      <table class="data-table">
+        <thead>
+          <tr><th>Cenário</th><th>RTO</th><th>RPO</th><th>Procedimento</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Falha de zona (AZ)</td>
+            <td>~3 min</td>
+            <td>0</td>
+            <td>Automático via Multi-AZ. Sem intervenção.</td>
+          </tr>
+          <tr>
+            <td>Falha de região primária</td>
+            <td>&lt; 1h</td>
+            <td>&lt; 5 min</td>
+            <td>Failover manual para us-east-1. Runbook em <a href="https://wiki.btg/runbook-dr">wiki.btg/runbook-dr</a>.</td>
+          </tr>
+          <tr>
+            <td>Corrupção de dados</td>
+            <td>&lt; 2h</td>
+            <td>&lt; 5 min</td>
+            <td>PITR (point-in-time recovery) do Aurora. Requer aprovação Tech Lead + comunicação prévia.</td>
+          </tr>
+          <tr>
+            <td>Perda de credenciais</td>
+            <td>&lt; 30 min</td>
+            <td>—</td>
+            <td>Rotação manual via Secrets Manager + redeploy.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 class="section-eyebrow">Custos Estimados (Produção)</h2>
+      <p class="prose">
+        Estimativa mensal em USD, baseada em ~15M requests/mês.
+        Atualizada trimestralmente conforme padrão de uso real.
+      </p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Componente</th><th>Custo mensal (USD)</th><th>% do total</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>ECS Fargate (API + Worker + Relay)</td><td>$ 380</td><td>32%</td></tr>
+          <tr><td>RDS Aurora Multi-AZ + read replica</td><td>$ 420</td><td>35%</td></tr>
+          <tr><td>ElastiCache Redis cluster</td><td>$ 180</td><td>15%</td></tr>
+          <tr><td>SNS + SQS</td><td>$ 35</td><td>3%</td></tr>
+          <tr><td>ALB + WAF + Route53</td><td>$ 60</td><td>5%</td></tr>
+          <tr><td>CloudWatch + X-Ray (logs e traces)</td><td>$ 95</td><td>8%</td></tr>
+          <tr><td>Outros (Secrets, KMS, transfer)</td><td>$ 25</td><td>2%</td></tr>
+          <tr><td colspan="1"><strong>Total</strong></td><td colspan="2"><strong>~ $ 1.195 / mês</strong></td></tr>
+        </tbody>
+      </table>
+
+      <h2 class="section-eyebrow">Próximas Leituras</h2>
+      <div class="doc-grid">
+        <a class="doc-card" href="04-configuracoes.html">
+          <div class="doc-card__icon" aria-hidden="true">⚙️</div>
+          <div class="doc-card__title">Configurações</div>
+          <div class="doc-card__desc">
+            Variáveis de ambiente por stage, feature flags, parâmetros operacionais.
+          </div>
+        </a>
+        <a class="doc-card" href="07-fluxo-autorizacao.html">
+          <div class="doc-card__icon" aria-hidden="true">🔐</div>
+          <div class="doc-card__title">Fluxo: Autorização</div>
+          <div class="doc-card__desc">
+            Como uma requisição flui através dessa topologia em condições normais.
+          </div>
+        </a>
+        <a class="doc-card" href="09-fluxo-contingencia.html">
+          <div class="doc-card__icon" aria-hidden="true">🆘</div>
+          <div class="doc-card__title">Fluxo: Contingência</div>
+          <div class="doc-card__desc">
+            O que muda no caminho da requisição quando alarmes de contingência disparam.
+          </div>
+        </a>
+      </div>
+    </main>
+  </div>
+
+  <script type="text/mermaid" data-id="topologia-aws">
+flowchart TB
+    classDef edge   fill:#ffffff,stroke:#1f2937,color:#0a0c12,stroke-width:1.5px
+    classDef compute fill:#4a8fe7,stroke:#0a0c12,color:#ffffff,stroke-width:2px
+    classDef data   fill:#1c4e93,stroke:#0a0c12,color:#ffffff,stroke-width:2.5px
+    classDef ext    fill:#f9fafb,stroke:#6b7280,color:#0a0c12,stroke-width:1.5px,stroke-dasharray:5 3
+
+    Net[("Internet")]
+    R53["Route 53"]
+    WAF["AWS WAF<br/>Rate limit + regras gerenciadas"]
+    ALB["Application Load Balancer<br/>HTTPS + ACM"]
+
+    subgraph PROD["AWS sa-east-1 · btg-liquidacao-prd"]
+        subgraph PUB["Public Subnets (3 AZs)"]
+            ALB
+        end
+        subgraph PRIV["Private Subnets (3 AZs)"]
+            subgraph ECS["ECS Fargate"]
+                API["API Service<br/>2–10 tasks"]
+                Worker["Worker Service<br/>1–5 tasks"]
+                Relay["Outbox Relay<br/>1 task singleton"]
+            end
+            RDS[("Aurora PostgreSQL<br/>Multi-AZ + read replica")]
+            Redis[("ElastiCache Redis<br/>cluster mode")]
+        end
+        SNS["SNS Topic<br/>liquidacao-decisao"]
+        SQS["SQS Queue<br/>+ DLQ"]
+        Sec["Secrets Manager"]
+        CW["CloudWatch<br/>Logs + Metrics"]
+        XR["X-Ray"]
+    end
+
+    AntF["Motor Antifraude<br/>FICO Falcon"]
+    Sal["Sistema de Saldos"]
+
+    Net --> R53 --> WAF --> ALB
+    ALB --> API
+    API --> RDS
+    API --> Redis
+    API --> AntF
+    API --> Sal
+    API --> SNS
+    SQS --> Worker
+    Worker --> RDS
+    Relay --> RDS
+    Relay --> SNS
+    API -.->|fetch credentials| Sec
+    API -.->|logs + metrics| CW
+    API -.->|traces| XR
+
+    class Net,AntF,Sal ext
+    class R53,WAF,ALB edge
+    class API,Worker,Relay compute
+    class RDS,Redis,SNS,SQS data
+    class Sec,CW,XR edge
+  </script>
+
+  <script type="text/mermaid" data-id="pipeline-deploy">
+flowchart LR
+    classDef step   fill:#ffffff,stroke:#1f2937,color:#0a0c12,stroke-width:1.5px
+    classDef gate   fill:#4a8fe7,stroke:#0a0c12,color:#ffffff,stroke-width:2px
+    classDef env    fill:#1c4e93,stroke:#0a0c12,color:#ffffff,stroke-width:2.5px
+
+    PR["Pull Request"]
+    Build["Build + Unit Tests<br/>~4 min"]
+    Arch["Architecture Tests<br/>NetArchTest"]
+    Docker["Build Image<br/>+ Trivy scan"]
+    Dev["Deploy DEV<br/>auto"]
+    Int["Integration Tests<br/>Testcontainers"]
+    Stg["Deploy STAGING<br/>auto"]
+    Smoke["Smoke tests sintéticos"]
+    Approve{{"Aprovação manual<br/>Tech Lead + SRE"}}
+    Prod["Deploy PROD<br/>blue/green"]
+    Watch["Observar p95 + 5xx<br/>30 min"]
+
+    PR --> Build --> Arch --> Docker --> Dev --> Int --> Stg --> Smoke --> Approve --> Prod --> Watch
+
+    class PR,Build,Arch,Docker,Int,Smoke,Watch step
+    class Approve gate
+    class Dev,Stg,Prod env
+  </script>
+
+  <script src="sidebar.js"></script>
+  <script src="diagram-viewer.js"></script>
+</body>
+</html>

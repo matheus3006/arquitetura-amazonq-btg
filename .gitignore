@@ -1,0 +1,25 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Editores e IDEs
+.idea/
+.vscode/settings.json
+.vscode/launch.json
+*.swp
+*.swo
+*~
+
+# Logs e temporários
+*.log
+*.tmp
+.cache/
+
+# Output local de testes (PDFs gerados a partir das páginas)
+pdfs/
+out/
+
+# Dependências (não usamos atualmente, mas pra futuro)
+node_modules/

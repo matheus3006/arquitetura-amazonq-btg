@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fluxo: Estorno — Liquidação Transacional</title>
+  <meta name="description" content="Reversão de autorização. Regras, sequência, garantias e exemplos.">
+  <link rel="stylesheet" href="../design-system/tokens.css">
+  <link rel="stylesheet" href="../design-system/components.css">
+</head>
+<body>
+  <div class="shell">
+    <aside id="sidebar" class="sidebar" aria-label="Navegação"></aside>
+
+    <main id="main" class="main">
+      <nav class="breadcrumb" aria-label="Caminho">
+        <ol>
+          <li><a href="index.html">Início</a></li>
+          <li>Fluxo: Estorno</li>
+        </ol>
+      </nav>
+
+      <header class="hero">
+        <span class="hero__eyebrow">Fluxo Transacional · 08</span>
+        <h1 class="hero__title">Es<span class="accent-word">torno</span></h1>
+        <p class="hero__subtitle">
+          Reversão lógica de uma autorização. Não desfaz no banco — emite uma nova
+          autorização <code class="code-inline">ESTORNADA</code> que referencia a original.
+        </p>
+      </header>
+
+      <h2 class="section-eyebrow">Visão Geral</h2>
+      <p class="prose">
+        Estorno é uma <strong>operação independente</strong>, não uma reversão transacional.
+        Recebemos <code class="code-inline">POST /estornar/{decisionId}</code> com nova
+        <code class="code-inline">Idempotency-Key</code>, validamos a autorização original,
+        registramos a nova decisão com status <code class="code-inline">ESTORNADA</code> e publicamos
+        o evento <code class="code-inline">AutorizacaoEstornada</code>.
+      </p>
+
+      <p class="prose">
+        <strong>Não chamamos antifraude.</strong> Estorno é benefício do cliente —
+        recusá-lo por scoring seria absurdo. Saldo também não é consultado: o estorno
+        sempre devolve dinheiro à conta, nunca debita.
+      </p>
+
+      <h2 class="section-eyebrow">Quando Estornar É Permitido</h2>
+      <table class="data-table">
+        <thead>
+          <tr><th>Pré-condição</th><th>Regra</th><th>Resposta se violada</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Status da autorização original</td>
+            <td>Deve ser <code class="code-inline">AUTORIZADO</code> ou <code class="code-inline">CONTINGENCIA_AUTORIZADO</code></td>
+            <td><code class="code-inline">409 Conflict</code> — estorno inválido para este status</td>
+          </tr>
+          <tr>
+            <td>Janela temporal</td>
+            <td>Até 7 dias após <code class="code-inline">decidedAt</code> da original</td>
+            <td><code class="code-inline">422 ESTORNO_PRAZO_EXPIRADO</code></td>
+          </tr>
+          <tr>
+            <td>Idempotência</td>
+            <td>Mesma <code class="code-inline">Idempotency-Key</code> retorna resposta cacheada</td>
+            <td>Resposta original (idempotente)</td>
+          </tr>
+          <tr>
+            <td>Já estornada</td>
+            <td>Autorização com <code class="code-inline">Status = ESTORNADA</code> não pode ser estornada de novo</td>
+            <td><code class="code-inline">409 Conflict</code></td>
+          </tr>
+          <tr>
+            <td>Valor parcial</td>
+            <td>Estorno total apenas. Parcial não suportado nesta versão</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>Autorização inexistente</td>
+            <td><code class="code-inline">decisionId</code> deve existir</td>
+            <td><code class="code-inline">404 Not Found</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 class="section-eyebrow">Sequência</h2>
+      <figure class="diagram-figure">
+        <div class="diagram-viewer" data-diagram="fluxo-estorno"></div>
+        <figcaption>Figura 1 — Sequência do estorno.</figcaption>
+      </figure>
+
+      <p class="prose">
+        Decomposição de latência (p95 alvo &lt; 200ms — mais rápido que autorização porque
+        não chama antifraude nem saldos):
+      </p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Passo</th><th>Operação</th><th>Latência alvo</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>Idempotency check</td><td>5 ms</td></tr>
+          <tr><td>2</td><td>Buscar autorização original (SELECT)</td><td>10 ms</td></tr>
+          <tr><td>3</td><td>Validar pré-condições no agregado</td><td>1 ms</td></tr>
+          <tr><td>4</td><td>Persistir (UPDATE original + INSERT estorno + INSERT outbox)</td><td>20 ms</td></tr>
+          <tr><td>5</td><td>Cache resposta</td><td>5 ms</td></tr>
+          <tr><td>—</td><td>Serialização + middleware + buffer</td><td>~160 ms</td></tr>
+          <tr><td>—</td><td><strong>Total</strong></td><td><strong>~200 ms</strong></td></tr>
+        </tbody>
+      </table>
+
+      <h2 class="section-eyebrow">Garantias Transacionais</h2>
+
+      <aside class="decision-callout" role="note">
+        <div class="decision-callout__icon" aria-hidden="true">▲</div>
+        <div class="decision-callout__body">
+          <div class="decision-callout__label">Atomicidade da reversão</div>
+          <p>
+            Na mesma transação do PostgreSQL: (a) <code class="code-inline">UPDATE</code> da autorização
+            original marcando <code class="code-inline">Status = ESTORNADA</code> e <code class="code-inline">ReversalOf = null → decisionId do estorno</code>;
+            (b) <code class="code-inline">INSERT</code> da nova autorização com <code class="code-inline">Status = ESTORNADA</code>
+            e <code class="code-inline">ReversalOf = decisionId original</code>; (c) <code class="code-inline">INSERT outbox_event</code>
+            do evento <code class="code-inline">AutorizacaoEstornada</code>. Tudo ou nada.
+          </p>
+        </div>
+      </aside>
+
+      <aside class="decision-callout" role="note">
+        <div class="decision-callout__icon" aria-hidden="true">▲</div>
+        <div class="decision-callout__body">
+          <div class="decision-callout__label">Por que duas linhas em vez de UPDATE direto</div>
+          <p>
+            Manter o registro original imutável e criar uma nova linha para o estorno preserva
+            <strong>auditabilidade temporal</strong>. Em uma investigação você consegue reconstituir
+            "como era no momento T". <code class="code-inline">UPDATE</code> destrutivo perderia essa propriedade.
+          </p>
+        </div>
+      </aside>
+
+      <h2 class="section-eyebrow">Exemplos de Payload</h2>
+
+      <h3>Request</h3>
+      <div class="code-block">
+        <div class="code-block__header"><span>POST /estornar/{decisionId} · application/json</span></div>
+<pre><code>POST /estornar/b4c2d3e5-8f9a-4b1c-7d2e-3f4a5b6c7d8e HTTP/1.1
+Host: liquidacao.btg.com.br
+Authorization: Bearer eyJhbGciOiJSUzI1NiIs...
+Content-Type: application/json
+Idempotency-Key: 9f8e7d6c-5b4a-3c2d-1e0f-a9b8c7d6e5f4
+X-Correlation-ID: 2d3e4f5a-6b7c-8d9e-0f1a-2b3c4d5e6f7a
+
+{
+  "reason": "REQUEST_CANCELED_BY_CUSTOMER",
+  "requestedBy": "atendimento.btg",
+  "notes": "Cliente cancelou compra antes da entrega — ticket 18234"
+}</code></pre>
+      </div>
+
+      <h3>Resposta — estorno aceito</h3>
+      <div class="code-block">
+        <div class="code-block__header"><span>200 OK</span></div>
+<pre><code>{
+  "decisionId": "f1e2d3c4-b5a6-7980-1f2e-3d4c5b6a7980",
+  "originalDecisionId": "b4c2d3e5-8f9a-4b1c-7d2e-3f4a5b6c7d8e",
+  "status": "ESTORNADA",
+  "amount": 247.50,
+  "currency": "BRL",
+  "reason": "REQUEST_CANCELED_BY_CUSTOMER",
+  "decidedAt": "2026-05-30T14:18:33.421Z"
+}</code></pre>
+      </div>
+
+      <h3>Resposta — estorno recusado por prazo</h3>
+      <div class="code-block">
+        <div class="code-block__header"><span>422 Unprocessable Entity · application/problem+json</span></div>
+<pre><code>{
+  "type": "https://liquidacao.btg.com.br/problems/estorno-prazo",
+  "title": "Estorno fora do prazo permitido",
+  "status": 422,
+  "detail": "Autorização datada de 2026-05-15T12:00:00Z. Prazo máximo: 7 dias.",
+  "reasonCode": "ESTORNO_PRAZO_EXPIRADO",
+  "originalDecisionId": "b4c2d3e5-8f9a-4b1c-7d2e-3f4a5b6c7d8e"
+}</code></pre>
+      </div>
+
+      <h3>Evento publicado</h3>
+      <div class="code-block">
+        <div class="code-block__header"><span>SNS · liquidacao-decisao</span></div>
+<pre><code>{
+  "eventId": "8a7b6c5d-4e3f-2a1b-0c9d-8e7f6a5b4c3d",
+  "eventType": "AutorizacaoEstornada",
+  "eventVersion": "1.0",
+  "aggregateId": "f1e2d3c4-b5a6-7980-1f2e-3d4c5b6a7980",
+  "occurredAt": "2026-05-30T14:18:33.421Z",
+  "correlationId": "2d3e4f5a-6b7c-8d9e-0f1a-2b3c4d5e6f7a",
+  "payload": {
+    "decisionId": "f1e2d3c4-b5a6-7980-1f2e-3d4c5b6a7980",
+    "originalDecisionId": "b4c2d3e5-8f9a-4b1c-7d2e-3f4a5b6c7d8e",
+    "customerAcctNumber": "00012345678",
+    "amount": 247.50,
+    "currency": "BRL",
+    "reason": "REQUEST_CANCELED_BY_CUSTOMER",
+    "requestedBy": "atendimento.btg"
+  }
+}</code></pre>
+      </div>
+
+      <h2 class="section-eyebrow">Códigos de Motivo Aceitos</h2>
+      <table class="data-table">
+        <thead>
+          <tr><th>Código</th><th>Quando</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code class="code-inline">REQUEST_CANCELED_BY_CUSTOMER</code></td><td>Cliente solicitou cancelamento</td></tr>
+          <tr><td><code class="code-inline">FRAUD_DETECTED_AFTER</code></td><td>Antifraude posterior identificou padrão suspeito</td></tr>
+          <tr><td><code class="code-inline">MERCHANT_RETURN</code></td><td>Estabelecimento devolveu o valor (produto não entregue, etc.)</td></tr>
+          <tr><td><code class="code-inline">SYSTEM_ERROR_DOWNSTREAM</code></td><td>Sistema parceiro falhou em concluir após nossa autorização</td></tr>
+          <tr><td><code class="code-inline">COMPLIANCE_REVERSAL</code></td><td>Reversão por exigência regulatória ou ordem judicial</td></tr>
+        </tbody>
+      </table>
+
+      <h2 class="section-eyebrow">Observações Importantes</h2>
+      <ul class="prose">
+        <li>Estorno é <strong>operação distinta</strong>. Tem seu próprio <code class="code-inline">decisionId</code>, seu próprio evento, seu próprio rastro de auditoria.</li>
+        <li>Consumers downstream (Conciliação, Auditoria) recebem o evento de estorno e devem ajustar seus próprios estados.</li>
+        <li>A autorização original permanece visível para consulta histórica via <code class="code-inline">GET /autorizacoes/{id}</code> — agora com status <code class="code-inline">ESTORNADA</code> e link para o estorno.</li>
+        <li>Não suportamos cadeia: <strong>estornar um estorno é proibido</strong>. Se necessário reverter o estorno, gera-se uma nova autorização original.</li>
+      </ul>
+
+      <h2 class="section-eyebrow">Próximas Leituras</h2>
+      <div class="doc-grid">
+        <a class="doc-card" href="07-fluxo-autorizacao.html">
+          <div class="doc-card__icon" aria-hidden="true">🔐</div>
+          <div class="doc-card__title">Fluxo: Autorização</div>
+          <div class="doc-card__desc">
+            A operação que o estorno reverte.
+          </div>
+        </a>
+        <a class="doc-card" href="13-dicionario.html">
+          <div class="doc-card__icon" aria-hidden="true">📖</div>
+          <div class="doc-card__title">Dicionário de Campos</div>
+          <div class="doc-card__desc">
+            Definição de <code class="code-inline">ReversalOf</code>, <code class="code-inline">ESTORNADA</code> e demais campos.
+          </div>
+        </a>
+      </div>
+    </main>
+  </div>
+
+  <script type="text/mermaid" data-id="fluxo-estorno">
+sequenceDiagram
+    autonumber
+    actor A as Atendimento / Canal
+    participant API as API
+    participant IDEM as Idempotency
+    participant DB as PostgreSQL
+    participant OUT as Outbox
+
+    A->>API: POST /estornar/{decisionId}<br/>(Idempotency-Key)
+    API->>IDEM: SETNX idem:K
+    IDEM-->>API: nova requisição
+    API->>DB: SELECT autorizacao WHERE decisionId
+    DB-->>API: original (status, decidedAt)
+    Note over API: Validar pré-condições:<br/>status, prazo, não-estornada
+    API->>DB: BEGIN TX
+    API->>DB: UPDATE original<br/>status=ESTORNADA, reversalOf=novoId
+    API->>DB: INSERT autorizacao (estorno)<br/>status=ESTORNADA
+    API->>OUT: INSERT outbox_event<br/>AutorizacaoEstornada
+    API->>DB: COMMIT
+    API->>IDEM: SET resposta (TTL 24h)
+    API-->>A: 200 Estornada
+
+    Note over OUT: relay publica em ~2s
+  </script>
+
+  <script src="sidebar.js"></script>
+  <script src="diagram-viewer.js"></script>
+</body>
+</html>

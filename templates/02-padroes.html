@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Padrões e Camadas — Liquidação Transacional</title>
+  <meta name="description" content="Arquitetura interna do serviço: Hexagonal, ports e adapters, estrutura de pastas, contract-first, resiliência e fitness functions.">
+  <link rel="stylesheet" href="../design-system/tokens.css">
+  <link rel="stylesheet" href="../design-system/components.css">
+</head>
+<body>
+  <div class="shell">
+    <aside id="sidebar" class="sidebar" aria-label="Navegação"></aside>
+
+    <main id="main" class="main">
+      <nav class="breadcrumb" aria-label="Caminho">
+        <ol>
+          <li><a href="index.html">Início</a></li>
+          <li>Padrões e Camadas</li>
+        </ol>
+      </nav>
+
+      <header class="hero">
+        <span class="hero__eyebrow">Arquitetura · 02</span>
+        <h1 class="hero__title">Padrões <span class="accent-word">e Camadas</span></h1>
+        <p class="hero__subtitle">
+          Como o código está organizado dentro do serviço. Decisões aplicadas
+          igualmente em todo bounded context — verificadas no CI, não confiadas à disciplina.
+        </p>
+      </header>
+
+      <h2 class="section-eyebrow">Por que Hexagonal</h2>
+      <p class="prose">
+        Adotamos <strong>Hexagonal (Ports and Adapters)</strong> por duas razões concretas:
+      </p>
+      <ol class="prose">
+        <li><strong>Testabilidade.</strong> O núcleo de domínio não conhece HTTP, EF Core ou SNS. Testes unitários rodam em milissegundos sem mocks complexos.</li>
+        <li><strong>Substituibilidade.</strong> Trocar PostgreSQL por outro banco, ou SNS por Kafka, é trocar um adaptador. O domínio não muda.</li>
+      </ol>
+
+      <aside class="decision-callout" role="note">
+        <div class="decision-callout__icon" aria-hidden="true">▲</div>
+        <div class="decision-callout__body">
+          <div class="decision-callout__label">Por que não Clean Architecture</div>
+          <p>
+            Hexagonal e Clean são primos. Escolhemos Hexagonal porque a metáfora
+            <strong>ports</strong> é mais explícita: cada dependência externa tem uma interface
+            declarada na camada de Aplicação, implementada por um adaptador em Infraestrutura.
+            Clean tem mais camadas e regras de dependência que, na prática deste serviço,
+            não trazem ganho proporcional à complexidade. Registrado em
+            <a href="adr/0002-hexagonal-vs-clean.html">ADR-0002</a>.
+          </p>
+        </div>
+      </aside>
+
+      <h2 class="section-eyebrow">As Camadas</h2>
+      <figure class="diagram-figure">
+        <div class="diagram-viewer" data-diagram="hexagonal-layers"></div>
+        <figcaption>Figura 1 — Camadas e direção de dependência.</figcaption>
+      </figure>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Camada</th>
+            <th>Responsabilidade</th>
+            <th>Depende de</th>
+            <th>NÃO pode depender de</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Domínio</strong></td>
+            <td>Agregados, value objects, regras de negócio, eventos</td>
+            <td>Nada</td>
+            <td>Nada externo — nem EF, nem AWS SDK, nem Polly</td>
+          </tr>
+          <tr>
+            <td><strong>Aplicação</strong></td>
+            <td>Orquestra use cases, define <em>ports</em> (interfaces de saída)</td>
+            <td>Domínio</td>
+            <td>Infraestrutura, Apresentação</td>
+          </tr>
+          <tr>
+            <td><strong>Infraestrutura</strong></td>
+            <td>Implementa os ports — repositórios EF, HTTP clients, SNS publisher</td>
+            <td>Domínio, Aplicação</td>
+            <td>Apresentação</td>
+          </tr>
+          <tr>
+            <td><strong>Apresentação</strong></td>
+            <td>Recebe HTTP, valida, traduz para command, chama o use case</td>
+            <td>Aplicação</td>
+            <td>Infraestrutura direta (sem atalhos)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 class="section-eyebrow">Estrutura de Pastas</h2>
+      <p class="prose">
+        Quatro projetos .NET refletem as quatro camadas. Cada bounded context é uma pasta dentro
+        de Domínio e uma de Aplicação. Infraestrutura agrupa por tipo de adaptador, não por contexto.
+      </p>
+
+      <div class="code-block">
+        <div class="code-block__header"><span>Estrutura do repositório</span></div>
+<pre><code>src/
+├── Liquidacao.Domain/              # núcleo — zero dependências externas
+│   ├── Autorizacao/                # bounded context
+│   │   ├── Autorizacao.cs          # aggregate root
+│   │   ├── StatusAutorizacao.cs    # enum / value object
+│   │   └── Eventos/
+│   │       ├── AutorizacaoCriada.cs
+│   │       └── AutorizacaoNegada.cs
+│   └── Common/                     # tipos compartilhados (Money, Cpf, etc.)
+│
+├── Liquidacao.Application/         # use cases + ports
+│   ├── UseCases/
+│   │   ├── AutorizarTransacao/
+│   │   │   ├── AutorizarCommand.cs
+│   │   │   └── AutorizarHandler.cs
+│   │   └── EstornarTransacao/
+│   └── Ports/                      # interfaces — implementação em Infrastructure
+│       ├── IAntifraudeService.cs
+│       ├── ISaldoRepository.cs
+│       └── IEventoPublisher.cs
+│
+├── Liquidacao.Infrastructure/      # adapters (cada port tem 1+ implementação)
+│   ├── Persistence/
+│   │   ├── LiquidacaoDbContext.cs
+│   │   └── Repositories/
+│   ├── Http/
+│   │   ├── AntifraudeAdapter.cs    # TCP scoring + Polly
+│   │   └── SaldoAdapter.cs         # HTTP + Polly
+│   └── Messaging/
+│       └── SnsPublisher.cs         # outbox relay
+│
+└── Liquidacao.Api/                 # entrypoint HTTP
+    ├── Endpoints/
+    │   └── AutorizacaoEndpoints.cs
+    ├── Middleware/
+    │   ├── CorrelationIdMiddleware.cs
+    │   └── ProblemDetailsMiddleware.cs
+    └── Program.cs
+
+tests/
+├── Liquidacao.Domain.Tests/         # unitário puro, sub-100ms
+├── Liquidacao.Application.Tests/    # unitário com fakes dos ports
+├── Liquidacao.Architecture.Tests/   # NetArchTest — fitness functions
+└── Liquidacao.Integration.Tests/    # Testcontainers (PostgreSQL real)</code></pre>
+      </div>
+
+      <h2 class="section-eyebrow">Contract-First</h2>
+      <p class="prose">
+        APIs são definidas em <strong>OpenAPI YAML antes do código</strong>. O contrato
+        é a fonte da verdade — quebrar exige PR explícito e bump de versão.
+      </p>
+      <ul class="prose">
+        <li><strong>Cliente</strong> (canais consumidores): gerado via NSwag a partir do YAML, distribuído como NuGet <code class="code-inline">Liquidacao.Client</code>.</li>
+        <li><strong>Servidor</strong>: DTOs gerados em build time. Drift entre código e contrato quebra a compilação.</li>
+      </ul>
+
+      <div class="code-block">
+        <div class="code-block__header"><span>contracts/autorizacao-v1.yaml · trecho</span></div>
+<pre><code>openapi: 3.1.0
+info:
+  title: Liquidação Transacional
+  version: 1.0.0
+
+paths:
+  /autorizar:
+    post:
+      operationId: autorizarTransacao
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AutorizarRequest' }
+      responses:
+        '200':
+          description: Autorizado
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AutorizarResponse' }
+        '422':
+          description: Recusado por antifraude ou saldo
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Problem' }</code></pre>
+      </div>
+
+      <h2 class="section-eyebrow">Resiliência (Polly)</h2>
+      <p class="prose">
+        Toda chamada externa síncrona é embrulhada em retry + circuit breaker + timeout.
+        Defaults da casa abaixo. Customização exige justificativa em ADR.
+      </p>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Política</th>
+            <th>Default</th>
+            <th>Quando customizar</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Retry</strong></td>
+            <td>3 tentativas, backoff exponencial 200ms · 800ms · 3.2s. Só em 5xx e timeouts.</td>
+            <td>Endpoints idempotentes podem aumentar. Não-idempotentes <em>devem</em> desligar.</td>
+          </tr>
+          <tr>
+            <td><strong>Circuit Breaker</strong></td>
+            <td>5 falhas em 30s → open por 60s</td>
+            <td>Dependência crítica pode pedir threshold mais baixo (3 falhas em 10s).</td>
+          </tr>
+          <tr>
+            <td><strong>Timeout</strong></td>
+            <td>1s por chamada externa</td>
+            <td>Antifraude usa 400ms (latência alvo + buffer pequeno).</td>
+          </tr>
+          <tr>
+            <td><strong>Bulkhead</strong></td>
+            <td>100 chamadas concorrentes por adaptador, 20 em fila</td>
+            <td>Adaptador de baixa criticidade pode ter limites menores.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="code-block">
+        <div class="code-block__header"><span>Program.cs · registro do adaptador antifraude</span></div>
+<pre><code>services.AddHttpClient&lt;IAntifraudeService, AntifraudeAdapter&gt;(client =&gt; {
+        client.Timeout     = TimeSpan.FromMilliseconds(400);
+        client.BaseAddress = config.GetUri("Antifraude:BaseUrl");
+    })
+    .AddPolicyHandler(GetRetryPolicy())
+    .AddPolicyHandler(GetCircuitBreakerPolicy());
+
+static IAsyncPolicy&lt;HttpResponseMessage&gt; GetRetryPolicy() =&gt;
+    HttpPolicyExtensions
+        .HandleTransientHttpError()
+        .Or&lt;TimeoutRejectedException&gt;()
+        .WaitAndRetryAsync(
+            retryCount: 3,
+            sleepDurationProvider: attempt =&gt;
+                TimeSpan.FromMilliseconds(200 * Math.Pow(4, attempt - 1)));
+
+static IAsyncPolicy&lt;HttpResponseMessage&gt; GetCircuitBreakerPolicy() =&gt;
+    HttpPolicyExtensions
+        .HandleTransientHttpError()
+        .CircuitBreakerAsync(
+            handledEventsAllowedBeforeBreaking: 5,
+            durationOfBreak: TimeSpan.FromSeconds(60));</code></pre>
+      </div>
+
+      <h2 class="section-eyebrow">Fitness Functions</h2>
+      <p class="prose">
+        Regras arquiteturais não são confiadas à disciplina — são <strong>verificadas no CI</strong>
+        por testes que falham se forem violadas. Usamos <code class="code-inline">NetArchTest</code>
+        no projeto <code class="code-inline">Liquidacao.Architecture.Tests</code>. Qualquer PR
+        que viole uma regra é bloqueado.
+      </p>
+
+      <div class="code-block">
+        <div class="code-block__header"><span>Liquidacao.Architecture.Tests · CamadaTests.cs</span></div>
+<pre><code>public class CamadaTests
+{
+    [Fact]
+    public void Dominio_nao_depende_de_nada_externo()
+    {
+        var result = Types.InAssembly(typeof(Autorizacao).Assembly)
+            .ShouldNot()
+            .HaveDependencyOnAny(
+                "Microsoft.EntityFrameworkCore",
+                "Amazon", "AWSSDK",
+                "Polly",
+                "System.Net.Http")
+            .GetResult();
+
+        Assert.True(result.IsSuccessful,
+            $"Domain depende de: {string.Join(", ", result.FailingTypeNames ?? new())}");
+    }
+
+    [Fact]
+    public void Aplicacao_nao_depende_de_Infraestrutura()
+    {
+        var result = Types.InAssembly(typeof(AutorizarHandler).Assembly)
+            .That()
+                .ResideInNamespace("Liquidacao.Application")
+            .ShouldNot()
+                .HaveDependencyOn("Liquidacao.Infrastructure")
+            .GetResult();
+
+        Assert.True(result.IsSuccessful);
+    }
+
+    [Fact]
+    public void Adapters_implementam_Ports_da_Aplicacao()
+    {
+        var result = Types.InAssembly(typeof(AntifraudeAdapter).Assembly)
+            .That()
+                .ResideInNamespace("Liquidacao.Infrastructure")
+                .And().AreClasses()
+                .And().DoNotHaveNameEndingWith("DbContext")
+                .And().DoNotHaveNameEndingWith("Migration")
+            .Should()
+                .ImplementInterface(typeof(IAntifraudeService))
+                .Or().ImplementInterface(typeof(ISaldoRepository))
+                .Or().ImplementInterface(typeof(IEventoPublisher))
+            .GetResult();
+
+        Assert.True(result.IsSuccessful);
+    }
+}</code></pre>
+      </div>
+
+      <aside class="decision-callout" role="note">
+        <div class="decision-callout__icon" aria-hidden="true">▲</div>
+        <div class="decision-callout__body">
+          <div class="decision-callout__label">Regras invioláveis no CI</div>
+          <ul style="margin: var(--space-2) 0 0; padding-left: var(--space-5);">
+            <li>Domínio não conhece EF Core, AWS SDK, Polly ou qualquer biblioteca externa</li>
+            <li>Aplicação só conhece Domínio e seus próprios Ports</li>
+            <li>Infraestrutura <em>implementa</em> Ports — nunca define novos</li>
+            <li>Apresentação delega para Aplicação, nunca chama Infraestrutura</li>
+          </ul>
+        </div>
+      </aside>
+
+      <h2 class="section-eyebrow">Adicionando um Bounded Context</h2>
+      <p class="prose">
+        Roteiro mínimo para criar um novo contexto sem quebrar as fitness functions.
+        Guia detalhado com exemplo end-to-end em <a href="05-nova-funcionalidade.html">Guia: Nova Feature</a>.
+      </p>
+      <ol class="prose">
+        <li><strong>Modele o domínio primeiro.</strong> Defina o agregado, suas invariantes e eventos em <code class="code-inline">Liquidacao.Domain/&lt;Contexto&gt;/</code>. Sem mocks ainda — só objetos e testes unitários.</li>
+        <li><strong>Defina os ports.</strong> Identifique quais dependências externas o use case precisa. Crie interfaces em <code class="code-inline">Application/Ports/</code>.</li>
+        <li><strong>Implemente o use case.</strong> Em <code class="code-inline">Application/UseCases/&lt;Contexto&gt;/</code>. Sem HTTP, sem DB — só recebe ports via DI.</li>
+        <li><strong>Implemente os adaptadores.</strong> Em <code class="code-inline">Infrastructure/</code>, cada port ganha implementação concreta com Polly aplicado.</li>
+        <li><strong>Exponha o endpoint.</strong> Adicione em <code class="code-inline">Api/Endpoints/</code>. Mapeie request → command → use case. Retorne <code class="code-inline">Problem+JSON</code> em erros.</li>
+        <li><strong>Testes na ordem:</strong> Domain (unitário) → Application (fakes) → Architecture (NetArchTest verde) → Integration (Testcontainers).</li>
+        <li><strong>Documente.</strong> Crie página <code class="code-inline">0X-fluxo-&lt;nome&gt;.html</code> seguindo o padrão de <a href="07-fluxo-autorizacao.html">07-fluxo-autorizacao.html</a>.</li>
+      </ol>
+
+      <h2 class="section-eyebrow">Próximas Leituras</h2>
+      <div class="doc-grid">
+        <a class="doc-card" href="03-dados.html">
+          <div class="doc-card__icon" aria-hidden="true">📊</div>
+          <div class="doc-card__title">Dados Trafegados</div>
+          <div class="doc-card__desc">
+            Estrutura do payload de entrada, transformações internas, evento no outbox.
+          </div>
+        </a>
+        <a class="doc-card" href="05-nova-funcionalidade.html">
+          <div class="doc-card__icon" aria-hidden="true">🧭</div>
+          <div class="doc-card__title">Guia: Nova Feature</div>
+          <div class="doc-card__desc">
+            Walkthrough end-to-end: domínio, use case, adapter, endpoint, testes, doc.
+          </div>
+        </a>
+        <a class="doc-card" href="07-fluxo-autorizacao.html">
+          <div class="doc-card__icon" aria-hidden="true">🔐</div>
+          <div class="doc-card__title">Fluxo: Autorização</div>
+          <div class="doc-card__desc">
+            Como as camadas colaboram em um fluxo transacional real, com falhas.
+          </div>
+        </a>
+      </div>
+    </main>
+  </div>
+
+  <!-- ============================================================
+       FONTES DOS DIAGRAMAS
+       ============================================================ -->
+
+  <script type="text/mermaid" data-id="hexagonal-layers">
+flowchart TB
+    classDef domain   fill:#1c4e93,stroke:#0a0c12,color:#ffffff,stroke-width:2.5px
+    classDef app      fill:#4a8fe7,stroke:#0a0c12,color:#ffffff,stroke-width:2px
+    classDef infra    fill:#ffffff,stroke:#1f2937,color:#0a0c12,stroke-width:1.5px
+    classDef ext      fill:#f9fafb,stroke:#6b7280,color:#0a0c12,stroke-width:1.5px,stroke-dasharray:5 3
+
+    Canal["Canal HTTP<br/>POST /autorizar"]
+
+    subgraph PRES["APRESENTAÇÃO"]
+        API["Endpoints<br/>ASP.NET Minimal API"]
+    end
+
+    subgraph APP["APLICAÇÃO"]
+        UC["Use Case<br/>AutorizarHandler"]
+        Ports["Ports<br/>IAntifraudeService<br/>ISaldoRepository<br/>IEventoPublisher"]
+    end
+
+    subgraph DOM["DOMÍNIO"]
+        Agg["Agregado Autorização<br/>Invariantes + Eventos"]
+    end
+
+    subgraph INFRA["INFRAESTRUTURA"]
+        RepoA["EF Core Repository"]
+        HttpA["HttpClient + Polly"]
+        MsgA["SNS Publisher (Outbox)"]
+    end
+
+    DB[("PostgreSQL")]
+    AntF["Motor Antifraude"]
+    SNS["SNS Topic"]
+
+    Canal --> API
+    API --> UC
+    UC --> Agg
+    UC -.depende.-> Ports
+    Ports -.implementado por.-> RepoA
+    Ports -.implementado por.-> HttpA
+    Ports -.implementado por.-> MsgA
+    RepoA --> DB
+    HttpA --> AntF
+    MsgA --> SNS
+
+    class Canal ext
+    class API,RepoA,HttpA,MsgA infra
+    class UC,Ports app
+    class Agg domain
+    class DB,AntF,SNS ext
+  </script>
+
+  <script src="sidebar.js"></script>
+  <script src="diagram-viewer.js"></script>
+</body>
+</html>

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dicionário de Campos — Liquidação Transacional</title>
+  <meta name="description" content="Definição canônica de cada campo do agregado, evento e contratos HTTP.">
+  <link rel="stylesheet" href="../design-system/tokens.css">
+  <link rel="stylesheet" href="../design-system/components.css">
+</head>
+<body>
+  <div class="shell">
+    <aside id="sidebar" class="sidebar" aria-label="Navegação"></aside>
+
+    <main id="main" class="main">
+      <nav class="breadcrumb" aria-label="Caminho">
+        <ol>
+          <li><a href="index.html">Início</a></li>
+          <li>Dicionário</li>
+        </ol>
+      </nav>
+
+      <header class="hero">
+        <span class="hero__eyebrow">Modelo de Dados · 13</span>
+        <h1 class="hero__title">Dicionário <span class="accent-word">de Campos</span></h1>
+        <p class="hero__subtitle">
+          Definição canônica de cada campo. Fonte de verdade quando código,
+          contrato OpenAPI ou diagrama divergirem.
+        </p>
+      </header>
+
+      <h2 class="section-eyebrow">Como ler</h2>
+      <p class="prose">
+        Cada tabela representa um tipo. <strong>Tipo lógico</strong> é o conceito
+        (UUID, decimal, ISO 8601). <strong>Tipo .NET</strong> é como aparece no agregado.
+        <strong>Tipo JSON</strong> é como aparece no contrato HTTP e no evento publicado.
+        Campos com asterisco <code class="code-inline">*</code> têm regra de mascaramento — ver
+        <a href="03-dados.html#mascaramento">Dados §&nbsp;Mascaramento</a>.
+      </p>
+
+      <h2 class="section-eyebrow">Agregado <code class="code-inline">Autorizacao</code></h2>
+      <p class="prose">
+        Vive em <code class="code-inline">Liquidacao.Domain/Autorizacao/Autorizacao.cs</code>.
+        Representa o estado completo de uma decisão de autorização desde a criação até o desfecho.
+      </p>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Campo</th>
+            <th>Tipo lógico</th>
+            <th>Tipo .NET</th>
+            <th>Tipo JSON</th>
+            <th>Descrição</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code class="code-inline">DecisionId</code></td>
+            <td>UUID v4</td>
+            <td><code class="code-inline">Guid</code></td>
+            <td>string (uuid)</td>
+            <td>ID gerado pelo serviço. Identidade do agregado. Imutável após criação.</td>
+          </tr>
+          <tr>
+            <td><code class="code-inline">ExternalTransactionId</code></td>
+            <td>UUID v4</td>
+            <td><code class="code-inline">Guid</code></td>
+            <td>string (uuid)</td>
+            <td>ID gerado pelo canal. Único por canal. Compõe chave de idempotência.</td>
+          </tr>
+          <tr>
+            <td><code class="code-inline">IdempotencyKey</code></td>
+            <td>UUID v4</td>
+            <td><code class="code-inline">Guid</code></td>
+            <td>string (uuid)</td>
+            <td>Recebida no header. Hash com payload identifica retentativas.</td>
+          </tr>
+          <tr>
+            <td><code class="code-inline">Pan</code> *</td>
+            <td>PAN mascarado</td>
+            <td><code class="code-inline">MaskedPan</code> (VO)</td>
+            <td>string</td>
+            <td>Formato <code class="code-inline">123456******7890</code>. Validado no construtor.</td>
+          </tr>
+          <tr>
+            <td><code class="code-inline">CustomerAcctNumber</code></td>
+            <td>número de conta</td>
+            <td><code class="code-inline">string</code></td>
+            <td>string</td>
+            <td>Conta interna do cliente no banco. 11 caracteres.</td>
+          </tr>
+          <tr>
+            <td><code class="code-inline">CustomerCpf</code> *</td>
+            <td>CPF</td>
+            <td><code class="code-inline">Cpf</code> (VO)</td>
+            <td>string</td>
+            <td>11 dígitos sem formatação. Validação Mod-11 no construtor.</td>
+          </tr>
+          <tr>
+            <td><code class="code-inline">Amount</code></td>
+            <td>valor monetário</td>
+            <td><code class="code-inline">Money</code> (VO)</td>
+            <td>number</td>
+            <td>Decimal com moeda associada. <code class="code-inline">new Money(247.50m, "BRL")</code>.</td>
+          </tr>
+          <tr>
+            <td><code class="code-inline">MerchantId</code></td>
+            <td>ID do estabelecimento</td>
+            <td><code class="code-inline">string</code></td>
+            <td>string</td>
+            <td>Identificador no adquirente. Não validado no domínio.</td>
+          </tr>
+          <tr>
+            <td><code class="code-inline">Mcc</code></td>
+            <td>código MCC</td>
+            <td><code class="code-inline">MerchantCategoryCode</code> (VO)</td>
+            <td>string</td>
+            <td>ISO 18245, 4 dígitos. Usado em regras de contingência.</td>
+          </tr>
+          <tr>
+            <td><code class="code-inline">ChannelType</code></td>
+            <td>enum canal</td>
+            <td><code class="code-inline">ChannelType</code> (enum)</td>
+            <td>string</td>
+            <td><code class="code-inline">POS</code> · <code class="code-inline">ECOMM</code> · <code class="code-inline">PIX_DEBITO</code>. Ver <a href="14-enums.html#channel">Enums</a>.</td>
+          </tr>
+          <tr>
+            <td><code class="code-inline">Status</code></td>
+            <td>enum status</td>
+            <td><code class="code-inline">StatusAutorizacao</code> (enum)</td>
+            <td>string</td>
+            <td>Estado atual. Transições controladas pelo agregado. Ver <a href="14-enums.html#status">Enums</a>.</td>
+          </tr>
+          <tr>
+            <td><code class="code-inline">ScoringResult</code></td>
+            <td>score 0-100</td>
+            <td><code class="code-inline">int?</code></td>
+            <td>number (nullable)</td>
+            <td>Resultado do antifraude. <code class="code-inline">null</code> em modo contingência.</td>
+          </tr>
+          <tr>
+            <td><code class="code-inline">ReasonCode</code></td>
+            <td>código de recusa</td>
+            <td><code class="code-inline">string?</code></td>
+            <td>string (nullable)</td>
+            <td>Preenchido apenas quando <code class="code-inline">Status = NEGADO</code>. Ver <a href="14-enums.html#reason">Enums</a>.</td>
+          </tr>
+          <tr>
+            <td><code class="code-inline">CreatedAt</code></td>
+            <td>timestamp</td>
+            <td><code class="code-inline">DateTimeOffset</code></td>
+            <td>string (iso-8601)</td>
+            <td>Quando o serviço recebeu o request. Sempre UTC.</td>
+          </tr>
+          <tr>
+            <td><code class="code-inline">DecidedAt</code></td>
+            <td>timestamp</td>
+            <td><code class="code-inline">DateTimeOffset?</code></td>
+            <td>string (iso-8601, nullable)</td>
+            <td>Quando o estado terminal foi atingido. <code class="code-inline">null</code> enquanto pendente.</td>
+          </tr>
+          <tr>
+            <td><code class="code-inline">RowVersion</code></td>
+            <td>concurrency token</td>
+            <td><code class="code-inline">byte[]</code></td>
+            <td>—</td>
+            <td>Optimistic concurrency via EF. Não exposto em JSON.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 class="section-eyebrow">Evento <code class="code-inline">OutboxEvent</code></h2>
+      <p class="prose">
+        Vive em <code class="code-inline">Liquidacao.Infrastructure/Persistence/OutboxEvent.cs</code>.
+        Persistido na tabela <code class="code-inline">outbox_event</code> na mesma transação do agregado.
+        O relay lê com <code class="code-inline">Status = pending</code> e publica em SNS.
+      </p>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Campo</th>
+            <th>Tipo .NET</th>
+            <th>Coluna PostgreSQL</th>
+            <th>Descrição</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><code class="code-inline">EventId</code></td><td><code class="code-inline">Guid</code></td><td><code class="code-inline">event_id uuid pk</code></td><td>UUID v4. Único por evento — usado por consumers para deduplicação.</td></tr>
+          <tr><td><code class="code-inline">EventType</code></td><td><code class="code-inline">string</code></td><td><code class="code-inline">event_type varchar(64)</code></td><td><code class="code-inline">AutorizacaoCriada</code> · <code class="code-inline">AutorizacaoNegada</code> · <code class="code-inline">AutorizacaoContingencia</code></td></tr>
+          <tr><td><code class="code-inline">EventVersion</code></td><td><code class="code-inline">string</code></td><td><code class="code-inline">event_version varchar(8)</code></td><td>SemVer do contrato do evento. Atual: <code class="code-inline">1.0</code>.</td></tr>
+          <tr><td><code class="code-inline">AggregateId</code></td><td><code class="code-inline">Guid</code></td><td><code class="code-inline">aggregate_id uuid</code></td><td>Refere-se ao <code class="code-inline">DecisionId</code> da Autorização.</td></tr>
+          <tr><td><code class="code-inline">CorrelationId</code></td><td><code class="code-inline">Guid</code></td><td><code class="code-inline">correlation_id uuid</code></td><td>Propagado do header <code class="code-inline">X-Correlation-ID</code> do request original.</td></tr>
+          <tr><td><code class="code-inline">Payload</code></td><td><code class="code-inline">string</code> (JSON)</td><td><code class="code-inline">payload jsonb</code></td><td>Snapshot dos dados relevantes do agregado no momento da emissão.</td></tr>
+          <tr><td><code class="code-inline">Status</code></td><td><code class="code-inline">OutboxStatus</code></td><td><code class="code-inline">status varchar(16)</code></td><td><code class="code-inline">pending</code> · <code class="code-inline">published</code> · <code class="code-inline">failed</code></td></tr>
+          <tr><td><code class="code-inline">CreatedAt</code></td><td><code class="code-inline">DateTimeOffset</code></td><td><code class="code-inline">created_at timestamptz</code></td><td>Quando o agregado emitiu o evento.</td></tr>
+          <tr><td><code class="code-inline">PublishedAt</code></td><td><code class="code-inline">DateTimeOffset?</code></td><td><code class="code-inline">published_at timestamptz null</code></td><td>Quando o relay confirmou publicação no SNS.</td></tr>
+          <tr><td><code class="code-inline">RetryCount</code></td><td><code class="code-inline">int</code></td><td><code class="code-inline">retry_count int default 0</code></td><td>Incrementado a cada tentativa de publicação falha.</td></tr>
+        </tbody>
+      </table>
+
+      <h2 class="section-eyebrow">Headers HTTP</h2>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Header</th>
+            <th>Direção</th>
+            <th>Obrigatório</th>
+            <th>Descrição</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><code class="code-inline">Idempotency-Key</code></td><td>in</td><td>Sim</td><td>UUID v4. Identifica unicamente a operação. TTL de 24h no Redis.</td></tr>
+          <tr><td><code class="code-inline">X-Correlation-ID</code></td><td>in/out</td><td>Não (gerado se ausente)</td><td>UUID v4. Propagado para todos logs e chamadas downstream.</td></tr>
+          <tr><td><code class="code-inline">Authorization</code></td><td>in</td><td>Sim</td><td>JWT Bearer emitido pelo Cognito do BTG.</td></tr>
+          <tr><td><code class="code-inline">X-Channel-Origin</code></td><td>in</td><td>Sim</td><td>Identifica o canal (<code class="code-inline">POS-001</code>, <code class="code-inline">ECOMM-WEB</code>, ...).</td></tr>
+          <tr><td><code class="code-inline">X-Request-Id</code></td><td>out</td><td>—</td><td>Echo do request ID gerado por nós. Útil em suporte.</td></tr>
+          <tr><td><code class="code-inline">Content-Type</code></td><td>in/out</td><td>Sim</td><td>Sempre <code class="code-inline">application/json</code> ou <code class="code-inline">application/problem+json</code> em erros.</td></tr>
+        </tbody>
+      </table>
+
+      <h2 class="section-eyebrow">Glossário de Domínio</h2>
+      <p class="prose">
+        Termos do negócio com significado preciso neste serviço. Quando código,
+        ADR ou conversa divergirem, este glossário é a verdade.
+      </p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Termo</th><th>Definição</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Autorização</strong></td>
+            <td>Decisão de permitir ou recusar uma operação de débito antes de ela ser efetivada no saldo. <em>Não é o débito em si</em> — é a aprovação para que ele ocorra.</td>
+          </tr>
+          <tr>
+            <td><strong>Liquidação</strong></td>
+            <td>Efetivação financeira da operação após autorização. Acontece em outro serviço; aqui só publicamos o evento de decisão.</td>
+          </tr>
+          <tr>
+            <td><strong>Scoring</strong></td>
+            <td>Pontuação 0-100 retornada pelo motor antifraude. Acima do threshold (definido por canal) autoriza; abaixo recusa.</td>
+          </tr>
+          <tr>
+            <td><strong>Advice</strong></td>
+            <td>Recomendação do antifraude além do score: <code class="code-inline">APPROVE</code>, <code class="code-inline">DECLINE</code>, <code class="code-inline">REVIEW</code>.</td>
+          </tr>
+          <tr>
+            <td><strong>Contingência</strong></td>
+            <td>Modo degradado quando o antifraude está indisponível. Decisão tomada localmente com base em limites configuráveis. Ver <a href="09-fluxo-contingencia.html">Fluxo Contingência</a>.</td>
+          </tr>
+          <tr>
+            <td><strong>Estorno</strong></td>
+            <td>Reversão lógica de uma autorização. Não desfaz no domínio — emite nova autorização <code class="code-inline">Estornada</code> com referência ao original.</td>
+          </tr>
+          <tr>
+            <td><strong>MCC</strong> (Merchant Category Code)</td>
+            <td>ISO 18245. 4 dígitos que classificam o estabelecimento (5411=supermercado, 5812=restaurante, etc.). Usado em regras de contingência.</td>
+          </tr>
+          <tr>
+            <td><strong>Idempotência</strong></td>
+            <td>Mesma operação invocada N vezes produz o mesmo resultado. Aqui: mesma <code class="code-inline">Idempotency-Key</code> + payload retorna resposta original cacheada por 24h.</td>
+          </tr>
+          <tr>
+            <td><strong>Outbox</strong></td>
+            <td>Tabela que registra eventos a publicar, gravada na mesma transação do agregado. Garante exactly-once lógico.</td>
+          </tr>
+          <tr>
+            <td><strong>Correlation ID</strong></td>
+            <td>UUID v4 propagado em todos logs e mensagens. Permite rastrear uma operação end-to-end através de múltiplos serviços.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 class="section-eyebrow">Próximas Leituras</h2>
+      <div class="doc-grid">
+        <a class="doc-card" href="14-enums.html">
+          <div class="doc-card__icon" aria-hidden="true">🔤</div>
+          <div class="doc-card__title">Enums e Códigos</div>
+          <div class="doc-card__desc">
+            Valores válidos em <code class="code-inline">ChannelType</code>, <code class="code-inline">StatusAutorizacao</code>, <code class="code-inline">ReasonCode</code>.
+          </div>
+        </a>
+        <a class="doc-card" href="03-dados.html">
+          <div class="doc-card__icon" aria-hidden="true">📊</div>
+          <div class="doc-card__title">Dados Trafegados</div>
+          <div class="doc-card__desc">
+            Como esses campos circulam entre Request, Domain, Evento e Response.
+          </div>
+        </a>
+        <a class="doc-card" href="02-padroes.html">
+          <div class="doc-card__icon" aria-hidden="true">🏛️</div>
+          <div class="doc-card__title">Padrões e Camadas</div>
+          <div class="doc-card__desc">
+            Onde cada tipo vive na estrutura de pastas e regras de dependência.
+          </div>
+        </a>
+      </div>
+    </main>
+  </div>
+
+  <script src="sidebar.js"></script>
+  <script src="diagram-viewer.js"></script>
+</body>
+</html>

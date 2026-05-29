@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guia: Nova Feature — Liquidação Transacional</title>
+  <meta name="description" content="Walkthrough end-to-end para adicionar uma nova feature ao serviço seguindo as convenções estabelecidas.">
+  <link rel="stylesheet" href="../design-system/tokens.css">
+  <link rel="stylesheet" href="../design-system/components.css">
+</head>
+<body>
+  <div class="shell">
+    <aside id="sidebar" class="sidebar" aria-label="Navegação"></aside>
+
+    <main id="main" class="main">
+      <nav class="breadcrumb" aria-label="Caminho">
+        <ol>
+          <li><a href="index.html">Início</a></li>
+          <li>Guia: Nova Feature</li>
+        </ol>
+      </nav>
+
+      <header class="hero">
+        <span class="hero__eyebrow">Arquitetura · 05</span>
+        <h1 class="hero__title">Guia: <span class="accent-word">Nova Feature</span></h1>
+        <p class="hero__subtitle">
+          Walkthrough end-to-end para adicionar uma feature sem quebrar contratos,
+          fitness functions ou padrões da casa. Exemplo concreto: pré-autorização.
+        </p>
+      </header>
+
+      <h2 class="section-eyebrow">Princípios Antes de Começar</h2>
+      <ol class="prose">
+        <li><strong>Modele o domínio antes do código.</strong> Se você não consegue desenhar o agregado em um quadro em 10 minutos, ainda não entendeu o problema.</li>
+        <li><strong>Contract-first.</strong> Defina o OpenAPI YAML antes de qualquer endpoint. Mude o contrato em PR explícito, nunca por acidente.</li>
+        <li><strong>Testes na ordem de fora para dentro.</strong> Domain (rápido) → Application (rápido) → Architecture (rápido) → Integration (lento). Nunca pule.</li>
+        <li><strong>Documente enquanto implementa.</strong> Não no fim. Doc desatualizada é pior que doc inexistente.</li>
+      </ol>
+
+      <h2 class="section-eyebrow">Checklist Pré-Implementação</h2>
+      <p class="prose">
+        Antes de abrir o IDE, garanta os seguintes itens.
+      </p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Item</th><th>Onde</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Brainstorm + decisão registrada como ADR</td>
+            <td><code class="code-inline">docs/adr/NNNN-titulo.html</code></td>
+          </tr>
+          <tr>
+            <td>Spec OpenAPI revisada e aprovada pelos consumers</td>
+            <td><code class="code-inline">contracts/feature-v1.yaml</code></td>
+          </tr>
+          <tr>
+            <td>Quality goals da feature (latência, disponibilidade) negociados</td>
+            <td>ADR ou seção dedicada do <code class="code-inline">architecture.html</code></td>
+          </tr>
+          <tr>
+            <td>Glossário atualizado com novos termos de domínio</td>
+            <td><a href="13-dicionario.html">Dicionário §&nbsp;Glossário</a></td>
+          </tr>
+          <tr>
+            <td>Limites operacionais propostos (rate limit, payload size)</td>
+            <td><a href="04-configuracoes.html">Configurações</a></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 class="section-eyebrow">Exemplo Concreto: Pré-Autorização</h2>
+      <p class="prose">
+        Vamos adicionar a feature <strong>Pré-Autorização</strong> — segurar valor na conta do cliente
+        sem efetivar a autorização (usado em hotel check-in, locação de veículo, etc.).
+        A pré-autorização tem prazo de captura; expirada, libera o valor automaticamente.
+      </p>
+
+      <h3>Passo 1 — Modelar Domínio</h3>
+      <div class="code-block">
+        <div class="code-block__header"><span>Liquidacao.Domain/PreAutorizacao/PreAutorizacao.cs</span></div>
+<pre><code>namespace Liquidacao.Domain.PreAutorizacao;
+
+public sealed class PreAutorizacao : AggregateRoot
+{
+    public Guid PreAuthId { get; private set; }
+    public Cpf CustomerCpf { get; private set; }
+    public Money Amount { get; private set; }
+    public StatusPreAutorizacao Status { get; private set; }
+    public DateTimeOffset ExpiresAt { get; private set; }
+    public Guid? CapturedAsDecisionId { get; private set; }
+
+    private PreAutorizacao() { }  // EF
+
+    public static PreAutorizacao Criar(Cpf cpf, Money amount, TimeSpan validity)
+    {
+        if (validity &gt; TimeSpan.FromDays(30))
+            throw new DomainException("Pré-autorização não pode exceder 30 dias.");
+
+        var pa = new PreAutorizacao
+        {
+            PreAuthId = Guid.NewGuid(),
+            CustomerCpf = cpf,
+            Amount = amount,
+            Status = StatusPreAutorizacao.Ativa,
+            ExpiresAt = DateTimeOffset.UtcNow.Add(validity)
+        };
+        pa.RaiseEvent(new PreAutorizacaoCriada(pa.PreAuthId, cpf, amount, pa.ExpiresAt));
+        return pa;
+    }
+
+    public void Capturar(Guid decisionId)
+    {
+        if (Status != StatusPreAutorizacao.Ativa)
+            throw new DomainException($"Pré-autorização {PreAuthId} não está ativa.");
+        if (DateTimeOffset.UtcNow &gt; ExpiresAt)
+            throw new DomainException($"Pré-autorização {PreAuthId} expirou.");
+
+        Status = StatusPreAutorizacao.Capturada;
+        CapturedAsDecisionId = decisionId;
+        RaiseEvent(new PreAutorizacaoCapturada(PreAuthId, decisionId));
+    }
+}</code></pre>
+      </div>
+
+      <h3>Passo 2 — Definir Ports</h3>
+      <p class="prose">
+        Identifique <em>uma a uma</em> as dependências externas que o use case precisa.
+        Cada uma vira uma interface em <code class="code-inline">Application/Ports/</code>.
+      </p>
+
+      <div class="code-block">
+        <div class="code-block__header"><span>Liquidacao.Application/Ports/IPreAutorizacaoRepository.cs</span></div>
+<pre><code>namespace Liquidacao.Application.Ports;
+
+public interface IPreAutorizacaoRepository
+{
+    Task&lt;PreAutorizacao?&gt; ObterAsync(Guid preAuthId, CancellationToken ct);
+    Task AdicionarAsync(PreAutorizacao pa, CancellationToken ct);
+    Task SalvarAsync(CancellationToken ct);
+}</code></pre>
+      </div>
+
+      <h3>Passo 3 — Use Case</h3>
+      <div class="code-block">
+        <div class="code-block__header"><span>Liquidacao.Application/UseCases/PreAutorizar/PreAutorizarHandler.cs</span></div>
+<pre><code>namespace Liquidacao.Application.UseCases.PreAutorizar;
+
+public sealed class PreAutorizarHandler
+{
+    private readonly IPreAutorizacaoRepository _repo;
+    private readonly ISaldoRepository _saldo;
+    private readonly IAntifraudeService _antifraude;
+    private readonly IEventoPublisher _outbox;
+
+    public PreAutorizarHandler(
+        IPreAutorizacaoRepository repo,
+        ISaldoRepository saldo,
+        IAntifraudeService antifraude,
+        IEventoPublisher outbox)
+    {
+        _repo = repo;
+        _saldo = saldo;
+        _antifraude = antifraude;
+        _outbox = outbox;
+    }
+
+    public async Task&lt;PreAutorizarResult&gt; HandleAsync(
+        PreAutorizarCommand cmd, CancellationToken ct)
+    {
+        var saldoOk = await _saldo.HasFundsAsync(cmd.CustomerCpf, cmd.Amount, ct);
+        if (!saldoOk) return PreAutorizarResult.Recusado("SALDO_INSUFICIENTE");
+
+        var scoring = await _antifraude.ScoreAsync(cmd.ToAntifraudeRequest(), ct);
+        if (scoring.Result &lt; cmd.Channel.GetThreshold())
+            return PreAutorizarResult.Recusado("ANTIFRAUDE_LOW_SCORE");
+
+        var pa = PreAutorizacao.Criar(cmd.CustomerCpf, cmd.Amount, cmd.Validity);
+        await _repo.AdicionarAsync(pa, ct);
+        foreach (var evt in pa.DomainEvents)
+            await _outbox.EnqueueAsync(evt, ct);
+        await _repo.SalvarAsync(ct);  // commit transacional
+
+        return PreAutorizarResult.Aceito(pa.PreAuthId, pa.ExpiresAt);
+    }
+}</code></pre>
+      </div>
+
+      <h3>Passo 4 — Adapters</h3>
+      <p class="prose">
+        Implementação concreta de cada port. Polly aplicado sempre que houver chamada externa.
+        EF Core para persistência. Nada de lógica de negócio aqui.
+      </p>
+
+      <div class="code-block">
+        <div class="code-block__header"><span>Liquidacao.Infrastructure/Persistence/Repositories/PreAutorizacaoRepository.cs</span></div>
+<pre><code>namespace Liquidacao.Infrastructure.Persistence.Repositories;
+
+public sealed class PreAutorizacaoRepository : IPreAutorizacaoRepository
+{
+    private readonly LiquidacaoDbContext _db;
+
+    public PreAutorizacaoRepository(LiquidacaoDbContext db) =&gt; _db = db;
+
+    public Task&lt;PreAutorizacao?&gt; ObterAsync(Guid id, CancellationToken ct) =&gt;
+        _db.PreAutorizacoes.FirstOrDefaultAsync(p =&gt; p.PreAuthId == id, ct);
+
+    public async Task AdicionarAsync(PreAutorizacao pa, CancellationToken ct) =&gt;
+        await _db.PreAutorizacoes.AddAsync(pa, ct);
+
+    public Task SalvarAsync(CancellationToken ct) =&gt; _db.SaveChangesAsync(ct);
+}</code></pre>
+      </div>
+
+      <h3>Passo 5 — Endpoint</h3>
+      <div class="code-block">
+        <div class="code-block__header"><span>Liquidacao.Api/Endpoints/PreAutorizacaoEndpoints.cs</span></div>
+<pre><code>namespace Liquidacao.Api.Endpoints;
+
+public static class PreAutorizacaoEndpoints
+{
+    public static void Map(IEndpointRouteBuilder app)
+    {
+        app.MapPost("/pre-autorizar", async (
+            PreAutorizarRequest req,
+            PreAutorizarHandler handler,
+            HttpContext http,
+            CancellationToken ct) =&gt;
+        {
+            var cmd = req.ToCommand();
+            var result = await handler.HandleAsync(cmd, ct);
+            return result.IsSuccess
+                ? Results.Ok(result.ToResponse())
+                : Results.Problem(
+                    type: $"https://liquidacao.btg.com.br/problems/{result.ReasonCode.ToLower()}",
+                    title: result.Message,
+                    statusCode: 422);
+        })
+        .RequireAuthorization()
+        .WithName("PreAutorizar");
+    }
+}</code></pre>
+      </div>
+
+      <h3>Passo 6 — Testes</h3>
+      <p class="prose">Quatro projetos, na ordem:</p>
+      <ol class="prose">
+        <li><strong>Domain.Tests</strong>: invariantes do agregado. Ex: pré-autorização com validity &gt; 30 dias lança exceção.</li>
+        <li><strong>Application.Tests</strong>: handler com ports faked. Ex: saldo insuficiente retorna recusa sem chamar antifraude.</li>
+        <li><strong>Architecture.Tests</strong>: rodar NetArchTest. Verifica que Domain não importa nada novo, Application não importa Infrastructure.</li>
+        <li><strong>Integration.Tests</strong>: Testcontainers com PostgreSQL real. Verifica que o evento aparece no outbox após commit.</li>
+      </ol>
+
+      <h3>Passo 7 — Documentar</h3>
+      <p class="prose">
+        Crie nova página em <code class="code-inline">templates/0X-fluxo-pre-autorizacao.html</code>
+        seguindo o padrão de <a href="07-fluxo-autorizacao.html">07-fluxo-autorizacao.html</a>.
+        Adicione o link no <code class="code-inline">sidebar.js</code> na seção "Fluxos Transacionais".
+      </p>
+
+      <h2 class="section-eyebrow">Checklist de Pull Request</h2>
+      <table class="data-table">
+        <thead>
+          <tr><th>Item</th><th>Como verificar</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Contrato OpenAPI atualizado</td>
+            <td>Arquivo em <code class="code-inline">contracts/</code> modificado, versão bumped</td>
+          </tr>
+          <tr>
+            <td>Fitness functions verdes</td>
+            <td>CI mostra <code class="code-inline">Liquidacao.Architecture.Tests</code> passando</td>
+          </tr>
+          <tr>
+            <td>Coverage &gt; 80%</td>
+            <td>CI mostra cobertura nos novos arquivos</td>
+          </tr>
+          <tr>
+            <td>Logs estruturados em pontos críticos</td>
+            <td>Grep por <code class="code-inline">_logger.Information</code> nos novos arquivos</td>
+          </tr>
+          <tr>
+            <td>Métricas instrumentadas</td>
+            <td>Counter / Histogram declarados em <code class="code-inline">Metrics.cs</code></td>
+          </tr>
+          <tr>
+            <td>Sem secrets em código</td>
+            <td>Gitleaks no CI</td>
+          </tr>
+          <tr>
+            <td>ADR registrada para decisões arquiteturais</td>
+            <td>PR referencia a ADR</td>
+          </tr>
+          <tr>
+            <td>Documentação atualizada</td>
+            <td>Página HTML criada e linkada no sidebar</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 class="section-eyebrow">Checklist de Deploy</h2>
+      <ol class="prose">
+        <li>Feature flag criada em AppConfig, default <code class="code-inline">false</code>.</li>
+        <li>Migrations do EF testadas em staging com cópia anonimizada de prod.</li>
+        <li>Alarmes específicos da feature configurados em CloudWatch.</li>
+        <li>Runbook operacional atualizado (failure modes, métricas).</li>
+        <li>Comunicação com consumers downstream sobre o novo tipo de evento.</li>
+        <li>Plano de rollback documentado e validado.</li>
+        <li>Tech Lead aprovou release em staging por 48h sem incidentes antes de prod.</li>
+      </ol>
+
+      <h2 class="section-eyebrow">Padrões a Evitar</h2>
+
+      <aside class="decision-callout" role="note">
+        <div class="decision-callout__icon" aria-hidden="true">▲</div>
+        <div class="decision-callout__body">
+          <div class="decision-callout__label">Lógica de negócio no controller</div>
+          <p>
+            Validação de regra de domínio em endpoint cria duas fontes de verdade.
+            Endpoint só traduz HTTP → command. Validação vive no agregado.
+          </p>
+        </div>
+      </aside>
+
+      <aside class="decision-callout" role="note">
+        <div class="decision-callout__icon" aria-hidden="true">▲</div>
+        <div class="decision-callout__body">
+          <div class="decision-callout__label">EF Core no Domínio</div>
+          <p>
+            Annotations <code class="code-inline">[Key]</code>, <code class="code-inline">[Required]</code>
+            no agregado violam Hexagonal. Mapeamento vive em
+            <code class="code-inline">EntityConfiguration</code> separada na Infraestrutura.
+          </p>
+        </div>
+      </aside>
+
+      <aside class="decision-callout" role="note">
+        <div class="decision-callout__icon" aria-hidden="true">▲</div>
+        <div class="decision-callout__body">
+          <div class="decision-callout__label">Publicação fora do outbox</div>
+          <p>
+            Chamar <code class="code-inline">snsClient.PublishAsync</code> direto do use case
+            quebra atomicidade. Sempre <code class="code-inline">IEventoPublisher.EnqueueAsync</code>
+            que insere na tabela <code class="code-inline">outbox_event</code> na mesma transação.
+          </p>
+        </div>
+      </aside>
+
+      <aside class="decision-callout" role="note">
+        <div class="decision-callout__icon" aria-hidden="true">▲</div>
+        <div class="decision-callout__body">
+          <div class="decision-callout__label">HttpClient sem Polly</div>
+          <p>
+            Toda chamada externa exige retry + circuit breaker + timeout.
+            Registrar via <code class="code-inline">AddHttpClient&lt;T&gt;().AddPolicyHandler(...)</code>
+            no <code class="code-inline">Program.cs</code>. Verificado por NetArchTest.
+          </p>
+        </div>
+      </aside>
+
+      <h2 class="section-eyebrow">Próximas Leituras</h2>
+      <div class="doc-grid">
+        <a class="doc-card" href="02-padroes.html">
+          <div class="doc-card__icon" aria-hidden="true">🏛️</div>
+          <div class="doc-card__title">Padrões e Camadas</div>
+          <div class="doc-card__desc">
+            Estrutura completa de pastas, fitness functions, convenções.
+          </div>
+        </a>
+        <a class="doc-card" href="07-fluxo-autorizacao.html">
+          <div class="doc-card__icon" aria-hidden="true">🔐</div>
+          <div class="doc-card__title">Fluxo: Autorização</div>
+          <div class="doc-card__desc">
+            Exemplo de uma feature já documentada no padrão esperado.
+          </div>
+        </a>
+        <a class="doc-card" href="03-dados.html">
+          <div class="doc-card__icon" aria-hidden="true">📊</div>
+          <div class="doc-card__title">Dados Trafegados</div>
+          <div class="doc-card__desc">
+            Convenções de payload (datas, máscaras, IDs) que sua feature deve seguir.
+          </div>
+        </a>
+      </div>
+    </main>
+  </div>
+
+  <script src="sidebar.js"></script>
+  <script src="diagram-viewer.js"></script>
+</body>
+</html>

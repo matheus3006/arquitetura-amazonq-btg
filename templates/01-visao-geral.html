@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visão Geral — Liquidação Transacional</title>
+  <meta name="description" content="Propósito, contexto de negócio, integrações externas e stack tecnológica do serviço de Liquidação Transacional.">
+  <link rel="stylesheet" href="../design-system/tokens.css">
+  <link rel="stylesheet" href="../design-system/components.css">
+</head>
+<body>
+  <div class="shell">
+    <aside id="sidebar" class="sidebar" aria-label="Navegação"></aside>
+
+    <main id="main" class="main">
+      <nav class="breadcrumb" aria-label="Caminho">
+        <ol>
+          <li><a href="index.html">Início</a></li>
+          <li>Visão Geral</li>
+        </ol>
+      </nav>
+
+      <header class="hero">
+        <span class="hero__eyebrow">Arquitetura · 01</span>
+        <h1 class="hero__title">Visão <span class="accent-word">Geral</span></h1>
+        <p class="hero__subtitle">
+          O que o serviço faz, com quem fala e por que existe.
+          Tudo que um dev novo precisa saber antes de abrir o código.
+        </p>
+      </header>
+
+      <h2 class="section-eyebrow">Propósito</h2>
+      <p class="prose">
+        Gateway síncrono de autorização para transações de débito.
+        Recebe operações de canais de pagamento (POS, e-commerce, PIX-débito),
+        consulta o motor antifraude e o sistema de saldos, e responde
+        <strong>autorizar</strong> ou <strong>recusar</strong> em até <code class="code-inline">500ms p95</code>.
+      </p>
+      <p class="prose">
+        Não persiste saldo nem histórico financeiro — esses ficam em serviços dedicados.
+        O que persiste aqui é apenas o necessário para garantir <strong>idempotência</strong>
+        e <strong>auditabilidade</strong> da decisão: chave de idempotência e evento no outbox.
+      </p>
+
+      <h2 class="section-eyebrow">Contexto de Negócio</h2>
+      <figure class="diagram-figure">
+        <div class="diagram-viewer" data-diagram="system-context"></div>
+        <figcaption>Figura 1 — System Context (C4 nível 1).</figcaption>
+      </figure>
+
+      <p class="prose">
+        O serviço é <strong>síncrono na entrada e na saída</strong>: o canal espera a resposta
+        para liberar a operação ao cliente. Internamente coordena uma chamada
+        ao motor antifraude (a mais lenta), uma ao sistema de saldos (rápida),
+        publica um evento de decisão para auditoria via outbox, e devolve.
+      </p>
+
+      <h2 class="section-eyebrow">Integrações Externas</h2>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Sistema</th>
+            <th>Tipo</th>
+            <th>Criticidade</th>
+            <th>Latência alvo</th>
+            <th>Fallback</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Motor Antifraude</strong> (FICO)</td>
+            <td>TCP síncrono</td>
+            <td>Crítica</td>
+            <td>200ms p95</td>
+            <td>Contingência local com limites por cliente</td>
+          </tr>
+          <tr>
+            <td><strong>Sistema de Saldos</strong></td>
+            <td>HTTP síncrono</td>
+            <td>Crítica</td>
+            <td>80ms p95</td>
+            <td>Recusar — <em>fail-secure</em></td>
+          </tr>
+          <tr>
+            <td><strong>Sistema Central de Cartões</strong></td>
+            <td>HTTP síncrono</td>
+            <td>Crítica (saída)</td>
+            <td>100ms p95</td>
+            <td>Retry exponencial + alarme</td>
+          </tr>
+          <tr>
+            <td><strong>Auditoria</strong> (SNS)</td>
+            <td>Assíncrono</td>
+            <td>Não-crítica</td>
+            <td>—</td>
+            <td>Outbox republica quando voltar</td>
+          </tr>
+          <tr>
+            <td><strong>Identidade</strong> (Cognito)</td>
+            <td>HTTP síncrono</td>
+            <td>Crítica</td>
+            <td>30ms p95 (com cache)</td>
+            <td>Cache de tokens válidos por 5min</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <aside class="decision-callout" role="note">
+        <div class="decision-callout__icon" aria-hidden="true">▲</div>
+        <div class="decision-callout__body">
+          <div class="decision-callout__label">Por que TCP no motor antifraude</div>
+          <p>
+            O FICO Falcon expõe protocolo proprietário sobre TCP, não REST. A latência
+            é melhor que HTTP equivalente (~40ms a menos no p95), mas exige connection
+            pool dedicado e healthcheck próprio. Decisão registrada em
+            <a href="adr/0003-tcp-pool-antifraude.html">ADR-0003</a>.
+          </p>
+        </div>
+      </aside>
+
+      <h2 class="section-eyebrow">Fluxo Principal</h2>
+      <figure class="diagram-figure">
+        <div class="diagram-viewer" data-diagram="fluxo-autorizacao"></div>
+        <figcaption>Figura 2 — Sequência feliz da autorização.</figcaption>
+      </figure>
+
+      <h2 class="section-eyebrow">Stack Tecnológica</h2>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Tecnologia</th>
+            <th>Versão</th>
+            <th>Por que</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>.NET</strong></td>
+            <td>8 (LTS)</td>
+            <td>Alinhado ao roadmap de migração corporativa; suporte estendido até 2026.</td>
+          </tr>
+          <tr>
+            <td><strong>ASP.NET Core Minimal APIs</strong></td>
+            <td>8</td>
+            <td>Menor overhead que MVC para gateway com poucos endpoints.</td>
+          </tr>
+          <tr>
+            <td><strong>PostgreSQL</strong> (Aurora RDS)</td>
+            <td>15</td>
+            <td>MVCC robusto, Multi-AZ nativo, sem vendor lock-in. Sem stored procs.</td>
+          </tr>
+          <tr>
+            <td><strong>EF Core</strong></td>
+            <td>8</td>
+            <td>Migrations versionadas em código, sem migração manual em prod.</td>
+          </tr>
+          <tr>
+            <td><strong>Redis</strong> (ElastiCache)</td>
+            <td>7</td>
+            <td>Idempotency keys com TTL e cache de tokens de autenticação.</td>
+          </tr>
+          <tr>
+            <td><strong>Polly</strong></td>
+            <td>8</td>
+            <td>Retry, circuit breaker e bulkhead aplicados em <em>toda</em> chamada externa.</td>
+          </tr>
+          <tr>
+            <td><strong>OpenTelemetry</strong></td>
+            <td>1.x</td>
+            <td>Tracing distribuído com correlation ID propagado end-to-end.</td>
+          </tr>
+          <tr>
+            <td><strong>AWS ECS Fargate</strong></td>
+            <td>—</td>
+            <td>Sem gerenciamento de cluster; autoscaling por CPU + RPS.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 class="section-eyebrow">Quality Goals (em ordem de prioridade)</h2>
+      <p class="prose">
+        Quando dois objetivos conflitam — e isso acontece — o de cima vence.
+        Esta ordem é a base de toda decisão arquitetural deste serviço.
+      </p>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Atributo</th>
+            <th>O que significa aqui</th>
+            <th>Métrica</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td><strong>Correctness</strong></td>
+            <td>Toda autorização gerada tem evento no outbox. Nenhuma transação perdida.</td>
+            <td>0 inconsistências em conciliação D-1</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td><strong>Disponibilidade</strong></td>
+            <td>Quando o antifraude cai, o serviço entra em modo contingência — não rejeita tudo.</td>
+            <td>SLO 99.95% mensal</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td><strong>Latência</strong></td>
+            <td>50ms próprio + 80ms saldos + 200ms antifraude + 170ms buffer.</td>
+            <td>p95 &lt; 500ms · p99 &lt; 900ms</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td><strong>Auditabilidade</strong></td>
+            <td>Toda decisão (autorizar / recusar / contingência) é rastreável end-to-end.</td>
+            <td>100% das requisições com correlation ID</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 class="section-eyebrow">Pontos de Atenção Arquitetural</h2>
+
+      <aside class="decision-callout" role="note">
+        <div class="decision-callout__icon" aria-hidden="true">▲</div>
+        <div class="decision-callout__body">
+          <div class="decision-callout__label">Idempotência é responsabilidade do canal</div>
+          <p>
+            O header <code class="code-inline">Idempotency-Key</code> é obrigatório.
+            Sem ele, retornamos <code class="code-inline">400</code>. A chave é hash do payload + UUID
+            por operação; responsabilidade do canal gerar e persistir até receber resposta final.
+          </p>
+        </div>
+      </aside>
+
+      <aside class="decision-callout" role="note">
+        <div class="decision-callout__icon" aria-hidden="true">▲</div>
+        <div class="decision-callout__body">
+          <div class="decision-callout__label">Saga distribuída — não usamos</div>
+          <p>
+            Não há transação distribuída entre Liquidação e Saldos. Reversão de autorização
+            ocorre via endpoint dedicado de estorno (<a href="08-fluxo-estorno.html">fluxo 08</a>),
+            que é uma operação separada com sua própria idempotência. Razão:
+            saga acrescenta complexidade operacional que não compensa o ganho neste fluxo
+            específico — registrado em <a href="adr/0007-sem-saga.html">ADR-0007</a>.
+          </p>
+        </div>
+      </aside>
+
+      <aside class="decision-callout" role="note">
+        <div class="decision-callout__icon" aria-hidden="true">▲</div>
+        <div class="decision-callout__body">
+          <div class="decision-callout__label">Contingência é fail-secure, não fail-open</div>
+          <p>
+            Quando o motor antifraude está indisponível, autorizamos apenas operações
+            que satisfaçam <em>todos</em> os limites locais (valor máximo, frequência,
+            categoria do MCC). Nunca aceitamos tudo — preferimos recusar uma transação
+            válida a aceitar uma fraudulenta. Limites em
+            <a href="04-configuracoes.html#contingencia">Configurações § Contingência</a>.
+          </p>
+        </div>
+      </aside>
+
+      <h2 class="section-eyebrow">Próximas Leituras</h2>
+      <div class="doc-grid">
+        <a class="doc-card" href="02-padroes.html">
+          <div class="doc-card__icon" aria-hidden="true">🏛️</div>
+          <div class="doc-card__title">Padrões e Camadas</div>
+          <div class="doc-card__desc">
+            Como o código está organizado dentro do serviço. Hexagonal, ArchUnit, contratos.
+          </div>
+        </a>
+        <a class="doc-card" href="03-dados.html">
+          <div class="doc-card__icon" aria-hidden="true">📊</div>
+          <div class="doc-card__title">Dados Trafegados</div>
+          <div class="doc-card__desc">
+            Payload de entrada, transformações internas, evento publicado no outbox.
+          </div>
+        </a>
+        <a class="doc-card" href="07-fluxo-autorizacao.html">
+          <div class="doc-card__icon" aria-hidden="true">🔐</div>
+          <div class="doc-card__title">Fluxo: Autorização</div>
+          <div class="doc-card__desc">
+            Detalhamento do fluxo principal incluindo caminhos de falha.
+          </div>
+        </a>
+      </div>
+    </main>
+  </div>
+
+  <!-- ============================================================
+       FONTES DOS DIAGRAMAS
+       Editáveis aqui. Cada bloco vincula ao seu .diagram-viewer
+       acima pelo atributo data-id ↔ data-diagram.
+       ============================================================ -->
+
+  <script type="text/mermaid" data-id="system-context">
+flowchart LR
+    classDef person   fill:#1c4e93,stroke:#0a0c12,color:#ffffff,stroke-width:2px
+    classDef sys      fill:#4a8fe7,stroke:#0a0c12,color:#ffffff,stroke-width:2.5px
+    classDef ext      fill:#ffffff,stroke:#1f2937,color:#0a0c12,stroke-width:1.5px
+    classDef extAsync fill:#f9fafb,stroke:#6b7280,color:#0a0c12,stroke-width:1.5px,stroke-dasharray:5 3
+
+    Canal["Canal de Pagamento<br/>POS · e-commerce · PIX-débito"]
+    Liq["LIQUIDAÇÃO TRANSACIONAL<br/>Gateway de autorização antifraude"]
+    AF["Motor Antifraude<br/>FICO Falcon · TCP"]
+    Sal["Sistema de Saldos<br/>Disponibilidade do cliente"]
+    Cen["Central de Cartões<br/>Confirma ao adquirente"]
+    Aud["Auditoria e Compliance<br/>Trilha forense"]
+
+    Canal -->|"Autoriza · HTTPS/JSON"| Liq
+    Liq -->|"Solicita scoring · TCP"| AF
+    Liq -->|"Verifica saldo · HTTPS"| Sal
+    Liq -->|"Confirma autorização · HTTPS"| Cen
+    Liq -.->|"Publica decisão · SNS"| Aud
+
+    class Canal person
+    class Liq sys
+    class AF,Sal,Cen ext
+    class Aud extAsync
+  </script>
+
+  <script type="text/mermaid" data-id="fluxo-autorizacao">
+sequenceDiagram
+    autonumber
+    actor C as Canal
+    participant API as API
+    participant IDEM as Idempotency
+    participant SAL as Saldos
+    participant AF as Antifraude
+    participant DB as PostgreSQL
+    participant OUT as Outbox
+
+    C->>API: POST /autorizar (Idempotency-Key)
+    API->>IDEM: SETNX idem:K
+    alt chave já existe
+        IDEM-->>API: resposta cacheada
+        API-->>C: 200 (resposta cacheada)
+    else nova requisição
+        IDEM-->>API: ok
+        API->>SAL: GET saldo do cliente
+        SAL-->>API: saldo disponível
+        API->>AF: solicitar scoring
+        AF-->>API: scoring + advice
+        API->>DB: BEGIN TX
+        API->>DB: INSERT autorizacao
+        API->>OUT: INSERT outbox_event
+        API->>DB: COMMIT
+        API->>IDEM: SET resposta (TTL 24h)
+        API-->>C: 200 Autorizado
+    end
+  </script>
+
+  <script src="sidebar.js"></script>
+  <script src="diagram-viewer.js"></script>
+</body>
+</html>

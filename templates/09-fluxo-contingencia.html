@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fluxo: Contingência — Liquidação Transacional</title>
+  <meta name="description" content="Modo degradado quando o motor antifraude está indisponível. Limites locais, reconciliação e saída.">
+  <link rel="stylesheet" href="../design-system/tokens.css">
+  <link rel="stylesheet" href="../design-system/components.css">
+</head>
+<body>
+  <div class="shell">
+    <aside id="sidebar" class="sidebar" aria-label="Navegação"></aside>
+
+    <main id="main" class="main">
+      <nav class="breadcrumb" aria-label="Caminho">
+        <ol>
+          <li><a href="index.html">Início</a></li>
+          <li>Fluxo: Contingência</li>
+        </ol>
+      </nav>
+
+      <header class="hero">
+        <span class="hero__eyebrow">Fluxo Transacional · 09</span>
+        <h1 class="hero__title">Contin<span class="accent-word">gência</span></h1>
+        <p class="hero__subtitle">
+          Modo degradado quando o motor antifraude está indisponível.
+          Limites locais decidem — <strong>fail-secure</strong>, nunca fail-open.
+        </p>
+      </header>
+
+      <h2 class="section-eyebrow">Quando Entramos em Contingência</h2>
+      <p class="prose">
+        Não é por escolha — é gatilho automático quando a dependência crítica
+        sobre risco (motor antifraude FICO) não responde. Três gatilhos:
+      </p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Gatilho</th><th>Detecção</th><th>Reação</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Timeout na chamada ao antifraude</td>
+            <td>Polly timeout policy &gt; 400ms</td>
+            <td>Esta requisição entra em contingência</td>
+          </tr>
+          <tr>
+            <td>Circuit breaker aberto</td>
+            <td>5 falhas em 30s (configurável em <a href="04-configuracoes.html">04-configuracoes</a>)</td>
+            <td>Todas as requisições por 60s entram em contingência</td>
+          </tr>
+          <tr>
+            <td>Resposta inesperada</td>
+            <td>HTTP 5xx, payload malformado, score fora de [0, 100]</td>
+            <td>Esta requisição entra em contingência; circuit conta a falha</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <aside class="decision-callout" role="note">
+        <div class="decision-callout__icon" aria-hidden="true">▲</div>
+        <div class="decision-callout__body">
+          <div class="decision-callout__label">Por que não desligar contingência sob ataque</div>
+          <p>
+            Em um pico de fraude, atacantes podem tentar derrubar o antifraude para forçar
+            o modo contingência. Por isso os limites de contingência são <strong>mais conservadores</strong>
+            que o threshold normal — o atacante ganha menos espaço, não mais. Verificado
+            em <a href="04-configuracoes.html#contingencia">Configurações §&nbsp;Limites</a>.
+          </p>
+        </div>
+      </aside>
+
+      <h2 class="section-eyebrow">Sequência</h2>
+      <figure class="diagram-figure">
+        <div class="diagram-viewer" data-diagram="fluxo-contingencia"></div>
+        <figcaption>Figura 1 — Sequência em modo contingência.</figcaption>
+      </figure>
+
+      <h2 class="section-eyebrow">Regras Locais Aplicadas</h2>
+      <p class="prose">
+        Quando entramos em contingência, validamos a operação contra os limites configurados
+        em AppConfig por canal. Detalhes completos em
+        <a href="04-configuracoes.html#contingencia">Configurações §&nbsp;Limites de Contingência</a>.
+        Resumo das verificações:
+      </p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>#</th><th>Verificação</th><th>Falha →</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>Valor da operação ≤ valor máximo por canal</td>
+            <td><code class="code-inline">CONTINGENCIA_LIMITE_VALOR</code></td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Valor acumulado pelo CPF na última hora ≤ limite horário do canal</td>
+            <td><code class="code-inline">CONTINGENCIA_LIMITE_VALOR</code></td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Número de operações do CPF na última hora ≤ limite de frequência</td>
+            <td><code class="code-inline">CONTINGENCIA_LIMITE_FREQ</code></td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>MCC do estabelecimento não está na lista de bloqueio temporário</td>
+            <td><code class="code-inline">CONTINGENCIA_MCC_BLOQUEADO</code></td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>Geolocation presente quando exigida (ECOMM)</td>
+            <td><code class="code-inline">CONTINGENCIA_GEOLOC_AUSENTE</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="prose">
+        Se as 5 verificações passam, autorizamos com <code class="code-inline">Status = CONTINGENCIA_AUTORIZADO</code>.
+        Qualquer falha resulta em <code class="code-inline">CONTINGENCIA_NEGADO</code> com o <code class="code-inline">reasonCode</code> da primeira regra violada.
+      </p>
+
+      <h2 class="section-eyebrow">Marcadores no Evento</h2>
+      <p class="prose">
+        Eventos de contingência carregam metadados extras para que consumers downstream
+        possam tratá-los com escrutínio adicional. Conciliação D-1 e Auditoria filtram por esses marcadores.
+      </p>
+
+      <div class="code-block">
+        <div class="code-block__header"><span>SNS · evento de autorização em contingência</span></div>
+<pre><code>{
+  "eventId": "...",
+  "eventType": "AutorizacaoContingencia",
+  "eventVersion": "1.0",
+  "aggregateId": "...",
+  "occurredAt": "...",
+  "correlationId": "...",
+  "payload": {
+    "decisionId": "...",
+    "externalTransactionId": "...",
+    "customerAcctNumber": "00012345678",
+    "amount": 89.90,
+    "currency": "BRL",
+    "status": "CONTINGENCIA_AUTORIZADO",
+    "scoringResult": null,
+    "merchantId": "BTGCOMERCIO0001",
+    "channelType": "POS",
+    "contingency": {
+      "trigger": "CIRCUIT_BREAKER_OPEN",
+      "limitsApplied": {
+        "maxValue": 2000.00,
+        "maxValueHourly": 5000.00,
+        "maxFreqHourly": 15,
+        "blockedMccs": ["6051", "7995"]
+      },
+      "needsReview": false
+    }
+  }
+}</code></pre>
+      </div>
+
+      <h2 class="section-eyebrow">Como Saímos de Contingência</h2>
+      <p class="prose">
+        Saída é automática quando o motor antifraude volta. Três mecanismos:
+      </p>
+
+      <ol class="prose">
+        <li>
+          <strong>Circuit breaker half-open.</strong> Após 60s aberto, Polly permite uma chamada de teste.
+          Se ela for bem-sucedida, o circuit fecha e voltamos ao fluxo normal.
+        </li>
+        <li>
+          <strong>Healthcheck periódico.</strong> Worker dedicado faz <code class="code-inline">PING</code>
+          no antifraude a cada 30s. Quando volta, força <code class="code-inline">circuit.Isolate(false)</code>.
+        </li>
+        <li>
+          <strong>Override manual.</strong> Em incidentes prolongados, SRE pode forçar saída de contingência
+          via <code class="code-inline">POST /admin/circuit/reset</code> (autenticação reforçada + log de auditoria).
+        </li>
+      </ol>
+
+      <h2 class="section-eyebrow">Reconciliação D-1</h2>
+      <p class="prose">
+        Toda operação aprovada em contingência é <strong>re-avaliada pelo antifraude no dia seguinte</strong>
+        em batch. Se o re-scoring teria recusado a operação, abre-se ticket de revisão manual
+        para a área de Risco. Esta é a salvaguarda final do modo contingência.
+      </p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Resultado do re-scoring D-1</th><th>Ação</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Score &gt;= threshold do canal</td>
+            <td>Nada. Decisão estava correta.</td>
+          </tr>
+          <tr>
+            <td>Score abaixo do threshold</td>
+            <td>Ticket de revisão para Risco + evento <code class="code-inline">AutorizacaoContingenciaReavaliada</code>.</td>
+          </tr>
+          <tr>
+            <td>Antifraude marca como fraude confirmada</td>
+            <td>Ticket prioritário + comunicação automática para o time de Investigação.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <aside class="decision-callout" role="note">
+        <div class="decision-callout__icon" aria-hidden="true">▲</div>
+        <div class="decision-callout__body">
+          <div class="decision-callout__label">Por que não estornar automaticamente em D-1</div>
+          <p>
+            Estornar automaticamente sem revisão humana cria risco de reputação:
+            cliente teve operação aprovada, depois debitada no dia seguinte sem explicação.
+            Risco prefere lidar caso a caso com a possibilidade de fraude já consumada
+            do que devolver dinheiro a clientes legítimos por engano.
+          </p>
+        </div>
+      </aside>
+
+      <h2 class="section-eyebrow">Observabilidade</h2>
+      <ul class="prose">
+        <li>Métrica <code class="code-inline">liquidacao.contingencia.ativa</code> (gauge 0/1) — dashboard mostra histórico.</li>
+        <li>Métrica <code class="code-inline">liquidacao.contingencia.entradas</code> (counter por trigger).</li>
+        <li>Alarme <strong>P2</strong> dispara quando &gt;5% das requisições estão em contingência por 10 min.</li>
+        <li>Logs de cada entrada/saída do circuit breaker, com causa explícita.</li>
+      </ul>
+
+      <h2 class="section-eyebrow">Próximas Leituras</h2>
+      <div class="doc-grid">
+        <a class="doc-card" href="07-fluxo-autorizacao.html">
+          <div class="doc-card__icon" aria-hidden="true">🔐</div>
+          <div class="doc-card__title">Fluxo: Autorização</div>
+          <div class="doc-card__desc">
+            Fluxo principal com antifraude disponível. Contingência é o desvio desse fluxo.
+          </div>
+        </a>
+        <a class="doc-card" href="04-configuracoes.html#contingencia">
+          <div class="doc-card__icon" aria-hidden="true">⚙️</div>
+          <div class="doc-card__title">Limites de Contingência</div>
+          <div class="doc-card__desc">
+            Tabela completa de limites por canal. Ajustáveis em runtime via AppConfig.
+          </div>
+        </a>
+      </div>
+    </main>
+  </div>
+
+  <script type="text/mermaid" data-id="fluxo-contingencia">
+sequenceDiagram
+    autonumber
+    actor C as Canal
+    participant API as API
+    participant SAL as Saldos
+    participant AF as Antifraude
+    participant CFG as AppConfig
+    participant DB as PostgreSQL
+    participant OUT as Outbox
+
+    C->>API: POST /autorizar
+    API->>SAL: GET saldo
+    SAL-->>API: saldo OK
+    API->>AF: solicitar scoring
+    Note over AF,API: timeout / circuit aberto
+    AF--xAPI: indisponível
+    Note over API: Entra em CONTINGÊNCIA
+    API->>CFG: buscar limites por canal
+    CFG-->>API: limites
+    Note over API: Validar 5 regras locais
+    alt todas as regras OK
+        API->>DB: BEGIN TX
+        API->>DB: INSERT autorizacao<br/>status=CONTINGENCIA_AUTORIZADO
+        API->>OUT: INSERT outbox<br/>AutorizacaoContingencia
+        API->>DB: COMMIT
+        API-->>C: 200 Autorizado (contingência)
+    else alguma regra falha
+        API->>DB: BEGIN TX
+        API->>DB: INSERT autorizacao<br/>status=CONTINGENCIA_NEGADO
+        API->>OUT: INSERT outbox
+        API->>DB: COMMIT
+        API-->>C: 422 CONTINGENCIA_LIMITE_*
+    end
+  </script>
+
+  <script src="sidebar.js"></script>
+  <script src="diagram-viewer.js"></script>
+</body>
+</html>

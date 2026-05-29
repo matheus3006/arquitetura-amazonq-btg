@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Configurações — Liquidação Transacional</title>
+  <meta name="description" content="Variáveis de ambiente, feature flags, parâmetros de Polly e limites de contingência por stage.">
+  <link rel="stylesheet" href="../design-system/tokens.css">
+  <link rel="stylesheet" href="../design-system/components.css">
+</head>
+<body>
+  <div class="shell">
+    <aside id="sidebar" class="sidebar" aria-label="Navegação"></aside>
+
+    <main id="main" class="main">
+      <nav class="breadcrumb" aria-label="Caminho">
+        <ol>
+          <li><a href="index.html">Início</a></li>
+          <li>Configurações</li>
+        </ol>
+      </nav>
+
+      <header class="hero">
+        <span class="hero__eyebrow">Arquitetura · 04</span>
+        <h1 class="hero__title">Confi<span class="accent-word">gurações</span></h1>
+        <p class="hero__subtitle">
+          Variáveis, feature flags, secrets e limites operacionais.
+          O que muda por ambiente, o que pode ser ajustado em runtime, o que exige redeploy.
+        </p>
+      </header>
+
+      <h2 class="section-eyebrow">Onde Cada Coisa Vive</h2>
+      <p class="prose">
+        Três camadas, cada uma com regra clara de uso. Misturar quebra rastreabilidade
+        e dificulta auditoria.
+      </p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Camada</th><th>O que guarda</th><th>Quem altera</th><th>Como muda</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>appsettings.json</strong></td>
+            <td>Defaults imutáveis (nomes de tópicos, thresholds técnicos, timeouts base)</td>
+            <td>Devs em PR</td>
+            <td>Redeploy</td>
+          </tr>
+          <tr>
+            <td><strong>Env vars</strong> (ECS task definition)</td>
+            <td>Valores que variam por ambiente (URLs, connection strings non-sensitive)</td>
+            <td>SRE via Terraform</td>
+            <td>Redeploy da task</td>
+          </tr>
+          <tr>
+            <td><strong>Secrets Manager</strong></td>
+            <td>Segredos: senhas DB, API keys do antifraude, JWT signing keys</td>
+            <td>SRE com aprovação Segurança</td>
+            <td>Rotação automática 90d ou manual</td>
+          </tr>
+          <tr>
+            <td><strong>AppConfig</strong> (AWS)</td>
+            <td>Feature flags + limites de contingência (mudanças em runtime)</td>
+            <td>Tech Lead ou Tech Manager</td>
+            <td>Propagação em ~60s sem redeploy</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 class="section-eyebrow">Variáveis de Ambiente</h2>
+      <table class="data-table">
+        <thead>
+          <tr><th>Variável</th><th>dev</th><th>staging</th><th>production</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code class="code-inline">ASPNETCORE_ENVIRONMENT</code></td>
+            <td><code class="code-inline">Development</code></td>
+            <td><code class="code-inline">Staging</code></td>
+            <td><code class="code-inline">Production</code></td>
+          </tr>
+          <tr>
+            <td><code class="code-inline">DB__HOST</code></td>
+            <td><code class="code-inline">liq-dev.cluster-x.sa-east-1.rds.amazonaws.com</code></td>
+            <td><code class="code-inline">liq-stg.cluster-x.sa-east-1.rds.amazonaws.com</code></td>
+            <td><code class="code-inline">liq-prd.cluster-x.sa-east-1.rds.amazonaws.com</code></td>
+          </tr>
+          <tr>
+            <td><code class="code-inline">REDIS__HOST</code></td>
+            <td><code class="code-inline">liq-dev.cache.sa-east-1.amazonaws.com</code></td>
+            <td><code class="code-inline">liq-stg.cache.sa-east-1.amazonaws.com</code></td>
+            <td><code class="code-inline">liq-prd.cache.sa-east-1.amazonaws.com</code></td>
+          </tr>
+          <tr>
+            <td><code class="code-inline">ANTIFRAUDE__BASEURL</code></td>
+            <td><code class="code-inline">tcp://antifraude-mock-dev:9100</code></td>
+            <td><code class="code-inline">tcp://antifraude-stg.btg:9100</code></td>
+            <td><code class="code-inline">tcp://antifraude-prd.btg:9100</code></td>
+          </tr>
+          <tr>
+            <td><code class="code-inline">SALDOS__BASEURL</code></td>
+            <td><code class="code-inline">https://saldos-dev.btg/api/v2</code></td>
+            <td><code class="code-inline">https://saldos-stg.btg/api/v2</code></td>
+            <td><code class="code-inline">https://saldos-prd.btg/api/v2</code></td>
+          </tr>
+          <tr>
+            <td><code class="code-inline">SNS__TOPICARN</code></td>
+            <td><code class="code-inline">arn:aws:sns:sa-east-1:111:liquidacao-decisao-dev</code></td>
+            <td><code class="code-inline">arn:aws:sns:sa-east-1:222:liquidacao-decisao-stg</code></td>
+            <td><code class="code-inline">arn:aws:sns:sa-east-1:333:liquidacao-decisao-prd</code></td>
+          </tr>
+          <tr>
+            <td><code class="code-inline">COGNITO__USERPOOLID</code></td>
+            <td><code class="code-inline">sa-east-1_DevPool01</code></td>
+            <td><code class="code-inline">sa-east-1_StgPool01</code></td>
+            <td><code class="code-inline">sa-east-1_PrdPool01</code></td>
+          </tr>
+          <tr>
+            <td><code class="code-inline">LOG__LEVEL</code></td>
+            <td><code class="code-inline">Debug</code></td>
+            <td><code class="code-inline">Information</code></td>
+            <td><code class="code-inline">Information</code></td>
+          </tr>
+          <tr>
+            <td><code class="code-inline">OTEL__SAMPLINGRATIO</code></td>
+            <td><code class="code-inline">1.0</code></td>
+            <td><code class="code-inline">1.0</code></td>
+            <td><code class="code-inline">1.0</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 class="section-eyebrow">Feature Flags</h2>
+      <p class="prose">
+        Vivem em AWS AppConfig, lidas pelo serviço a cada 60s.
+        Permitem ativar/desativar comportamentos sem redeploy.
+        <strong>Toda flag tem dono e data de remoção</strong> — flags sem dono são removidas
+        trimestralmente em pull request automático.
+      </p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Flag</th><th>Default</th><th>Efeito</th><th>Dono</th><th>Remover até</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code class="code-inline">contingencia.habilitada</code></td>
+            <td><code class="code-inline">true</code></td>
+            <td>Permite modo contingência quando antifraude está down. Desligar significa recusar tudo se antifraude cair.</td>
+            <td>Tech Lead</td>
+            <td>permanente</td>
+          </tr>
+          <tr>
+            <td><code class="code-inline">scoring.review_acordo_aceitar</code></td>
+            <td><code class="code-inline">true</code></td>
+            <td>Quando antifraude retorna <code class="code-inline">REVIEW</code>, autorizar e marcar para revisão. Se <code class="code-inline">false</code>, recusa.</td>
+            <td>Risco</td>
+            <td>permanente</td>
+          </tr>
+          <tr>
+            <td><code class="code-inline">pix_debito.habilitado</code></td>
+            <td><code class="code-inline">false</code></td>
+            <td>Aceita channelType <code class="code-inline">PIX_DEBITO</code>. Flag de rollout gradual.</td>
+            <td>Squad Liquidação</td>
+            <td>2026-08-01</td>
+          </tr>
+          <tr>
+            <td><code class="code-inline">geolocation.exigida_ecomm</code></td>
+            <td><code class="code-inline">false</code></td>
+            <td>Quando ligada, ECOMM sem geolocation tem score reduzido em 15 pontos.</td>
+            <td>Risco</td>
+            <td>2026-09-30</td>
+          </tr>
+          <tr>
+            <td><code class="code-inline">circuit_breaker.antifraude.threshold</code></td>
+            <td><code class="code-inline">5</code></td>
+            <td>Número de falhas em 30s para abrir o circuit do antifraude.</td>
+            <td>SRE</td>
+            <td>permanente</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 class="section-eyebrow">Parâmetros de Polly</h2>
+      <p class="prose">
+        Defaults vivem em <code class="code-inline">appsettings.json</code>; podem ser sobrescritos por env var
+        usando o padrão <code class="code-inline">Resilience__&lt;Adapter&gt;__&lt;Setting&gt;</code>.
+        Mudanças exigem redeploy.
+      </p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Adapter</th><th>Retry tentativas</th><th>Retry backoff</th><th>Circuit threshold</th><th>Circuit duration</th><th>Timeout</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Antifraude</strong></td>
+            <td>2</td>
+            <td>100ms · 400ms</td>
+            <td>5 falhas / 30s</td>
+            <td>60s</td>
+            <td>400ms</td>
+          </tr>
+          <tr>
+            <td><strong>Saldos</strong></td>
+            <td>3</td>
+            <td>200ms · 800ms · 3.2s</td>
+            <td>5 falhas / 30s</td>
+            <td>60s</td>
+            <td>1s</td>
+          </tr>
+          <tr>
+            <td><strong>Cognito (auth)</strong></td>
+            <td>3</td>
+            <td>100ms · 400ms · 1.6s</td>
+            <td>10 falhas / 30s</td>
+            <td>30s</td>
+            <td>500ms</td>
+          </tr>
+          <tr>
+            <td><strong>SNS publish</strong></td>
+            <td>5</td>
+            <td>1s · 4s · 16s · 64s · 256s</td>
+            <td>—</td>
+            <td>—</td>
+            <td>5s</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <aside class="decision-callout" role="note">
+        <div class="decision-callout__icon" aria-hidden="true">▲</div>
+        <div class="decision-callout__body">
+          <div class="decision-callout__label">Por que SNS não tem circuit breaker</div>
+          <p>
+            Publicação no SNS é assíncrona via outbox relay. Se SNS estiver indisponível,
+            o evento permanece em <code class="code-inline">outbox_event</code> com <code class="code-inline">status = pending</code>
+            e o próximo ciclo de relay republica. Circuit breaker aqui só adicionaria complexidade
+            sem benefício — a fila já é nossa camada de absorção.
+          </p>
+        </div>
+      </aside>
+
+      <h2 class="section-eyebrow" id="contingencia">Limites de Contingência</h2>
+      <p class="prose">
+        Quando antifraude está indisponível, decisão é local com base nestes limites.
+        Vivem em AppConfig — podem ser ajustados em runtime por Tech Lead ou Risco.
+        Toda mudança fica em log de auditoria por 5 anos.
+      </p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Limite</th><th>POS</th><th>ECOMM</th><th>PIX_DEBITO</th><th>RECURRENT</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Valor máximo por operação</strong></td>
+            <td>R$ 2.000</td>
+            <td>R$ 500</td>
+            <td>R$ 1.000</td>
+            <td>R$ 5.000</td>
+          </tr>
+          <tr>
+            <td><strong>Valor máximo acumulado / hora</strong></td>
+            <td>R$ 5.000</td>
+            <td>R$ 1.500</td>
+            <td>R$ 3.000</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td><strong>Operações máximas por CPF / hora</strong></td>
+            <td>15</td>
+            <td>5</td>
+            <td>10</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td><strong>MCCs permitidos</strong></td>
+            <td>todos exceto lista bloqueio</td>
+            <td>lista permitida</td>
+            <td>lista permitida</td>
+            <td>lista permitida</td>
+          </tr>
+          <tr>
+            <td><strong>Geolocation obrigatória</strong></td>
+            <td>não</td>
+            <td>sim</td>
+            <td>não</td>
+            <td>não</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 class="section-eyebrow">Secrets</h2>
+      <table class="data-table">
+        <thead>
+          <tr><th>Secret</th><th>Path no Secrets Manager</th><th>Rotação</th><th>Owner</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Credenciais do banco (master + readonly)</td>
+            <td><code class="code-inline">/liquidacao/&lt;env&gt;/db/credentials</code></td>
+            <td>Automática 90 dias</td>
+            <td>SRE Plataforma</td>
+          </tr>
+          <tr>
+            <td>API key do FICO Falcon</td>
+            <td><code class="code-inline">/liquidacao/&lt;env&gt;/antifraude/api-key</code></td>
+            <td>Manual, 180 dias</td>
+            <td>Segurança</td>
+          </tr>
+          <tr>
+            <td>JWT signing key (verification do Cognito)</td>
+            <td><code class="code-inline">/liquidacao/&lt;env&gt;/jwt/signing-key</code></td>
+            <td>Automática 30 dias</td>
+            <td>Segurança</td>
+          </tr>
+          <tr>
+            <td>Redis auth token</td>
+            <td><code class="code-inline">/liquidacao/&lt;env&gt;/redis/auth-token</code></td>
+            <td>Automática 90 dias</td>
+            <td>SRE Plataforma</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <aside class="decision-callout" role="note">
+        <div class="decision-callout__icon" aria-hidden="true">▲</div>
+        <div class="decision-callout__body">
+          <div class="decision-callout__label">Regra de ouro de secrets</div>
+          <p>
+            Nada de senha, chave ou token em <code class="code-inline">appsettings.json</code>,
+            <code class="code-inline">env vars</code> de task definition, repositório git ou pipeline.
+            Sempre Secrets Manager + IAM role no ECS task. Verificado por scan de git no CI
+            (<code class="code-inline">gitleaks</code>) e auditoria de IAM trimestral.
+          </p>
+        </div>
+      </aside>
+
+      <h2 class="section-eyebrow">Próximas Leituras</h2>
+      <div class="doc-grid">
+        <a class="doc-card" href="06-infraestrutura.html">
+          <div class="doc-card__icon" aria-hidden="true">🛰️</div>
+          <div class="doc-card__title">Infraestrutura</div>
+          <div class="doc-card__desc">
+            Topologia AWS, pipeline, observabilidade, disaster recovery.
+          </div>
+        </a>
+        <a class="doc-card" href="09-fluxo-contingencia.html">
+          <div class="doc-card__icon" aria-hidden="true">🆘</div>
+          <div class="doc-card__title">Fluxo: Contingência</div>
+          <div class="doc-card__desc">
+            Como os limites desta página são aplicados em runtime durante uma indisponibilidade do antifraude.
+          </div>
+        </a>
+      </div>
+    </main>
+  </div>
+
+  <script src="sidebar.js"></script>
+  <script src="diagram-viewer.js"></script>
+</body>
+</html>

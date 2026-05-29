@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enums e Códigos — Liquidação Transacional</title>
+  <meta name="description" content="Valores aceitos em campos enumerados, códigos de erro e códigos de resposta.">
+  <link rel="stylesheet" href="../design-system/tokens.css">
+  <link rel="stylesheet" href="../design-system/components.css">
+</head>
+<body>
+  <div class="shell">
+    <aside id="sidebar" class="sidebar" aria-label="Navegação"></aside>
+
+    <main id="main" class="main">
+      <nav class="breadcrumb" aria-label="Caminho">
+        <ol>
+          <li><a href="index.html">Início</a></li>
+          <li>Enums e Códigos</li>
+        </ol>
+      </nav>
+
+      <header class="hero">
+        <span class="hero__eyebrow">Modelo de Dados · 14</span>
+        <h1 class="hero__title">Enums <span class="accent-word">e Códigos</span></h1>
+        <p class="hero__subtitle">
+          Valores válidos em campos enumerados, códigos de erro e códigos de resposta
+          que aparecem em requests, eventos e logs.
+        </p>
+      </header>
+
+      <h2 class="section-eyebrow" id="channel"><code class="code-inline">ChannelType</code></h2>
+      <p class="prose">Origem da operação. Define thresholds de scoring e regras de contingência aplicáveis.</p>
+      <table class="data-table">
+        <thead>
+          <tr><th>Valor</th><th>Descrição</th><th>Threshold mínimo</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code class="code-inline">POS</code></td><td>Point of Sale presencial — terminal físico com cartão presente</td><td>40</td></tr>
+          <tr><td><code class="code-inline">ECOMM</code></td><td>E-commerce com cartão não presente (CNP)</td><td>60</td></tr>
+          <tr><td><code class="code-inline">PIX_DEBITO</code></td><td>PIX em conta corrente débito via QR code dinâmico</td><td>30</td></tr>
+          <tr><td><code class="code-inline">RECURRENT</code></td><td>Débito automático recorrente já agendado</td><td>20</td></tr>
+        </tbody>
+      </table>
+
+      <h2 class="section-eyebrow" id="status"><code class="code-inline">StatusAutorizacao</code></h2>
+      <p class="prose">Estado terminal da decisão. Transições controladas pelo agregado <code class="code-inline">Autorizacao</code>.</p>
+      <table class="data-table">
+        <thead>
+          <tr><th>Valor</th><th>Descrição</th><th>HTTP retornado</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code class="code-inline">PENDENTE</code></td><td>Recém-criada, ainda sem decisão. Estado transiente — nunca é resposta final ao canal</td><td>—</td></tr>
+          <tr><td><code class="code-inline">AUTORIZADO</code></td><td>Antifraude aprovou e saldo está disponível</td><td>200</td></tr>
+          <tr><td><code class="code-inline">NEGADO</code></td><td>Antifraude recusou ou saldo insuficiente — ver <code class="code-inline">reasonCode</code></td><td>422</td></tr>
+          <tr><td><code class="code-inline">CONTINGENCIA_AUTORIZADO</code></td><td>Antifraude indisponível, mas a operação atendeu todos os limites locais</td><td>200</td></tr>
+          <tr><td><code class="code-inline">CONTINGENCIA_NEGADO</code></td><td>Antifraude indisponível e operação violou algum limite local</td><td>422</td></tr>
+          <tr><td><code class="code-inline">ESTORNADA</code></td><td>Autorização original revertida por estorno posterior</td><td>—</td></tr>
+        </tbody>
+      </table>
+
+      <aside class="decision-callout" role="note">
+        <div class="decision-callout__icon" aria-hidden="true">▲</div>
+        <div class="decision-callout__body">
+          <div class="decision-callout__label">Por que dois estados de contingência</div>
+          <p>
+            Separar <code class="code-inline">CONTINGENCIA_AUTORIZADO</code> de <code class="code-inline">AUTORIZADO</code> permite
+            ao consumer downstream (auditoria, conciliação) tratar operações de contingência
+            com escrutínio extra. Conciliação D-1 marca esses casos para revisão humana.
+          </p>
+        </div>
+      </aside>
+
+      <h2 class="section-eyebrow" id="reason"><code class="code-inline">ReasonCode</code> — Motivos de Negação</h2>
+      <p class="prose">
+        Preenchido apenas quando <code class="code-inline">Status</code> é <code class="code-inline">NEGADO</code>
+        ou <code class="code-inline">CONTINGENCIA_NEGADO</code>. Aparece no campo <code class="code-inline">reasonCode</code> da resposta 422.
+      </p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Código</th><th>Significado</th><th>Origem</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code class="code-inline">ANTIFRAUDE_LOW_SCORE</code></td><td>Score abaixo do mínimo para o canal</td><td>Motor antifraude</td></tr>
+          <tr><td><code class="code-inline">ANTIFRAUDE_BLOCKED_LIST</code></td><td>Cartão ou cliente em lista de bloqueio</td><td>Motor antifraude</td></tr>
+          <tr><td><code class="code-inline">SALDO_INSUFICIENTE</code></td><td>Saldo do cliente menor que o valor da operação</td><td>Sistema de Saldos</td></tr>
+          <tr><td><code class="code-inline">CONTA_BLOQUEADA</code></td><td>Conta do cliente bloqueada por compliance ou inadimplência</td><td>Sistema de Saldos</td></tr>
+          <tr><td><code class="code-inline">CONTINGENCIA_LIMITE_VALOR</code></td><td>Em contingência, valor excede o limite máximo configurado</td><td>Regras locais</td></tr>
+          <tr><td><code class="code-inline">CONTINGENCIA_LIMITE_FREQ</code></td><td>Em contingência, frequência de operações excede o limite</td><td>Regras locais</td></tr>
+          <tr><td><code class="code-inline">CONTINGENCIA_MCC_BLOQUEADO</code></td><td>Em contingência, MCC do estabelecimento está na lista de bloqueio temporário</td><td>Regras locais</td></tr>
+          <tr><td><code class="code-inline">PAYLOAD_INVALIDO</code></td><td>Falha de validação no contrato — campos obrigatórios ausentes ou inválidos</td><td>Apresentação</td></tr>
+        </tbody>
+      </table>
+
+      <h2 class="section-eyebrow"><code class="code-inline">AdviceCode</code> — Recomendação do Antifraude</h2>
+      <p class="prose">
+        Devolvido pelo motor FICO Falcon junto com o score. Usamos
+        <code class="code-inline">APPROVE</code> e <code class="code-inline">DECLINE</code> diretamente; <code class="code-inline">REVIEW</code> aciona compensação manual via auditoria.
+      </p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Código</th><th>Significado</th><th>Comportamento neste serviço</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code class="code-inline">APPROVE</code></td><td>Aprovar sem ressalvas</td><td>Autoriza diretamente</td></tr>
+          <tr><td><code class="code-inline">DECLINE</code></td><td>Recusar — alto risco identificado</td><td>Recusa com <code class="code-inline">ANTIFRAUDE_BLOCKED_LIST</code></td></tr>
+          <tr><td><code class="code-inline">REVIEW</code></td><td>Suspeita — revisar manualmente</td><td>Autoriza, mas marca evento <code class="code-inline">needsReview = true</code></td></tr>
+          <tr><td><code class="code-inline">CHALLENGE</code></td><td>Pedir autenticação adicional (3DS, biometria)</td><td>Recusa e canal deve retentar com fator adicional</td></tr>
+        </tbody>
+      </table>
+
+      <h2 class="section-eyebrow">HTTP Status Codes</h2>
+      <table class="data-table">
+        <thead>
+          <tr><th>Código</th><th>Quando</th><th>Body</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code class="code-inline">200 OK</code></td><td>Autorizado (inclui modo contingência)</td><td><code class="code-inline">AutorizarResponse</code></td></tr>
+          <tr><td><code class="code-inline">400 Bad Request</code></td><td>Header obrigatório ausente ou JSON inválido</td><td><code class="code-inline">application/problem+json</code></td></tr>
+          <tr><td><code class="code-inline">401 Unauthorized</code></td><td>Sem token JWT ou token expirado</td><td><code class="code-inline">application/problem+json</code></td></tr>
+          <tr><td><code class="code-inline">403 Forbidden</code></td><td>Token válido mas sem permissão para o canal</td><td><code class="code-inline">application/problem+json</code></td></tr>
+          <tr><td><code class="code-inline">409 Conflict</code></td><td>Idempotency-Key reutilizada com payload diferente</td><td><code class="code-inline">application/problem+json</code></td></tr>
+          <tr><td><code class="code-inline">422 Unprocessable Entity</code></td><td>Negação por antifraude, saldo ou contingência</td><td><code class="code-inline">application/problem+json</code> com <code class="code-inline">reasonCode</code></td></tr>
+          <tr><td><code class="code-inline">429 Too Many Requests</code></td><td>Rate limit excedido para o canal</td><td><code class="code-inline">application/problem+json</code></td></tr>
+          <tr><td><code class="code-inline">500 Internal Server Error</code></td><td>Exceção não tratada — sempre alarme P1</td><td><code class="code-inline">application/problem+json</code></td></tr>
+          <tr><td><code class="code-inline">503 Service Unavailable</code></td><td>Circuit breaker aberto em <em>todas</em> as dependências críticas</td><td><code class="code-inline">application/problem+json</code></td></tr>
+        </tbody>
+      </table>
+
+      <h2 class="section-eyebrow">Tipos de Problema (URIs)</h2>
+      <p class="prose">
+        Em respostas <code class="code-inline">application/problem+json</code> (RFC 7807),
+        o campo <code class="code-inline">type</code> aponta para uma URI canônica.
+        URIs apontam para a documentação pública do código.
+      </p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>URI</th><th>Quando</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code class="code-inline">https://liquidacao.btg.com.br/problems/recusa-antifraude</code></td><td>Negação por scoring abaixo do threshold</td></tr>
+          <tr><td><code class="code-inline">https://liquidacao.btg.com.br/problems/recusa-saldo</code></td><td>Saldo insuficiente</td></tr>
+          <tr><td><code class="code-inline">https://liquidacao.btg.com.br/problems/recusa-contingencia</code></td><td>Operação violou limite em modo contingência</td></tr>
+          <tr><td><code class="code-inline">https://liquidacao.btg.com.br/problems/payload-invalido</code></td><td>Erro de validação do contrato</td></tr>
+          <tr><td><code class="code-inline">https://liquidacao.btg.com.br/problems/idempotency-conflict</code></td><td>Chave de idempotência reutilizada com payload diferente</td></tr>
+          <tr><td><code class="code-inline">https://liquidacao.btg.com.br/problems/rate-limit</code></td><td>Throttling acionado por canal</td></tr>
+        </tbody>
+      </table>
+
+      <h2 class="section-eyebrow">Convenções</h2>
+      <ul class="prose">
+        <li>Enums em JSON são <strong>UPPER_SNAKE_CASE</strong>. Ex: <code class="code-inline">AUTORIZADO</code>, <code class="code-inline">PIX_DEBITO</code>.</li>
+        <li>Adicionar novo valor: PR com bump na versão <code class="code-inline">eventVersion</code> do evento que carrega o enum.</li>
+        <li>Remover valor: <strong>nunca</strong>. Marcar como deprecated no contrato e manter por pelo menos 1 ano para compatibilidade.</li>
+        <li>Renomear valor: equivalente a remover + adicionar. Mesma regra de 1 ano.</li>
+      </ul>
+
+      <h2 class="section-eyebrow">Próximas Leituras</h2>
+      <div class="doc-grid">
+        <a class="doc-card" href="13-dicionario.html">
+          <div class="doc-card__icon" aria-hidden="true">📖</div>
+          <div class="doc-card__title">Dicionário de Campos</div>
+          <div class="doc-card__desc">
+            Cada campo do agregado e do evento com tipo lógico, .NET e JSON.
+          </div>
+        </a>
+        <a class="doc-card" href="03-dados.html">
+          <div class="doc-card__icon" aria-hidden="true">📊</div>
+          <div class="doc-card__title">Dados Trafegados</div>
+          <div class="doc-card__desc">
+            Como esses códigos aparecem em request, response e evento real.
+          </div>
+        </a>
+      </div>
+    </main>
+  </div>
+
+  <script src="sidebar.js"></script>
+  <script src="diagram-viewer.js"></script>
+</body>
+</html>

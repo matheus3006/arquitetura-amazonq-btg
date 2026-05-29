@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dados Trafegados — Liquidação Transacional</title>
+  <meta name="description" content="Estrutura do payload de entrada, transformações internas, evento publicado no outbox.">
+  <link rel="stylesheet" href="../design-system/tokens.css">
+  <link rel="stylesheet" href="../design-system/components.css">
+</head>
+<body>
+  <div class="shell">
+    <aside id="sidebar" class="sidebar" aria-label="Navegação"></aside>
+
+    <main id="main" class="main">
+      <nav class="breadcrumb" aria-label="Caminho">
+        <ol>
+          <li><a href="index.html">Início</a></li>
+          <li>Dados Trafegados</li>
+        </ol>
+      </nav>
+
+      <header class="hero">
+        <span class="hero__eyebrow">Arquitetura · 03</span>
+        <h1 class="hero__title">Dados <span class="accent-word">Trafegados</span></h1>
+        <p class="hero__subtitle">
+          O que entra, o que sai, o que persiste. Estrutura completa do payload,
+          regras de transformação e formato dos eventos publicados.
+        </p>
+      </header>
+
+      <h2 class="section-eyebrow">Payload de Entrada</h2>
+      <p class="prose">
+        Todo request chega no endpoint <code class="code-inline">POST /autorizar</code>.
+        Header obrigatório <code class="code-inline">Idempotency-Key</code> identifica unicamente a operação;
+        retentativas com a mesma chave retornam a resposta cacheada por 24h. Campos abaixo formam
+        o objeto <code class="code-inline">AutorizarRequest</code> validado no controller.
+      </p>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Campo</th>
+            <th>Tipo</th>
+            <th>Descrição</th>
+            <th>Obrigatório</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><code class="code-inline">externalTransactionId</code></td><td>UUID</td><td>ID único da transação no sistema de origem</td><td>Sim</td></tr>
+          <tr><td><code class="code-inline">pan</code></td><td>string</td><td>PAN mascarado — 6 primeiros + 4 últimos dígitos (formato <code class="code-inline">123456******7890</code>)</td><td>Sim</td></tr>
+          <tr><td><code class="code-inline">customerAcctNumber</code></td><td>string</td><td>Número da conta interna do cliente</td><td>Sim</td></tr>
+          <tr><td><code class="code-inline">customerCpf</code></td><td>string</td><td>CPF do titular sem máscara (11 dígitos)</td><td>Sim</td></tr>
+          <tr><td><code class="code-inline">transactionAmount</code></td><td>decimal</td><td>Valor em moeda — 2 casas decimais</td><td>Sim</td></tr>
+          <tr><td><code class="code-inline">currencyCode</code></td><td>string</td><td>ISO 4217. <code class="code-inline">BRL</code> em 99% dos casos</td><td>Sim</td></tr>
+          <tr><td><code class="code-inline">merchantId</code></td><td>string</td><td>Identificador do estabelecimento na adquirente</td><td>Sim</td></tr>
+          <tr><td><code class="code-inline">merchantCategoryCode</code></td><td>string</td><td>MCC ISO 18245 — 4 dígitos</td><td>Sim</td></tr>
+          <tr><td><code class="code-inline">channelType</code></td><td>enum</td><td><code class="code-inline">POS</code> · <code class="code-inline">ECOMM</code> · <code class="code-inline">PIX_DEBITO</code> — ver <a href="14-enums.html#channel">Enums</a></td><td>Sim</td></tr>
+          <tr><td><code class="code-inline">transactionTimestamp</code></td><td>ISO 8601</td><td>Momento em que o canal gerou a transação (UTC)</td><td>Sim</td></tr>
+          <tr><td><code class="code-inline">deviceFingerprint</code></td><td>string</td><td>Hash do dispositivo. Usado pelo antifraude. Vazio em PIX-débito</td><td>Não</td></tr>
+          <tr><td><code class="code-inline">geolocation</code></td><td>objeto</td><td><code class="code-inline">{ lat, lng }</code> — opcional, mas eleva score do antifraude</td><td>Não</td></tr>
+        </tbody>
+      </table>
+
+      <div class="code-block">
+        <div class="code-block__header"><span>request · application/json</span></div>
+<pre><code>POST /autorizar HTTP/1.1
+Host: liquidacao.btg.com.br
+Content-Type: application/json
+Idempotency-Key: 7a1f3c2e-4d8b-4f1a-9c3d-8e2b1a5f6c7d
+X-Correlation-ID: 0c1b9d7e-2f4a-4b6c-8d9e-1a2b3c4d5e6f
+
+{
+  "externalTransactionId": "a3f1e2b4-7c8d-4e5f-9a1b-2c3d4e5f6a7b",
+  "pan": "411111******1234",
+  "customerAcctNumber": "00012345678",
+  "customerCpf": "12345678901",
+  "transactionAmount": 247.50,
+  "currencyCode": "BRL",
+  "merchantId": "BTGCOMERCIO0001",
+  "merchantCategoryCode": "5411",
+  "channelType": "POS",
+  "transactionTimestamp": "2026-05-29T18:42:11Z",
+  "deviceFingerprint": "d8f3a2b1c4e5f6a7b8c9d0e1f2a3b4c5",
+  "geolocation": { "lat": -23.561414, "lng": -46.655881 }
+}</code></pre>
+      </div>
+
+      <h2 class="section-eyebrow">Transformação Interna</h2>
+      <p class="prose">
+        Entre o request HTTP e o evento publicado, três modelos coexistem.
+        Cada um vive em uma camada diferente e tem responsabilidade distinta.
+      </p>
+
+      <figure class="diagram-figure">
+        <div class="diagram-viewer" data-diagram="transformacao-dados"></div>
+        <figcaption>Figura 1 — Mapeamento Request → Domínio → Evento.</figcaption>
+      </figure>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Modelo</th>
+            <th>Camada</th>
+            <th>Quem cria</th>
+            <th>Propósito</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><code class="code-inline">AutorizarRequest</code></td><td>Apresentação</td><td>NSwag (gerado do OpenAPI)</td><td>Contrato HTTP. Validado no controller</td></tr>
+          <tr><td><code class="code-inline">AutorizarCommand</code></td><td>Aplicação</td><td>Endpoint, ao receber request</td><td>Input do use case, sem dependência de HTTP</td></tr>
+          <tr><td><code class="code-inline">Autorizacao</code> (agregado)</td><td>Domínio</td><td>Use case, via factory</td><td>Estado canônico — invariantes garantidas aqui</td></tr>
+          <tr><td><code class="code-inline">AutorizacaoCriada</code> (evento)</td><td>Domínio</td><td>Agregado, ao mudar de estado</td><td>Fato passado, publicado via outbox</td></tr>
+          <tr><td><code class="code-inline">AutorizarResponse</code></td><td>Apresentação</td><td>Endpoint, ao retornar</td><td>Contrato HTTP de saída</td></tr>
+        </tbody>
+      </table>
+
+      <aside class="decision-callout" role="note">
+        <div class="decision-callout__icon" aria-hidden="true">▲</div>
+        <div class="decision-callout__body">
+          <div class="decision-callout__label">Por que não passar o Request direto para o use case</div>
+          <p>
+            Aplicação não conhece HTTP. Se passarmos o DTO da Apresentação direto, criamos
+            acoplamento que quebra a inversão de dependência. O endpoint constrói o
+            <code class="code-inline">AutorizarCommand</code> a partir do Request. Tradução de uma linha,
+            mas mantém Hexagonal limpo. Verificado por NetArchTest em
+            <a href="02-padroes.html#fitness">Padrões §&nbsp;Fitness Functions</a>.
+          </p>
+        </div>
+      </aside>
+
+      <h2 class="section-eyebrow">Resposta HTTP</h2>
+      <p class="prose">
+        Sempre <code class="code-inline">application/json</code>. Sucesso é <code class="code-inline">200 OK</code>;
+        recusa de antifraude ou saldo é <code class="code-inline">422 Unprocessable Entity</code> seguindo RFC 7807
+        (<code class="code-inline">application/problem+json</code>). Erros internos seguem o mesmo formato.
+      </p>
+
+      <div class="code-block">
+        <div class="code-block__header"><span>200 OK · autorizado</span></div>
+<pre><code>{
+  "decisionId": "b4c2d3e5-8f9a-4b1c-7d2e-3f4a5b6c7d8e",
+  "status": "AUTORIZADO",
+  "scoringResult": 87,
+  "adviceCode": "APPROVE",
+  "authorizationCode": "ABC123",
+  "decidedAt": "2026-05-29T18:42:11.247Z"
+}</code></pre>
+      </div>
+
+      <div class="code-block">
+        <div class="code-block__header"><span>422 · recusado por antifraude</span></div>
+<pre><code>{
+  "type": "https://liquidacao.btg.com.br/problems/recusa-antifraude",
+  "title": "Transação recusada pelo motor antifraude",
+  "status": 422,
+  "detail": "Score 23 abaixo do mínimo de 40 para canal POS",
+  "decisionId": "b4c2d3e5-8f9a-4b1c-7d2e-3f4a5b6c7d8e",
+  "scoringResult": 23,
+  "reasonCode": "ANTIFRAUDE_LOW_SCORE",
+  "decidedAt": "2026-05-29T18:42:11.198Z"
+}</code></pre>
+      </div>
+
+      <h2 class="section-eyebrow">Evento no Outbox</h2>
+      <p class="prose">
+        Toda decisão (autorizar, recusar, contingência) gera um evento na tabela
+        <code class="code-inline">outbox_event</code> dentro da mesma transação de banco do agregado.
+        O relay assíncrono publica em SNS. <strong>Consumers devem ser idempotentes</strong> —
+        o mesmo evento pode chegar mais de uma vez.
+      </p>
+
+      <div class="code-block">
+        <div class="code-block__header"><span>SNS message body · AutorizacaoCriada</span></div>
+<pre><code>{
+  "eventId": "c5d3e4f6-9a8b-4c2d-8e3f-4a5b6c7d8e9f",
+  "eventType": "AutorizacaoCriada",
+  "eventVersion": "1.0",
+  "aggregateId": "b4c2d3e5-8f9a-4b1c-7d2e-3f4a5b6c7d8e",
+  "occurredAt": "2026-05-29T18:42:11.247Z",
+  "correlationId": "0c1b9d7e-2f4a-4b6c-8d9e-1a2b3c4d5e6f",
+  "payload": {
+    "decisionId": "b4c2d3e5-8f9a-4b1c-7d2e-3f4a5b6c7d8e",
+    "externalTransactionId": "a3f1e2b4-7c8d-4e5f-9a1b-2c3d4e5f6a7b",
+    "customerAcctNumber": "00012345678",
+    "amount": 247.50,
+    "currency": "BRL",
+    "status": "AUTORIZADO",
+    "scoringResult": 87,
+    "merchantId": "BTGCOMERCIO0001",
+    "channelType": "POS"
+  }
+}</code></pre>
+      </div>
+
+      <h2 class="section-eyebrow">Convenções</h2>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Regra</th>
+            <th>Exemplo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Datas e timestamps</td><td>ISO 8601 com timezone UTC sempre. Precisão até milissegundos no retorno</td><td><code class="code-inline">2026-05-29T18:42:11.247Z</code></td></tr>
+          <tr><td>Identificadores</td><td>UUID v4 em strings. Nunca inteiros incrementais como ID externo</td><td><code class="code-inline">a3f1e2b4-7c8d-4e5f-9a1b-2c3d4e5f6a7b</code></td></tr>
+          <tr><td>CPF</td><td>Sem máscara nem pontos. 11 dígitos numéricos</td><td><code class="code-inline">12345678901</code></td></tr>
+          <tr><td>PAN</td><td>Mascarado: 6 primeiros + 6 asteriscos + 4 últimos</td><td><code class="code-inline">411111******1234</code></td></tr>
+          <tr><td>Valores monetários</td><td>Decimal com 2 casas, ponto como separador. <strong>Nunca</strong> em centavos</td><td><code class="code-inline">247.50</code></td></tr>
+          <tr><td>Códigos de moeda</td><td>ISO 4217, 3 letras maiúsculas</td><td><code class="code-inline">BRL</code></td></tr>
+          <tr><td>Enums em JSON</td><td>UPPER_SNAKE_CASE</td><td><code class="code-inline">AUTORIZADO</code>, <code class="code-inline">PIX_DEBITO</code></td></tr>
+          <tr><td>Nomes de campo</td><td>camelCase no JSON, PascalCase no C#</td><td><code class="code-inline">externalTransactionId</code> ↔ <code class="code-inline">ExternalTransactionId</code></td></tr>
+        </tbody>
+      </table>
+
+      <h2 class="section-eyebrow">Mascaramento em Logs</h2>
+      <p class="prose">
+        Campos sensíveis nunca aparecem em logs sem mascaramento. Configurado em
+        <code class="code-inline">LoggerConfiguration.cs</code> via Serilog destructuring policies.
+      </p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>Campo</th><th>Tratamento em log</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code class="code-inline">customerCpf</code></td><td><code class="code-inline">***.***.***-**</code></td></tr>
+          <tr><td><code class="code-inline">pan</code></td><td>Mantém máscara: <code class="code-inline">411111******1234</code></td></tr>
+          <tr><td><code class="code-inline">deviceFingerprint</code></td><td>Primeiros 8 caracteres + <code class="code-inline">...</code></td></tr>
+          <tr><td><code class="code-inline">geolocation</code></td><td>Removido completamente</td></tr>
+        </tbody>
+      </table>
+
+      <h2 class="section-eyebrow">Próximas Leituras</h2>
+      <div class="doc-grid">
+        <a class="doc-card" href="13-dicionario.html">
+          <div class="doc-card__icon" aria-hidden="true">📖</div>
+          <div class="doc-card__title">Dicionário de Campos</div>
+          <div class="doc-card__desc">
+            Definição canônica de cada campo do agregado, evento e contratos HTTP.
+          </div>
+        </a>
+        <a class="doc-card" href="14-enums.html">
+          <div class="doc-card__icon" aria-hidden="true">🔤</div>
+          <div class="doc-card__title">Enums e Códigos</div>
+          <div class="doc-card__desc">
+            Valores aceitos em <code class="code-inline">channelType</code>, <code class="code-inline">status</code>, <code class="code-inline">reasonCode</code>.
+          </div>
+        </a>
+        <a class="doc-card" href="07-fluxo-autorizacao.html">
+          <div class="doc-card__icon" aria-hidden="true">🔐</div>
+          <div class="doc-card__title">Fluxo: Autorização</div>
+          <div class="doc-card__desc">
+            Como esses dados fluem entre os componentes do serviço durante uma autorização.
+          </div>
+        </a>
+      </div>
+    </main>
+  </div>
+
+  <script type="text/mermaid" data-id="transformacao-dados">
+flowchart LR
+    classDef pres   fill:#ffffff,stroke:#1f2937,color:#0a0c12,stroke-width:1.5px
+    classDef app    fill:#4a8fe7,stroke:#0a0c12,color:#ffffff,stroke-width:2px
+    classDef domain fill:#1c4e93,stroke:#0a0c12,color:#ffffff,stroke-width:2.5px
+
+    Req["AutorizarRequest<br/>(Apresentação)"]
+    Cmd["AutorizarCommand<br/>(Aplicação)"]
+    Agg["Agregado Autorização<br/>(Domínio)"]
+    Evt["AutorizacaoCriada<br/>(Domain Event)"]
+    Resp["AutorizarResponse<br/>(Apresentação)"]
+    Outbox["outbox_event<br/>(Persistência)"]
+
+    Req -- endpoint traduz --> Cmd
+    Cmd -- factory --> Agg
+    Agg -- emite --> Evt
+    Evt -- serializado --> Outbox
+    Agg -- projetado --> Resp
+
+    class Req,Resp pres
+    class Cmd app
+    class Agg,Evt domain
+    class Outbox pres
+  </script>
+
+  <script src="sidebar.js"></script>
+  <script src="diagram-viewer.js"></script>
+</body>
+</html>

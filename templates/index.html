@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Liquidação Transacional — Arquitetura</title>
+  <meta name="description" content="Documentação técnica do microsserviço de Liquidação Transacional.">
+  <link rel="stylesheet" href="../design-system/tokens.css">
+  <link rel="stylesheet" href="../design-system/components.css">
+</head>
+<body>
+  <div class="shell">
+    <aside id="sidebar" class="sidebar" aria-label="Navegação"></aside>
+
+    <main id="main" class="main">
+      <header class="hero">
+        <span class="hero__eyebrow">Documentação Técnica</span>
+        <h1 class="hero__title">Liquidação <span class="accent-word">Transacional</span></h1>
+        <p class="hero__subtitle">
+          Microsserviço responsável pela liquidação síncrona de transações
+          de débito entre canais de pagamento e o motor antifraude.
+        </p>
+
+        <ul class="tech-pills">
+          <li class="tech-pill">.NET 8 + ASP.NET Core</li>
+          <li class="tech-pill">Hexagonal Architecture</li>
+          <li class="tech-pill">PostgreSQL + Outbox Pattern</li>
+          <li class="tech-pill">v0.1.0</li>
+        </ul>
+      </header>
+
+      <aside class="decision-callout" role="note" aria-label="Decisão arquitetural principal">
+        <div class="decision-callout__icon" aria-hidden="true">▲</div>
+        <div class="decision-callout__body">
+          <div class="decision-callout__label">Decisão arquitetural</div>
+          <p>
+            O serviço opera como <strong>gateway síncrono</strong> entre canais de pagamento e o motor de scoring.
+            Latência máxima de <code>500ms p95</code> garantida via <strong>Circuit Breaker + Retry + Bulkhead</strong>
+            em todas as integrações externas. Contingência local com limites configuráveis quando o motor
+            antifraude está indisponível.
+          </p>
+        </div>
+      </aside>
+
+      <h2 class="section-eyebrow">Visão Geral e Arquitetura</h2>
+      <div class="doc-grid">
+        <a class="doc-card" href="01-visao-geral.html">
+          <div class="doc-card__icon" aria-hidden="true">📌</div>
+          <div class="doc-card__title">Visão Geral</div>
+          <div class="doc-card__desc">
+            Propósito do serviço, integrações externas, fluxo principal e stack tecnológica.
+          </div>
+        </a>
+        <a class="doc-card" href="02-padroes.html">
+          <div class="doc-card__icon" aria-hidden="true">🏛️</div>
+          <div class="doc-card__title">Padrões e Camadas</div>
+          <div class="doc-card__desc">
+            Hexagonal, ArchUnit, Contract-First, resiliência via Polly e organização por bounded context.
+          </div>
+        </a>
+        <a class="doc-card" href="03-dados.html">
+          <div class="doc-card__icon" aria-hidden="true">📊</div>
+          <div class="doc-card__title">Dados Trafegados</div>
+          <div class="doc-card__desc">
+            Estrutura de entrada e saída, transformações internas e campos persistidos.
+          </div>
+        </a>
+        <a class="doc-card" href="04-configuracoes.html">
+          <div class="doc-card__icon" aria-hidden="true">⚙️</div>
+          <div class="doc-card__title">Configurações</div>
+          <div class="doc-card__desc">
+            Variáveis de ambiente por stage, feature flags e parâmetros de resiliência.
+          </div>
+        </a>
+        <a class="doc-card" href="05-nova-funcionalidade.html">
+          <div class="doc-card__icon" aria-hidden="true">🧭</div>
+          <div class="doc-card__title">Guia: Nova Feature</div>
+          <div class="doc-card__desc">
+            Como adicionar um novo endpoint, regra de negócio ou integração mantendo os contratos.
+          </div>
+        </a>
+        <a class="doc-card" href="06-infraestrutura.html">
+          <div class="doc-card__icon" aria-hidden="true">🛰️</div>
+          <div class="doc-card__title">Infraestrutura</div>
+          <div class="doc-card__desc">
+            Topologia AWS, pipeline de deploy, monitoramento e disaster recovery.
+          </div>
+        </a>
+      </div>
+
+      <h2 class="section-eyebrow">Fluxos Transacionais</h2>
+      <div class="doc-grid">
+        <a class="doc-card" href="07-fluxo-autorizacao.html">
+          <div class="doc-card__icon" aria-hidden="true">🔐</div>
+          <div class="doc-card__title">Autorização</div>
+          <div class="doc-card__desc">
+            Fluxo síncrono de autorização. Idempotência, garantias transacionais e compensação.
+          </div>
+        </a>
+        <a class="doc-card" href="08-fluxo-estorno.html">
+          <div class="doc-card__icon" aria-hidden="true">↩️</div>
+          <div class="doc-card__title">Estorno</div>
+          <div class="doc-card__desc">
+            Reversão de autorização. Saga de compensação e garantias de exactly-once lógico.
+          </div>
+        </a>
+        <a class="doc-card" href="09-fluxo-contingencia.html">
+          <div class="doc-card__icon" aria-hidden="true">🆘</div>
+          <div class="doc-card__title">Contingência</div>
+          <div class="doc-card__desc">
+            Modo degradado quando o motor antifraude está indisponível. Limites e reconciliação.
+          </div>
+        </a>
+      </div>
+
+      <h2 class="section-eyebrow">Modelo de Dados</h2>
+      <div class="doc-grid">
+        <a class="doc-card" href="13-dicionario.html">
+          <div class="doc-card__icon" aria-hidden="true">📖</div>
+          <div class="doc-card__title">Dicionário</div>
+          <div class="doc-card__desc">
+            Definição canônica de cada campo do payload e seu papel no domínio.
+          </div>
+        </a>
+        <a class="doc-card" href="14-enums.html">
+          <div class="doc-card__icon" aria-hidden="true">🔤</div>
+          <div class="doc-card__title">Enums e Códigos</div>
+          <div class="doc-card__desc">
+            Valores aceitos em campos enumerados, códigos de erro e códigos de resposta.
+          </div>
+        </a>
+      </div>
+    </main>
+  </div>
+
+  <script src="sidebar.js"></script>
+</body>
+</html>
