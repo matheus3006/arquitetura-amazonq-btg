@@ -15,6 +15,35 @@ Um pacote pronto para clonar dentro de cada serviço .NET do seu time. Inclui:
 - **Template viewer** para diagramas Mermaid com pan/zoom estilo Figma, fundo claro com traços escuros
 - **12 páginas HTML de exemplo** documentando um serviço fictício ("Liquidação Transacional") como referência de forma e qualidade
 
+## Instalação rápida
+
+"Instalar" = colocar 4 coisas na **raiz** do repo do serviço (`.amazonq/rules/`, `prompts/`, `design-system/`, `templates/*.js`). O Amazon Q lê `.amazonq/rules/` sozinho a partir daí. Escolha a via:
+
+**macOS / Linux (bash):**
+```bash
+git clone https://github.com/matheus3006/arquitetura-amazonq-btg.git
+bash arquitetura-amazonq-btg/install.sh /caminho/do/seu/servico
+```
+
+**Windows (PowerShell):**
+```powershell
+git clone https://github.com/matheus3006/arquitetura-amazonq-btg.git
+pwsh arquitetura-amazonq-btg\install.ps1 -Target C:\repos\seu-servico
+# Windows PowerShell 5.x: powershell -ExecutionPolicy Bypass -File arquitetura-amazonq-btg\install.ps1 -Target C:\repos\seu-servico
+```
+
+**Manual (qualquer OS, sem script):** copie do pack pro repo do serviço, mantendo a estrutura:
+- `.amazonq/rules/` → `architecture-style.md`, `frontend-style.md`, `negocio-style.md`
+- `prompts/arquitetura/` e `prompts/negocio/` (as duas pastas inteiras)
+- `design-system/*.css`
+- `templates/diagram-viewer.js` e `templates/sidebar.js`
+
+**Não** copie `project-context.md` / `business-context.md` — são gerados por-serviço pelos analisadores.
+
+Como usar (todos os gatilhos): [COMO-USAR.md](COMO-USAR.md).
+
+> O pack tem **duas trilhas**: a **técnica** (arquitetura .NET) e a de **negócio** (regras, fluxos caminho feliz/triste, glossário — derivados do código). Os instaladores entregam as duas.
+
 ## Filosofia
 
 Uma única regra rígida: **a convenção de diagramas** (Mermaid + viewer + 4 classDefs com cores fixas).
@@ -124,12 +153,9 @@ Essa convenção **não muda** quando o resto do visual (paleta, tipografia, etc
 
 ## Quick start em um projeto novo
 
-1. **Clone esse repo para a raiz do seu projeto .NET**:
+1. **Instale o pack no seu projeto** (seção _Instalação rápida_ acima):
    ```bash
-   cd seu-projeto-dotnet
-   git clone https://github.com/matheus3006/arquitetura-amazonq-btg.git
-   # ou subarvore:
-   # git subtree add --prefix=docs/arquitetura https://github.com/matheus3006/arquitetura-amazonq-btg.git main --squash
+   bash /caminho/arquitetura-amazonq-btg/install.sh   # de dentro do repo do serviço
    ```
 
 2. **Abra o Amazon Q** com `@workspace` no projeto.
