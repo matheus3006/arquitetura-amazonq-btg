@@ -61,7 +61,7 @@ Preencha o template abaixo com o detectado + confirmado. Após criar, mostre ao 
 
 Gere o MESMO conteúdo em dois arquivos (um por ferramenta de assistente):
 
-1. `.amazonq/rules/business-context.md` — sem frontmatter (lido pelo Q Developer).
+1. `.amazonq/rules/business-context.md` — sem frontmatter (lido pelo Amazon Q).
 2. `.github/instructions/business-context.instructions.md` — começando com o frontmatter literal:
 
    ```

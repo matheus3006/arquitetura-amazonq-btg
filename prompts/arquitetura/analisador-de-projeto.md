@@ -90,7 +90,7 @@ Onde não souber e o usuário também não, marque `[a confirmar]`.
 
 Gere o MESMO conteúdo em dois arquivos (um por ferramenta de assistente):
 
-1. `.amazonq/rules/project-context.md` — sem frontmatter (lido pelo Q Developer).
+1. `.amazonq/rules/project-context.md` — sem frontmatter (lido pelo Amazon Q).
 2. `.github/instructions/project-context.instructions.md` — começando com o frontmatter literal:
 
    ```
