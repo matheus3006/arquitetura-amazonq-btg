@@ -1,0 +1,18 @@
+analisador-de-projeto	arquitetura	Analisa o repositorio e gera o contexto tecnico do projeto (roda primeiro em todo repo novo)
+arquiteto-de-sistema	arquitetura	Persona de arquiteto senior para visao geral e diagramas de arquitetura do servico
+gerador-adr	arquitetura	Gera ADRs em formato MADR com trade-offs explicitos e metrica de validacao
+gerador-runbook	arquitetura	Gera runbooks operacionais com failure modes, sintomas e acoes
+documentador-fluxo	arquitetura	Documenta fluxos transacionais com sequence diagrams e payloads
+grill-doc	arquitetura	Revisor cetico de documentacao: procura furos, inconsistencias e garantias nao implementadas
+brainstorm-arquitetural	arquitetura	Parceiro de pensamento pre-ADR: reformula o problema, gera opcoes e converge com trade-offs
+designer-ux-controlado	frontend	Decisoes visuais propostas antes de aplicadas, uma por vez
+designer-ui-pro-max	frontend	Catalogo de estilos, paletas e padroes visuais para escolher direcao
+design-system-arquitetura	frontend	Extensao e auditoria do design system do pack
+polidor-ui	frontend	Polimento de UI: microinteracoes, easing e acabamento (estilo Emil Kowalski)
+analisador-de-dominio	negocio	Analisa o dominio e gera o contexto de negocio (regras, atores, eventos)
+mapeador-de-fluxo-de-negocio	negocio	Mapeia fluxo de negocio com caminho feliz e caminhos tristes em diagrama
+catalogo-de-regras	negocio	Cataloga regras de negocio com origem, dono e consequencia
+glossario-de-negocio	negocio	Gera o glossario do dominio (linguagem ubiqua)
+grill-negocio	negocio	Interrogatorio por fases com ledger para extrair regras nao escritas do dominio
+depurador-sistematico	engenharia	Depuracao sistematica em 4 fases: causa raiz com evidencia antes de qualquer correcao
+planejador-de-implementacao	engenharia	Transforma spec/decisao em plano de etapas pequenas e independentemente verificaveis
