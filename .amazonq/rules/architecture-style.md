@@ -1,25 +1,32 @@
 # Architecture Documentation Style Guide
 
-> Este arquivo é lido automaticamente pelo Amazon Q em todo workspace que contenha esta pasta.
+> Lido automaticamente pelo Amazon Q em todo workspace que contenha esta pasta.
 > Define **o que é exemplo e o que é regra**, mapeia gatilhos de usuário para prompts especializados,
 > e estabelece a única convenção rígida deste workspace: a criação de diagramas.
 
 ---
 
-## GATE OBRIGATÓRIO — `project-context.md`
+## GATE OBRIGATÓRIO — contexto do projeto
 
-**Antes de qualquer geração de documentação**, verifique se `.amazonq/rules/project-context.md` existe.
+**Antes de qualquer geração de documentação**, verifique se o contexto do projeto existe.
+Ele mora em DOIS arquivos com o mesmo conteúdo (um por ferramenta de assistente):
+
+- `.amazonq/rules/project-context.md` (lido pelo Amazon Q)
+- `.github/instructions/project-context.instructions.md` (lido pelo GitHub Copilot; começa com frontmatter `applyTo: "**"`)
 
 ```
 Pedido de geração chega
         ↓
-project-context.md existe?
+os dois arquivos de contexto existem?
         │
-        ├── NÃO → carregue `prompts/arquitetura/analisador-de-projeto.md` PRIMEIRO.
+        ├── NENHUM existe → carregue `prompts/arquitetura/analisador-de-projeto.md` PRIMEIRO.
         │        Pare a geração original. Conclua a análise. Peça confirmação.
         │        Depois disso o usuário pode reinvocar o pedido original.
         │
-        └── SIM → leia-o COMPLETO. Use-o como fonte de verdade para:
+        ├── SÓ UM existe (repo instalado antes da era dual-tool) → espelhe o conteúdo no
+        │        destino que falta (com/sem o frontmatter conforme o lado) e prossiga.
+        │
+        └── AMBOS existem → leia COMPLETO o do seu lado. Use-o como fonte de verdade para:
                  • Nome do serviço (não use "Liquidação Transacional")
                  • Stack real (não copie a do exemplo)
                  • Padrões que NÃO se aplicam (não documente o que está listado como "não usado")
@@ -27,7 +34,7 @@ project-context.md existe?
                  Depois prossiga normalmente com o prompt indicado pelo gatilho.
 ```
 
-`project-context.md` tem **peso de regra**, igual a este arquivo. Quando ele afirma "não usamos Outbox",
+O contexto do projeto tem **peso de regra**, igual a este arquivo. Quando ele afirma "não usamos Outbox",
 isso **sobrescreve** qualquer exemplo em `templates/` que mencione Outbox.
 
 ---
@@ -40,7 +47,7 @@ Antes de qualquer coisa, entenda como tratar o que existe aqui:
 |---|---|---|
 | `.amazonq/rules/architecture-style.md` (este arquivo) | **REGRA** | Aplique sempre. Convenções de geração e hooks de prompt. |
 | `.amazonq/rules/frontend-style.md` | **REGRA** | Aplique sempre. Estrutura HTML e padrão de diagramas. |
-| `.amazonq/rules/project-context.md` | **REGRA por projeto** (gerada pelo analisador) | Define este projeto específico. Sobrescreve exemplos. Se não existir, executar o analisador antes de qualquer geração. |
+| Contexto do projeto: `.amazonq/rules/project-context.md` + `.github/instructions/project-context.instructions.md` | **REGRA por projeto** (gerada pelo analisador, nos dois destinos) | Define este projeto específico. Sobrescreve exemplos. Se não existir, executar o analisador antes de qualquer geração. |
 | `prompts/arquitetura/*.md` | **REGRA** (metodologia) | Carregue conforme tabela de hooks. Siga a metodologia descrita. |
 | `prompts/frontend/*.md` | **REGRA** (metodologia) | Carregue para tarefas visuais. |
 | `design-system/tokens.css` e `components.css` | **REGRA** (CSS) | Use `var(--*)` sempre. Nunca hardcode cor/espaço/raio. |
@@ -148,7 +155,7 @@ Quando gerar HTML final, **sempre** aplique também `.amazonq/rules/frontend-sty
 
 ## 3. Esqueleto de página HTML
 
-Todo HTML novo segue este esqueleto (confirma o padrão demonstrado em `templates/01-visao-geral.html` em diante). Detalhamento em `frontend-style.md`.
+Todo HTML novo segue este esqueleto (demonstrado em `templates/01-visao-geral.html` quando o pack foi instalado com `--with-examples`; sem os exemplos, o esqueleto abaixo é a referência completa). Detalhamento em `frontend-style.md`.
 
 ```html
 <!DOCTYPE html>

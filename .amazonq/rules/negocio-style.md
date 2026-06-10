@@ -7,33 +7,43 @@
 
 ---
 
-## GATE OBRIGATÓRIO — `business-context.md`
+## GATE OBRIGATÓRIO — contexto de negócio
 
-Antes de gerar **qualquer doc de negócio** (exceto os dois prompts que o criam — ver abaixo):
+Antes de gerar **qualquer doc de negócio** (exceto os dois prompts que o criam — ver abaixo),
+verifique se o contexto de negócio existe. Ele mora em DOIS arquivos com o mesmo conteúdo:
+
+- `.amazonq/rules/business-context.md` (lido pelo Amazon Q)
+- `.github/instructions/business-context.instructions.md` (lido pelo GitHub Copilot; começa com frontmatter `applyTo: "**"`)
 
 ```
 Pedido de doc de negócio chega
         ↓
-business-context.md existe em .amazonq/rules/ ?
+os dois arquivos de contexto de negócio existem?
         │
-        ├── NÃO → carregue prompts/negocio/analisador-de-dominio.md PRIMEIRO.
+        ├── NENHUM existe → carregue prompts/negocio/analisador-de-dominio.md PRIMEIRO.
         │        Pare a geração. Conclua a análise de domínio. Peça confirmação.
         │        Depois o usuário reinvoca o pedido original.
         │
-        └── SIM → leia-o COMPLETO. É a fonte de verdade de NEGÓCIO:
+        ├── SÓ UM existe (repo da era Q-only) → espelhe o conteúdo no destino que falta
+        │        (com/sem o frontmatter conforme o lado) e prossiga.
+        │
+        └── AMBOS existem → leia COMPLETO o do seu lado. É a fonte de verdade de NEGÓCIO:
                  • glossário do domínio (linguagem ubíqua)
                  • regras de negócio confirmadas + dono + consequência
                  • atores/papéis e desfechos de negócio
                  Prossiga com o prompt indicado pelo gatilho (§2).
 ```
 
-**Exceções ao gate** (rodam JUSTAMENTE pra popular o `business-context.md`):
-- `analisador-de-dominio.md` — cria/atualiza o arquivo.
-- `grill-negocio.md` — refina o arquivo inline durante a sessão.
+**Exceções ao gate** (rodam JUSTAMENTE pra popular o contexto de negócio):
+- `analisador-de-dominio.md` — cria/atualiza os dois arquivos.
+- `grill-negocio.md` — refina os arquivos inline durante a sessão (mantenha os dois em sincronia).
 
-**Pré-requisito recomendado:** `project-context.md` (trilha técnica) deve existir — o analisador de domínio o consome. Se faltar, sugira rodar `analisador-de-projeto.md` antes; mas é possível seguir a partir do código.
+**Pré-requisito recomendado:** o contexto do projeto (trilha técnica) deve existir — o analisador
+de domínio o consome. Se faltar, sugira rodar `analisador-de-projeto.md` antes; mas é possível
+seguir a partir do código.
 
-`business-context.md` tem **peso de regra**, igual a esta. Quando define um termo ou regra, **sobrescreve** qualquer exemplo em `templates/`.
+O contexto de negócio tem **peso de regra**, igual a esta. Quando define um termo ou regra,
+**sobrescreve** qualquer exemplo em `templates/`.
 
 ---
 
@@ -42,11 +52,10 @@ business-context.md existe em .amazonq/rules/ ?
 | Pasta / arquivo | Status | Como usar |
 |---|---|---|
 | `.amazonq/rules/negocio-style.md` (esta) | **REGRA** | Convenções + gate + hooks de negócio. |
-| `.amazonq/rules/business-context.md` | **REGRA por projeto** (gerada pelo analisador de domínio) | Fonte de verdade de negócio. Sobrescreve exemplos. |
-| `.amazonq/rules/project-context.md` | **REGRA por projeto** (trilha técnica, reusada) | Contexto de código que o negócio consome. |
+| Contexto de negócio: `.amazonq/rules/business-context.md` + `.github/instructions/business-context.instructions.md` | **REGRA por projeto** (gerada pelo analisador de domínio) | Fonte de verdade de negócio. Sobrescreve exemplos. |
+| Contexto do projeto: `.amazonq/rules/project-context.md` + `.github/instructions/project-context.instructions.md` | **REGRA por projeto** (trilha técnica, reusada) | Contexto de código que o negócio consome. |
 | `prompts/negocio/*.md` | **REGRA** (metodologia) | Carregue conforme a tabela de hooks § 2. |
 | `design-system/*.css`, `templates/diagram-viewer.js`, `sidebar.js` | **REGRA** (reuso) | Mesmos do pack técnico. Não duplicar, não substituir. |
-| `templates/negocio/*` (exemplos de negócio) | **EXEMPLO** | Forma, não substância. Adapte ao domínio real. |
 
 A doc de negócio **mora junto** da técnica, no mesmo repo do serviço, e **compartilha** o `project-context.md`.
 

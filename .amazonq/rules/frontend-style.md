@@ -1,5 +1,6 @@
 # Frontend / HTML Output Style Guide
 
+> Lido automaticamente pelo Amazon Q em todo workspace que contenha esta pasta.
 > Aplicado em conjunto com `architecture-style.md` toda vez que o Amazon Q gerar HTML ou CSS neste workspace.
 > Filosofia: documentação técnica com cuidado editorial. Inspiração: Linear docs, Stripe docs, Vercel docs.
 
