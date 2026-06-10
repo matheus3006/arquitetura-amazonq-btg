@@ -19,8 +19,11 @@ PACK_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MANIFEST="$PACK_DIR/tools/manifest.tsv"
 RULES=(architecture-style frontend-style negocio-style engenharia-style)
 
-MODE="generate"
-if [ "${1:-}" = "--check" ]; then MODE="check"; fi
+case "${1:-}" in
+  --check) MODE="check" ;;
+  "")      MODE="generate" ;;
+  *) echo "ERRO: argumento desconhecido: ${1} (use --check ou nada)" >&2; exit 2 ;;
+esac
 
 if [ "$MODE" = "check" ]; then
   TMP="$(mktemp -d)"
@@ -51,6 +54,10 @@ for r in "${RULES[@]}"; do
     printf -- '---\napplyTo: "**"\nexcludeAgent: "code-review"\n---\n'
     rewrite_for_copilot < "$src"
   } > "$OUT/instructions/$r.instructions.md"
+  if grep -qi 'lido automaticamente pelo Amazon Q' "$OUT/instructions/$r.instructions.md"; then
+    echo "ERRO: frase de auto-load nao reescrita em $r.instructions.md — padronize a frase no canonico (ver Task 3 do plano)." >&2
+    exit 1
+  fi
 done
 
 # ── 2) Entry point ──────────────────────────────────────────────────────────
@@ -89,9 +96,13 @@ EOF
 
 # ── 3) Wrappers a partir do manifest ───────────────────────────────────────
 count=0
-while IFS=$'\t' read -r slug trilha desc; do
+while IFS=$'\t' read -r slug trilha desc || [ -n "$slug" ]; do
+  desc="${desc%$'\r'}"
   [ -z "$slug" ] && continue
   case "$slug" in \#*) continue ;; esac
+  case "$desc" in
+    ''|*'"'*|*'\'*) echo "ERRO: descricao invalida no manifest para '$slug' (vazia ou contem \" ou \\)." >&2; exit 1 ;;
+  esac
   canonical="prompts/$trilha/$slug.md"
   if [ ! -f "$PACK_DIR/$canonical" ]; then
     echo "ERRO: manifest aponta para $canonical, que nao existe." >&2
@@ -131,16 +142,37 @@ Regras de execucao:
 EOF
   count=$((count + 1))
 done < "$MANIFEST"
+[ "$count" -gt 0 ] || { echo "ERRO: nenhum wrapper gerado — manifest vazio ou ilegivel?" >&2; exit 1; }
 
-# ── 4) Resultado ────────────────────────────────────────────────────────────
+# ── 4) Cobertura ─────────────────────────────────────────────────────────────
+# Toda rule canonica de estilo precisa estar em RULES,
+# e todo prompt canonico precisa de uma linha no manifest.
+for f in "$PACK_DIR"/.amazonq/rules/*-style.md; do
+  base="$(basename "$f" .md)"
+  found=0
+  for r in "${RULES[@]}"; do [ "$r" = "$base" ] && found=1; done
+  [ "$found" -eq 1 ] || { echo "ERRO: $base.md existe no canonico mas nao esta em RULES." >&2; exit 1; }
+done
+prompt_files="$(find "$PACK_DIR/prompts" -name '*.md' -type f | wc -l | tr -d ' ')"
+if [ "$prompt_files" -ne "$count" ]; then
+  echo "ERRO: $prompt_files prompts em prompts/ mas $count linhas no manifest — sincronize tools/manifest.tsv." >&2
+  exit 1
+fi
+
+# ── 5) Resultado ────────────────────────────────────────────────────────────
 if [ "$MODE" = "check" ]; then
-  if diff -r "$PACK_DIR/.github" "$OUT" > /dev/null 2>&1; then
+  status=0
+  for p in copilot-instructions.md instructions prompts skills; do
+    if ! diff -r "$PACK_DIR/.github/$p" "$OUT/$p" > /dev/null 2>&1; then
+      echo "DRIFT em .github/$p — rode: bash tools/sync-copilot.sh" >&2
+      diff -r "$PACK_DIR/.github/$p" "$OUT/$p" 2>&1 | head -20 >&2 || true
+      status=1
+    fi
+  done
+  if [ "$status" -eq 0 ]; then
     echo "OK: .github/ em sincronia com o canonico."
-  else
-    echo "DRIFT: .github/ difere do que seria gerado. Rode: bash tools/sync-copilot.sh" >&2
-    diff -r "$PACK_DIR/.github" "$OUT" 2>&1 | head -40 >&2 || true
-    exit 1
   fi
+  exit "$status"
 else
   echo "Gerado: ${#RULES[@]} instructions + copilot-instructions.md + $count prompt files + $count skills em $OUT"
 fi
