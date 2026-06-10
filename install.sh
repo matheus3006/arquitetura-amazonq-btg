@@ -22,10 +22,10 @@ for arg in "$@"; do
   case "$arg" in
     --with-examples) WITH_EXAMPLES=1 ;;
     -h|--help) usage; exit 0 ;;
-    -*) echo "❌ Opcao desconhecida: $arg"; echo ""; usage; exit 1 ;;
+    -*) echo "❌ Opcao desconhecida: $arg" >&2; echo "" >&2; usage >&2; exit 1 ;;
     *)
       if [ -n "$TARGET" ]; then
-        echo "❌ Mais de um alvo informado: \"$TARGET\" e \"$arg\". Passe so um."
+        echo "❌ Mais de um alvo informado: \"$TARGET\" e \"$arg\". Passe so um." >&2
         exit 1
       fi
       TARGET="$arg"
@@ -35,11 +35,12 @@ done
 
 PACK_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TARGET="${TARGET:-$(pwd)}"
-TARGET="$(cd "$TARGET" 2>/dev/null && pwd)" || { echo "❌ Alvo nao existe: ${TARGET}"; exit 1; }
+RESOLVED="$(cd "$TARGET" 2>/dev/null && pwd)" || { echo "❌ Alvo nao existe: $TARGET" >&2; exit 1; }
+TARGET="$RESOLVED"
 
-if [ "$TARGET" = "$PACK_DIR" ]; then
-  echo "❌ O alvo e o proprio pack. Rode apontando pro repo do SERVICO:"
-  echo "   bash \"$PACK_DIR/install.sh\" /caminho/do/seu/servico"
+if [ "$TARGET" -ef "$PACK_DIR" ]; then
+  echo "❌ O alvo e o proprio pack. Rode apontando pro repo do SERVICO:" >&2
+  echo "   bash \"$PACK_DIR/install.sh\" /caminho/do/seu/servico" >&2
   exit 1
 fi
 
@@ -95,7 +96,11 @@ if [ "$WITH_EXAMPLES" = "1" ]; then
 fi
 
 # 6) Guia de uso (mensagens prontas — abra no navegador)
-if cp "$PACK_DIR/COMO-USAR.html" "$TARGET/COMO-USAR.html" 2>/dev/null && [ -f "$TARGET/COMO-USAR.html" ]; then
+if [ ! -f "$PACK_DIR/COMO-USAR.html" ]; then
+  echo "  ⚠ COMO-USAR.html ausente no pack — pulado"
+elif [ -d "$TARGET/COMO-USAR.html" ]; then
+  echo "  ⚠ COMO-USAR.html nao copiado (existe um DIRETORIO com esse nome no alvo)"
+elif cp "$PACK_DIR/COMO-USAR.html" "$TARGET/COMO-USAR.html" 2>/dev/null && [ -f "$TARGET/COMO-USAR.html" ]; then
   echo "  ✓ COMO-USAR.html"
 else
   echo "  ⚠ COMO-USAR.html nao copiado (destino bloqueado?)"

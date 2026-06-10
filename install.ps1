@@ -17,6 +17,11 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 
+if ($args.Count -gt 0) {
+  Write-Host "[erro] Argumentos nao reconhecidos: $($args -join ', '). Use -Target <repo> [-WithExamples]."
+  exit 1
+}
+
 $PackDir = $PSScriptRoot
 try {
   $Target = (Resolve-Path -LiteralPath $Target -ErrorAction Stop).Path
@@ -87,19 +92,32 @@ Write-Host "  + templates/diagram-viewer.js + sidebar.js"
 if ($WithExamples) {
   $html = Get-ChildItem (Join-Path $PackDir 'templates') -Filter '*.html' -ErrorAction SilentlyContinue
   if ($html) {
-    $html | Copy-Item -Destination $tplDst -Force
-    Write-Host "  + templates/*.html (exemplos)"
+    $html | Copy-Item -Destination $tplDst -Force -ErrorAction SilentlyContinue
+    $copied = @(Get-ChildItem $tplDst -Filter '*.html' -ErrorAction SilentlyContinue)
+    if ($copied.Count -ge $html.Count) {
+      Write-Host "  + templates/*.html (exemplos)"
+    } else {
+      Write-Host "  ! templates/*.html copiados parcialmente ($($copied.Count) de $($html.Count))"
+    }
   } else {
     Write-Host "  ! templates/*.html nao copiados (nenhum .html no pack?)"
   }
 }
 
 # 6) Guia de uso (mensagens prontas - abra no navegador)
-Copy-Item (Join-Path $PackDir 'COMO-USAR.html') (Join-Path $Target 'COMO-USAR.html') -Force -ErrorAction SilentlyContinue
-if (Test-Path -PathType Leaf (Join-Path $Target 'COMO-USAR.html')) {
-  Write-Host "  + COMO-USAR.html"
+$comoSrc = Join-Path $PackDir 'COMO-USAR.html'
+$comoDst = Join-Path $Target 'COMO-USAR.html'
+if (-not (Test-Path -PathType Leaf $comoSrc)) {
+  Write-Host "  ! COMO-USAR.html ausente no pack - pulado"
+} elseif (Test-Path -PathType Container $comoDst) {
+  Write-Host "  ! COMO-USAR.html nao copiado (existe um DIRETORIO com esse nome no alvo)"
 } else {
-  Write-Host "  ! COMO-USAR.html nao copiado (destino bloqueado?)"
+  Copy-Item $comoSrc $comoDst -Force -ErrorAction SilentlyContinue
+  if (Test-Path -PathType Leaf $comoDst) {
+    Write-Host "  + COMO-USAR.html"
+  } else {
+    Write-Host "  ! COMO-USAR.html nao copiado (destino bloqueado?)"
+  }
 }
 
 # 7) Limpeza de lixo do Finder
