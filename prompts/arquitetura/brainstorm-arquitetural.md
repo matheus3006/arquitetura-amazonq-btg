@@ -2,7 +2,7 @@
 
 > ## STATUS
 >
-> Este prompt é referenciado pelas rules em `.amazonq/rules/architecture-style.md` § 2.
+> Este prompt é referenciado pela rule da trilha `arquitetura` § 2 (`.amazonq/rules/architecture-style.md` ou `.github/instructions/architecture-style.instructions.md`, conforme a ferramenta).
 >
 > Brainstorming é metodologia de pensamento — não produz HTML final. Quando o brainstorm
 > convergir para uma decisão, encaminhe ao `gerador-adr.md` para registro.
@@ -124,9 +124,15 @@ Para brainstorming, **HTML não é obrigatório** — o output principal é uma 
 
 Este documento é insumo da ADR, não substituto.
 
-## Exemplo de invocação no Amazon Q
+## Exemplo de invocação
 
 > Estou pensando em substituir o RabbitMQ por Kafka no serviço de Pagamentos. Use `prompts/arquitetura/brainstorm-arquitetural.md` antes de qualquer recomendação.
+
+| Ferramenta | Como invocar |
+|---|---|
+| Amazon Q (IDE ou `q chat`) | Mensagem nomeando o prompt, como acima |
+| Copilot (VS Code / Visual Studio / JetBrains) | `/brainstorm-arquitetural` |
+| Copilot CLI | Gatilho natural — a instruction roteia |
 
 ## Referências
 - Próximo passo natural: `gerador-adr.md` quando a decisão estiver pronta.

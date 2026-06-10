@@ -2,7 +2,7 @@
 
 > ## STATUS
 >
-> Parte da trilha `negocio`. Referenciado pela `negocio-style.md` (hooks). **Sujeito ao GATE:** exige `.amazonq/rules/business-context.md`.
+> Parte da trilha `negocio`. Referenciado pela rule da trilha `negocio` (hooks — `.amazonq/rules/negocio-style.md` ou `.github/instructions/negocio-style.instructions.md`, conforme a ferramenta). **Sujeito ao GATE:** exige o contexto de negócio (`.amazonq/rules/business-context.md` e `.github/instructions/business-context.instructions.md`).
 >
 > **Renderizador:** lê a seção "Regras de negócio" do `business-context.md` e a transforma em página HTML navegável. **NÃO descobre regras do zero** — quem faz isso é o `analisador-de-dominio` / `grill-negocio`.
 >
@@ -45,10 +45,16 @@ Status por regra: `confirmada` ou `a confirmar`. Origem como `arquivo:símbolo` 
 - ❌ Incluir regra **técnica** (idempotência, retry, circuit breaker) → é trilha técnica.
 - ❌ Listar regra sem origem nem dono como se fosse confirmada → é lacuna.
 
-## Exemplo de invocação no Amazon Q
+## Exemplo de invocação
 > Com `business-context.md` pronto no `pagamentos-api`, use `prompts/negocio/catalogo-de-regras.md` pra gerar a página de regras de negócio, agrupada por capacidade.
 
+| Ferramenta | Como invocar |
+|---|---|
+| Amazon Q (IDE ou `q chat`) | Mensagem nomeando o prompt, como acima |
+| Copilot (VS Code / Visual Studio / JetBrains) | `/catalogo-de-regras` |
+| Copilot CLI | Gatilho natural — a instruction roteia |
+
 ## Referências
-- Fonte: `.amazonq/rules/business-context.md` (seção Regras de negócio).
+- Fonte: `business-context.md`, nos dois destinos do contexto de negócio (seção Regras de negócio).
 - Lacunas: `prompts/negocio/grill-negocio.md`.
-- Esqueleto HTML: `.amazonq/rules/frontend-style.md`.
+- Esqueleto HTML: rule da trilha `frontend` (`.amazonq/rules/frontend-style.md` ou `.github/instructions/frontend-style.instructions.md`, conforme a ferramenta).

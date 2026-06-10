@@ -2,16 +2,17 @@
 
 > ## STATUS
 >
-> **PRIMEIRO prompt da trilha `negocio` a rodar** em um repositório. Produz
-> `.amazonq/rules/business-context.md` — a **fonte de verdade de negócio** que o GATE de
-> `negocio-style.md` exige e que todos os outros prompts de negócio consomem.
+> **PRIMEIRO prompt da trilha `negocio` a rodar** em um repositório. Produz o contexto de
+> negócio em DOIS destinos — `.amazonq/rules/business-context.md` e
+> `.github/instructions/business-context.instructions.md` — a **fonte de verdade de negócio**
+> que o GATE de `negocio-style.md` exige e que todos os outros prompts de negócio consomem.
 >
 > **Isento do GATE** (ele é quem cria o arquivo). Na **Fase 2** ele **delega ao protocolo do
 > `grill-negocio.md`** — não reimplemente o loop, siga aquele (regra de ouro + ledger + fases).
 >
 > Conteúdo de `templates/` é **EXEMPLO**. Reconstrua o negócio do **código e domínio reais**.
 
-Clona `grill-with-docs` (domain awareness) + DDD (linguagem ubíqua / bounded contexts) + event-storming, para Amazon Q. Lê o código, **propõe** a visão de negócio candidata, **confirma com você por grilling**, e grava o `business-context.md`.
+Clona `grill-with-docs` (domain awareness) + DDD (linguagem ubíqua / bounded contexts) + event-storming. Lê o código, **propõe** a visão de negócio candidata, **confirma com você por grilling**, e grava o `business-context.md`.
 
 ## Quando usar
 - **Primeira doc de negócio** em um repositório (gate da trilha).
@@ -28,7 +29,7 @@ que o código não revela, e documenta a **realidade de negócio** — não a as
 
 ## Metodologia — 3 fases
 
-### Fase 1 — Detecção (use `@workspace`, NÃO pergunte ainda)
+### Fase 1 — Detecção (explore o código do workspace, NÃO pergunte ainda)
 Leia e extraia **candidatos** (não verdades — candidatos a confirmar na Fase 2):
 
 | Onde olhar | Candidato a extrair |
@@ -53,8 +54,23 @@ Conduza seguindo **o protocolo do `grill-negocio.md`** — regra de ouro (uma pe
 
 Cubra, ramo a ramo: **propósito de negócio**, **atores + autoridade**, **regras** (origem + dono + consequência), **eventos de domínio**, **desfechos** (caminho feliz + caminhos tristes), **termos do glossário**. O que ninguém souber → `[a confirmar com <quem>]`. **Nunca invente.**
 
-### Fase 3 — Gerar `business-context.md`
-Preencha o template abaixo com o detectado + confirmado. Após criar, mostre ao usuário um resumo (top 5 pontos) e avise: *"Isto agora é a fonte de verdade de negócio. Edite se algo estiver errado. Depois posso gerar fluxo de negócio, catálogo de regras ou glossário."*
+### Fase 3 — Gerar `business-context.md` (destino duplo)
+Preencha o template abaixo com o detectado + confirmado. Após criar, mostre ao usuário um resumo (top 5 pontos) e avise: *"Isto agora é a fonte de verdade de negócio (dois arquivos, mesmo conteúdo). Edite se algo estiver errado. Depois posso gerar fluxo de negócio, catálogo de regras ou glossário."*
+
+### Destino duplo do arquivo gerado
+
+Gere o MESMO conteúdo em dois arquivos (um por ferramenta de assistente):
+
+1. `.amazonq/rules/business-context.md` — sem frontmatter (lido pelo Q Developer).
+2. `.github/instructions/business-context.instructions.md` — começando com o frontmatter literal:
+
+   ```
+   ---
+   applyTo: "**"
+   ---
+   ```
+
+   seguido do MESMO conteúdo do arquivo 1.
 
 ---
 
@@ -63,7 +79,7 @@ Preencha o template abaixo com o detectado + confirmado. Após criar, mostre ao 
 ```markdown
 # Business Context — <Nome do Serviço>
 
-> Lido automaticamente pelo Amazon Q antes de qualquer doc de negócio.
+> Lido automaticamente pelo assistente antes de qualquer doc de negócio.
 > Tem peso de regra — sobrescreve exemplos. Glossário e regras de NEGÓCIO; sem detalhe de implementação.
 > Edite manualmente quando o negócio mudar; rode o analisador-de-dominio pra refresh.
 
@@ -117,9 +133,11 @@ _Evitar_: <sinônimos a não usar>
 - [ ] **Atores** com autoridade descrita (não só o nome).
 - [ ] Pelo menos **1 caminho triste** documentado.
 - [ ] O que ninguém soube → `[a confirmar com <quem>]`, nunca inventado.
+- [ ] Os dois arquivos de contexto existem com o mesmo conteúdo (fora o frontmatter)?
+- [ ] O arquivo `.instructions.md` começa com `applyTo: "**"`?
 
 ## Saída esperada
-- **Arquivo único**: `.amazonq/rules/business-context.md` (modo `write`).
+- **Dois arquivos, mesmo conteúdo**: `.amazonq/rules/business-context.md` e `.github/instructions/business-context.instructions.md` (gerados diretamente no repositório — ver "Destino duplo do arquivo gerado" na Fase 3).
 - **Resumo ao usuário** após criar (nome · propósito · 3 regras-chave · 2 pontos abertos).
 - **Não gere mais nada nesta invocação.** O fluxo é: analisar → confirmar → (depois) gerar docs.
 
@@ -130,9 +148,15 @@ _Evitar_: <sinônimos a não usar>
 - ❌ **Vazar implementação** (idempotency, outbox, retry) pro `business-context.md` — é glossário de negócio.
 - ❌ Gerar fluxo/catálogo/glossário na mesma invocação.
 
-## Exemplo de invocação no Amazon Q
+## Exemplo de invocação
 
-> `@workspace` aberto no `pagamentos-api`. Siga `prompts/negocio/analisador-de-dominio.md` pra montar a visão de negócio antes de qualquer doc — detecta do código, me grila o que faltar, e grava o `business-context.md`.
+> Estou no `pagamentos-api`. Siga `prompts/negocio/analisador-de-dominio.md` pra montar a visão de negócio antes de qualquer doc — detecta do código, me grila o que faltar, e grava o `business-context.md`.
+
+| Ferramenta | Como invocar |
+|---|---|
+| Amazon Q (IDE ou `q chat`) | Mensagem nomeando o prompt, como acima |
+| Copilot (VS Code / Visual Studio / JetBrains) | `/analisador-de-dominio` |
+| Copilot CLI | Gatilho natural — a instruction roteia |
 
 ## Prompts que consomem o `business-context.md`
 - `grill-negocio.md` → refina inline durante o grilling.

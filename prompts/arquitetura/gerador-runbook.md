@@ -2,17 +2,17 @@
 
 > ## STATUS
 >
-> Este prompt é referenciado pelas rules em `.amazonq/rules/architecture-style.md` § 2.
+> Este prompt é referenciado pela rule da trilha `arquitetura` § 2 (`.amazonq/rules/architecture-style.md` ou `.github/instructions/architecture-style.instructions.md`, conforme a ferramenta).
 >
 > **Conteúdo de `templates/runbook.html`** (legado tema off-white) e dos exemplos no fluxo
 > "Liquidação Transacional" é **EXEMPLO**. Runbooks reais que você gerar devem seguir o
-> esqueleto HTML padrão de `.amazonq/rules/frontend-style.md` § 1 com sidebar + main +
+> esqueleto HTML padrão da rule da trilha `frontend` § 1 (`.amazonq/rules/frontend-style.md` ou `.github/instructions/frontend-style.instructions.md`, conforme a ferramenta) com sidebar + main +
 > hero + sections, **não** o template legado.
 >
 > A **única regra rígida de visual** é a convenção de diagramas em
-> `.amazonq/rules/architecture-style.md` § 1 — quando o runbook contiver fluxos.
+> `architecture-style.md` § 1 — quando o runbook contiver fluxos.
 
-Clona o comportamento da skill `operations:runbook` para Amazon Q.
+Clona o comportamento da skill `operations:runbook`.
 Produz runbooks que **funcionam às 3h da manhã** durante incidente.
 
 ## Quando usar
@@ -77,7 +77,7 @@ Tabela com:
 
 ### Passo 5 — Gerar HTML
 
-Estrutura: esqueleto padrão de `.amazonq/rules/frontend-style.md` § 1.
+Estrutura: esqueleto padrão de `frontend-style.md` § 1.
 
 Seções típicas (use como `<h2 class="section-eyebrow">` cada uma):
 
@@ -94,7 +94,7 @@ Seções típicas (use como `<h2 class="section-eyebrow">` cada uma):
 
 ### Passo 6 — Diagramas (quando aplicável)
 
-Para failure modes complexos com decisão ramificada, adicione um diagrama seguindo `.amazonq/rules/architecture-style.md` § 1 (flowchart com classDefs da convenção). Diagramas em runbook são opcionais; texto direto é o padrão.
+Para failure modes complexos com decisão ramificada, adicione um diagrama seguindo `architecture-style.md` § 1 (flowchart com classDefs da convenção). Diagramas em runbook são opcionais; texto direto é o padrão.
 
 ## Regras de honestidade
 
@@ -111,14 +111,20 @@ Para failure modes complexos com decisão ramificada, adicione um diagrama segui
 - Tabelas com threshold/severidade legíveis (use `.severity-badge--p1/--p2/--p3`).
 - Status do documento (`Active`, `Draft`, `Stale`) em `.status-badge` no `.hero`.
 
-## Exemplo de invocação no Amazon Q
+## Exemplo de invocação
 
-> Use `prompts/arquitetura/gerador-runbook.md`. Gere runbook para o serviço Pagamentos. `@workspace` aberto em `pagamentos-api`. SLO: 99.9% disponibilidade, p95 < 500ms.
+> Use `prompts/arquitetura/gerador-runbook.md`. Gere runbook para o serviço Pagamentos, no repositório `pagamentos-api`. SLO: 99.9% disponibilidade, p95 < 500ms.
+
+| Ferramenta | Como invocar |
+|---|---|
+| Amazon Q (IDE ou `q chat`) | Mensagem nomeando o prompt, como acima |
+| Copilot (VS Code / Visual Studio / JetBrains) | `/gerador-runbook` |
+| Copilot CLI | Gatilho natural — a instruction roteia |
 
 ## Referências
 
-- Esqueleto HTML padrão: `.amazonq/rules/frontend-style.md` § 1.
-- Padrão de diagrama (quando aplicável): `.amazonq/rules/architecture-style.md` § 1.
-- Comportamento esperado em runbook: `.amazonq/rules/architecture-style.md` § 6 ("Ao gerar Runbook").
+- Esqueleto HTML padrão: `frontend-style.md` § 1.
+- Padrão de diagrama (quando aplicável): `architecture-style.md` § 1.
+- Comportamento esperado em runbook: `architecture-style.md` § 6 ("Ao gerar Runbook").
 - Página exemplo de runbook (em estilo legado off-white, use apenas como referência conceitual): `templates/runbook.html`.
 - Prompt complementar para sequence diagrams: `documentador-fluxo.md`.

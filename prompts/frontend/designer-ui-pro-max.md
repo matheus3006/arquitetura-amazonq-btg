@@ -2,17 +2,17 @@
 
 > ## STATUS
 >
-> Este prompt é referenciado pelas rules em `.amazonq/rules/architecture-style.md` § 2.
+> Este prompt é referenciado pela rule da trilha `arquitetura` § 2 (`.amazonq/rules/architecture-style.md` ou `.github/instructions/architecture-style.instructions.md`, conforme a ferramenta).
 >
 > Use quando o usuário quiser **opções e exemplos** em vez de diálogo. Apresenta catálogo
 > opinativo de estilos para escolha rápida.
 >
 > Catálogos abaixo (estilos, paletas, tipografias) são SUGESTÕES. A paleta atual em
 > `design-system/tokens.css` é **convenção da casa adaptável**; a convenção de diagramas
-> em `.amazonq/rules/architecture-style.md` § 1 é a **única regra rígida** e **não muda**
+> em `architecture-style.md` § 1 é a **única regra rígida** e **não muda**
 > ao trocar de paleta.
 
-Clona o comportamento da skill `ui-ux-pro-max` para Amazon Q.
+Clona o comportamento da skill `ui-ux-pro-max`.
 Catálogo opinativo de estilos, paletas, tipografias e padrões. Use quando o usuário quiser **opções e exemplos**, não conversa.
 
 ## Quando usar
@@ -158,9 +158,15 @@ Geração de CSS + HTML em partes:
 - CSS pronto para uso (não pseudo-código).
 - Mockup textual antes do código.
 
-## Exemplo de invocação no Amazon Q
+## Exemplo de invocação
 
 > Use `prompts/frontend/designer-ui-pro-max.md`. Mostre 3 direções visuais para documentação interna de microserviços .NET. Audiência: devs sênior + SRE.
+
+| Ferramenta | Como invocar |
+|---|---|
+| Amazon Q (IDE ou `q chat`) | Mensagem nomeando o prompt, como acima |
+| Copilot (VS Code / Visual Studio / JetBrains) | `/designer-ui-pro-max` |
+| Copilot CLI | Gatilho natural — a instruction roteia |
 
 ## Referências
 - Após escolha, refine com `polidor-ui.md`.

@@ -2,14 +2,14 @@
 
 > ## STATUS
 >
-> Este prompt é referenciado pelas rules em `.amazonq/rules/architecture-style.md` § 2.
+> Este prompt é referenciado pela rule da trilha `arquitetura` § 2 (`.amazonq/rules/architecture-style.md` ou `.github/instructions/architecture-style.instructions.md`, conforme a ferramenta).
 >
 > **Conteúdo dos exemplos** (Liquidação Transacional, fluxos de autorização/estorno/contingência,
 > Outbox, FICO Falcon, etc.) é **EXEMPLO**. Fluxos reais devem usar o vocabulário, atores e
 > sistemas do domínio do usuário.
 >
 > A **única regra rígida de visual** é a convenção de diagramas em
-> `.amazonq/rules/architecture-style.md` § 1 — Mermaid via `diagram-viewer.js`,
+> `architecture-style.md` § 1 — Mermaid via `diagram-viewer.js`,
 > `sequenceDiagram` para fluxos temporais, `flowchart` com classDefs `person/sys/ext/extAsync`
 > para diagramas de relação.
 
@@ -116,7 +116,7 @@ Para fluxos transacionais críticos, antecipe e documente em callouts:
 Use `.decision-callout` para destacar cada interleaving relevante.
 
 ### Passo 6 — Gerar HTML
-Estrutura: esqueleto padrão de `.amazonq/rules/frontend-style.md` § 1.
+Estrutura: esqueleto padrão da rule da trilha `frontend` § 1 (`.amazonq/rules/frontend-style.md` ou `.github/instructions/frontend-style.instructions.md`, conforme a ferramenta).
 
 Seções típicas (cada uma como `<h2 class="section-eyebrow">`):
 
@@ -142,14 +142,20 @@ Seções típicas (cada uma como `<h2 class="section-eyebrow">`):
 - "Funciona transacionalmente" sem especificar **o quê** está na transação → exija escopo exato.
 - Misturar fluxos diferentes na mesma página → divida em arquivos separados.
 
-## Exemplo de invocação no Amazon Q
+## Exemplo de invocação
 
 > Use `prompts/arquitetura/documentador-fluxo.md`. Documente o fluxo de captura de pagamento de cartão (POST /pagamentos/{id}/capture) integrando com Adyen.
 
+| Ferramenta | Como invocar |
+|---|---|
+| Amazon Q (IDE ou `q chat`) | Mensagem nomeando o prompt, como acima |
+| Copilot (VS Code / Visual Studio / JetBrains) | `/documentador-fluxo` |
+| Copilot CLI | Gatilho natural — a instruction roteia |
+
 ## Referências
 
-- Esqueleto HTML padrão: `.amazonq/rules/frontend-style.md` § 1.
-- Padrão de diagrama: `.amazonq/rules/architecture-style.md` § 1.
-- Terminologia transacional: `.amazonq/rules/architecture-style.md` § 5.
+- Esqueleto HTML padrão: `frontend-style.md` § 1.
+- Padrão de diagrama: `architecture-style.md` § 1.
+- Terminologia transacional: `architecture-style.md` § 5.
 - Página exemplo de fluxo: `templates/07-fluxo-autorizacao.html` (use como referência de FORMA).
 - Prompt complementar: `gerador-adr.md` para decisões que emergem da análise do fluxo.

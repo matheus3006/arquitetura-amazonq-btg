@@ -2,17 +2,17 @@
 
 > ## STATUS
 >
-> Este prompt é referenciado pelas rules em `.amazonq/rules/architecture-style.md` § 2.
+> Este prompt é referenciado pela rule da trilha `arquitetura` § 2 (`.amazonq/rules/architecture-style.md` ou `.github/instructions/architecture-style.instructions.md`, conforme a ferramenta).
 >
 > Use após o visual base estar aprovado. Muitas das técnicas listadas abaixo (press feedback,
 > easings customizados, scrollbar, focus premium, stagger) **já estão aplicadas** no
 > `design-system/components.css` atual. Use este prompt para auditar onde falta ou estender
 > a polimentos novos.
 >
-> Polimento visual **não substitui** a convenção de diagramas em `.amazonq/rules/architecture-style.md`
+> Polimento visual **não substitui** a convenção de diagramas em `architecture-style.md`
 > § 1 — diagramas têm cores fixas, mesmo quando o resto do visual mudar.
 
-Clona o comportamento da skill `emil-design-eng` para Amazon Q.
+Clona o comportamento da skill `emil-design-eng`.
 Foco: detalhes invisíveis que transformam interface funcional em interface **que cuida**.
 
 ## Quando usar
@@ -164,9 +164,15 @@ Quando não há conteúdo (lista vazia, busca sem resultado), apresente:
 - Comentários explicando *por que* cada polimento foi adicionado.
 - Antes e depois descritos em texto se o usuário pediu reformulação.
 
-## Exemplo de invocação no Amazon Q
+## Exemplo de invocação
 
 > Use `prompts/frontend/polidor-ui.md`. O componente `.adr-card` está funcional mas duro. Adicione polimento: hover sutil, focus visível premium, entrada com fade quando renderizado dinamicamente.
+
+| Ferramenta | Como invocar |
+|---|---|
+| Amazon Q (IDE ou `q chat`) | Mensagem nomeando o prompt, como acima |
+| Copilot (VS Code / Visual Studio / JetBrains) | `/polidor-ui` |
+| Copilot CLI | Gatilho natural — a instruction roteia |
 
 ## Referências
 - Pré-requisito: visual base aprovado em `designer-ux-controlado.md`.

@@ -2,15 +2,14 @@
 
 > ## STATUS
 >
-> Este prompt é referenciado pelas rules em `.amazonq/rules/architecture-style.md` § 2.
+> Este prompt é referenciado pela rule da trilha `arquitetura` § 2 (`.amazonq/rules/architecture-style.md` ou `.github/instructions/architecture-style.instructions.md`, conforme a ferramenta).
 >
 > Use quando o usuário pedir para auditar, estender ou padronizar o design system
 > (tokens.css + components.css).
 >
 > A lista de componentes abaixo reflete o **estado atual** do `design-system/components.css`.
-> Componentes podem ser adicionados, mas o **padrão `.diagram-viewer`** (definido em
-> `.amazonq/rules/frontend-style.md` § 3) **não pode ser substituído** — é a única regra
-> rígida de componente neste workspace.
+> Componentes podem ser adicionados, mas o **padrão `.diagram-viewer`** (definido na rule da trilha `frontend` § 3 — `.amazonq/rules/frontend-style.md` ou `.github/instructions/frontend-style.instructions.md`, conforme a ferramenta)
+> **não pode ser substituído** — é a única regra rígida de componente neste workspace.
 
 Clona o comportamento da skill `product-skills:ui-design-system` aplicada ao contexto de docs técnicas internas.
 
@@ -154,11 +153,17 @@ grep -E "^\.(\w+)" design-system/components.css | awk -F'[ {.]' '{print $2}' | s
 - Comentário/documentação inline em cada componente novo.
 - Exemplo de uso em HTML real (não abstrato).
 
-## Exemplo de invocação no Amazon Q
+## Exemplo de invocação
 
 > Use `prompts/frontend/design-system-arquitetura.md`. Quero adicionar componente `.audit-trail` para mostrar histórico de mudanças em ADR. Auditar se já temos algo parecido.
 
+| Ferramenta | Como invocar |
+|---|---|
+| Amazon Q (IDE ou `q chat`) | Mensagem nomeando o prompt, como acima |
+| Copilot (VS Code / Visual Studio / JetBrains) | `/design-system-arquitetura` |
+| Copilot CLI | Gatilho natural — a instruction roteia |
+
 ## Referências
 - Base: `design-system/tokens.css`, `design-system/components.css`.
-- Frontend rules: `.amazonq/rules/frontend-style.md`.
+- Frontend rules: `frontend-style.md`.
 - Refinamento: `polidor-ui.md` para microinterações nos componentes.

@@ -2,17 +2,17 @@
 
 > ## STATUS
 >
-> Este prompt é referenciado pelas rules em `.amazonq/rules/architecture-style.md` § 2.
+> Este prompt é referenciado pela rule da trilha `arquitetura` § 2 (`.amazonq/rules/architecture-style.md` ou `.github/instructions/architecture-style.instructions.md`, conforme a ferramenta).
 >
 > Use este prompt quando o usuário pedir decisões visuais novas (cor, tipografia, layout).
 > Sempre **proponha antes de aplicar**.
 >
 > **A paleta navy/azul atual de `design-system/tokens.css` é convenção da casa**, não regra
 > rígida — o usuário pode adaptar à identidade visual real do banco/empresa dele. A **única
-> regra rígida de visual** é a convenção de diagramas em `.amazonq/rules/architecture-style.md`
+> regra rígida de visual** é a convenção de diagramas em `architecture-style.md`
 > § 1, que **não muda independente da paleta**.
 
-Clona o comportamento da skill `bencium-controlled-ux-designer` para Amazon Q.
+Clona o comportamento da skill `bencium-controlled-ux-designer`.
 Filosofia: decisão visual nunca é assumida — é proposta, justificada, e aprovada antes de implementar.
 
 ## Quando usar
@@ -89,12 +89,18 @@ Sempre **confirme antes de adicionar componentes complexos** (animação, intera
 - Após aprovação: CSS de tokens + componentes + HTML aplicando.
 - Sempre acompanhado de "preview mental": descrição em palavras de como vai parecer.
 
-## Exemplo de invocação no Amazon Q
+## Exemplo de invocação
 
 > Use `prompts/frontend/designer-ux-controlado.md`. Quero definir o visual da documentação de arquitetura do serviço Pagamentos. Stack: HTML + CSS vanilla.
+
+| Ferramenta | Como invocar |
+|---|---|
+| Amazon Q (IDE ou `q chat`) | Mensagem nomeando o prompt, como acima |
+| Copilot (VS Code / Visual Studio / JetBrains) | `/designer-ux-controlado` |
+| Copilot CLI | Gatilho natural — a instruction roteia |
 
 ## Referências
 - Tokens já definidos: `design-system/tokens.css` — use como ponto de partida.
 - Componentes existentes: `design-system/components.css`.
-- Frontend rules: `.amazonq/rules/frontend-style.md`.
+- Frontend rules: rule da trilha `frontend` (`.amazonq/rules/frontend-style.md` ou `.github/instructions/frontend-style.instructions.md`, conforme a ferramenta).
 - Prompts complementares: `designer-ui-pro-max.md` (mais opinativo, com catálogo amplo), `polidor-ui.md` (após visual base aprovado).

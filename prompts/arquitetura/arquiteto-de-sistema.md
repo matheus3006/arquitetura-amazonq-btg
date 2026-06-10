@@ -2,7 +2,7 @@
 
 > ## STATUS
 >
-> Este prompt é referenciado pelas rules em `.amazonq/rules/architecture-style.md` § 2.
+> Este prompt é referenciado pela rule da trilha `arquitetura` § 2 (`.amazonq/rules/architecture-style.md` ou `.github/instructions/architecture-style.instructions.md`, conforme a ferramenta).
 >
 > **Conteúdo das páginas em `templates/`** (serviço fictício "Liquidação Transacional",
 > motor "FICO Falcon", limites em R$, stack específica, etc.) é **EXEMPLO** de aplicação
@@ -10,10 +10,10 @@
 > deve ser substituída pelo serviço REAL que você está documentando.
 >
 > A **única regra rígida de visual** é a convenção de diagramas em
-> `.amazonq/rules/architecture-style.md` § 1 — Mermaid via `diagram-viewer.js`,
+> `architecture-style.md` § 1 — Mermaid via `diagram-viewer.js`,
 > sintaxe `flowchart`, classes `person` / `sys` / `ext` / `extAsync`.
 
-Clona o comportamento das skills `engineering:system-design` + `human-architect-mindset` para Amazon Q.
+Clona o comportamento das skills `engineering:system-design` + `human-architect-mindset`.
 
 ## Quando usar
 - Início de documentação de um serviço novo ou existente.
@@ -48,10 +48,10 @@ Antes de escrever qualquer prosa, desenhe mentalmente (e depois em Mermaid segui
 - **Container view** — apps deployáveis + DBs + filas internas, com setas mostrando direção de dependência. Mesmo `flowchart` + `classDef`.
 - **Sequence diagram** dos 2-3 fluxos transacionais mais críticos, com `autonumber` e marcação de `BEGIN/COMMIT` onde houver transação.
 
-Especificação completa do padrão de diagramas em `.amazonq/rules/architecture-style.md` § 1.
+Especificação completa do padrão de diagramas em `architecture-style.md` § 1.
 
 ### Passo 3 — Estrutura da página
-A estrutura HTML (esqueleto `<div class="shell">` + `<aside id="sidebar">` + `<main id="main">` + scripts) é definida em `.amazonq/rules/frontend-style.md` § 1.
+A estrutura HTML (esqueleto `<div class="shell">` + `<aside id="sidebar">` + `<main id="main">` + scripts) é definida na rule da trilha `frontend` § 1 (`.amazonq/rules/frontend-style.md` ou `.github/instructions/frontend-style.instructions.md`, conforme a ferramenta).
 
 Use a página `templates/01-visao-geral.html` como referência da forma. **Substitua todo o conteúdo** pelo do serviço real.
 
@@ -68,7 +68,7 @@ Seções típicas que cubrem o essencial de uma visão geral (adapte conforme a 
 
 Para cada seção:
 - Se a resposta é "não se aplica", escreva isso explicitamente.
-- Se a resposta exige investigação no código, pause e peça ao usuário para usar `@workspace`.
+- Se a resposta exige investigação no código, pause e explore o código do workspace.
 - Se a resposta exige decisão arquitetural ainda não tomada, **não invente**. Marque com `⚠ a decidir` e sugira abrir uma ADR via `prompts/arquitetura/gerador-adr.md`.
 
 ### Passo 4 — Validação cruzada
@@ -79,7 +79,7 @@ Antes de entregar, pergunte ao usuário:
 
 ## Saída esperada
 
-- **Formato:** HTML completo seguindo o esqueleto de `.amazonq/rules/frontend-style.md` § 1.
+- **Formato:** HTML completo seguindo o esqueleto de `frontend-style.md` § 1.
 - **Idioma:** PT-BR + termos técnicos em inglês (`outbox`, `idempotency`, etc.).
 - **Tom:** factual e direto. Sem qualificadores vagos.
 - **Diagramas:** padrão `diagram-viewer` (`<div class="diagram-viewer" data-diagram>` + `<script type="text/mermaid">`) com as 4 classes da convenção.
@@ -93,9 +93,15 @@ Antes de entregar, pergunte ao usuário:
 - **Não pular as 5 perguntas-âncora.** Mesmo sob pressão para "entregar logo". O custo de documentar arquitetura sem entender o domínio é uma documentação que mente.
 - **Não copiar conteúdo do exemplo "Liquidação Transacional".** Use as 12 páginas em `templates/` apenas como referência de **forma**.
 
-## Exemplo de invocação no Amazon Q
+## Exemplo de invocação
 
-> Use a persona em `prompts/arquitetura/arquiteto-de-sistema.md`. Quero documentar o serviço de Conciliação Bancária. `@workspace` está aberto no repositório `conciliacao-banco`.
+> Use a persona em `prompts/arquitetura/arquiteto-de-sistema.md`. Quero documentar o serviço de Conciliação Bancária, no repositório `conciliacao-banco`.
+
+| Ferramenta | Como invocar |
+|---|---|
+| Amazon Q (IDE ou `q chat`) | Mensagem nomeando o prompt, como acima |
+| Copilot (VS Code / Visual Studio / JetBrains) | `/arquiteto-de-sistema` |
+| Copilot CLI | Gatilho natural — a instruction roteia |
 
 ## Prompts complementares
 - `gerador-adr.md` — para cada decisão importante mapeada.

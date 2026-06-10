@@ -2,9 +2,10 @@
 
 > ## STATUS
 >
-> Parte da **trilha de negócio** do pack. Referenciado pela rule `.amazonq/rules/negocio-style.md`
-> (tabela de hooks). Consome e atualiza `.amazonq/rules/business-context.md` — a fonte de verdade
-> de negócio gerada pelo `prompts/negocio/analisador-de-dominio.md`.
+> Parte da **trilha de negócio** do pack. Referenciado pela rule da trilha `negocio` (tabela de hooks — `.amazonq/rules/negocio-style.md` ou `.github/instructions/negocio-style.instructions.md`, conforme a ferramenta).
+> Consome e atualiza o `business-context.md` (nos DOIS destinos: `.amazonq/rules/business-context.md` e
+> `.github/instructions/business-context.instructions.md` — mantenha-os idênticos fora o frontmatter) —
+> a fonte de verdade de negócio gerada pelo `prompts/negocio/analisador-de-dominio.md`.
 >
 > **Este prompt NÃO gera um relatório.** Ele conduz uma **sessão interativa** de interrogatório.
 > O produto da sessão é o *entendimento resolvido*, capturado **inline** no `business-context.md`
@@ -12,7 +13,7 @@
 >
 > Conteúdo de `templates/` é **EXEMPLO**. Interrogue contra o **código e o domínio reais** do usuário.
 
-Clona o comportamento de `grill-me` + `grill-with-docs` para Amazon Q, com **lente de negócio**.
+Clona o comportamento de `grill-me` + `grill-with-docs`, com **lente de negócio**.
 Interroga o usuário implacavelmente sobre o negócio por trás do sistema — regras, donos de decisão,
 caminhos feliz e triste, invariantes — até chegarem a um entendimento compartilhado.
 
@@ -31,13 +32,13 @@ Estes cinco compromissos vêm direto do skill original. **Não os achate num che
 2. **Uma pergunta por vez.** Faça UMA pergunta, **pare, e espere** a resposta antes da próxima.
 3. **Proponha sua resposta recomendada** em toda pergunta, com o porquê em uma linha. O usuário
    reage e corrige — não parte do zero.
-4. **Explore o código em vez de perguntar** o que o código já responde. Use `@workspace`.
+4. **Explore o código do workspace em vez de perguntar** o que o código já responde.
 5. **Implacável, cordial.** Não amacie. Cite o trecho/campo exato. Pare só quando os ramos abertos
    zeram (ou viram `[a confirmar com <quem>]`).
 
-## Protocolo de cada rodada (o andaime que mantém o Q no trilho)
+## Protocolo de cada rodada (o andaime que mantém o assistente no trilho)
 
-O Amazon Q tende a achatar interrogatórios numa pergunta-única ou num despejo de lista. Para evitar,
+Assistentes tendem a achatar interrogatórios numa pergunta-única ou num despejo de lista. Para evitar,
 **toda rodada segue este ciclo**, sem exceção:
 
 1. **Mostre o ledger** da árvore (abaixo).
@@ -45,9 +46,9 @@ O Amazon Q tende a achatar interrogatórios numa pergunta-única ou num despejo 
 3. **Uma pergunta** sobre esse ramo + **sua resposta recomendada** + porquê (1 linha).
 4. **PARE. Espere a resposta.** Não faça a próxima pergunta na mesma mensagem.
 5. Na resposta do usuário: registre a decisão; se ela abriu sub-ramos, **adicione-os ao ledger**;
-   se cristalizou um termo ou regra, **atualize o `business-context.md` ali mesmo**; volte ao passo 1.
+   se cristalizou um termo ou regra, **atualize o `business-context.md` ali mesmo** (nos dois destinos do contexto de negócio); volte ao passo 1.
 
-**Nunca:** listar várias perguntas de uma vez · repetir um ramo já `✓` · pular pra conclusão com ramo `○` aberto · perguntar o que o `@workspace` revela.
+**Nunca:** listar várias perguntas de uma vez · repetir um ramo já `✓` · pular pra conclusão com ramo `○` aberto · perguntar o que o código do workspace revela.
 
 ## Ledger da árvore de decisão
 
@@ -82,8 +83,8 @@ Depois dessa mensagem você **para e espera** — não emenda a próxima pergunt
 ## Fases (cada uma tem gate de saída)
 
 ### F0 — Reconhecimento (NÃO pergunta ainda)
-Leia, via `@workspace`, e monte a **árvore inicial** de ramos:
-- `.amazonq/rules/project-context.md` e `business-context.md` (se existirem).
+Explore o código do workspace e monte a **árvore inicial** de ramos a partir de:
+- `project-context.md` e `business-context.md` (se existirem, no destino da sua ferramenta: `.amazonq/rules/` ou `.github/instructions/`).
 - **Onde a regra de negócio mora no código** (ver seção abaixo).
 - `CONTEXT.md`/glossário existente, se houver.
 
@@ -110,7 +111,7 @@ Invente **cenários concretos de borda** que forcem precisão nos limites ("e se
 **Gate:** principais caminhos tristes cobertos.
 
 ### F4 — Cristalização
-- Atualize o `business-context.md` **inline** (glossário — formato abaixo).
+- Atualize o `business-context.md` **inline**, nos dois destinos do contexto de negócio (glossário — formato abaixo).
 - Capture cada **regra resolvida** na tabela abaixo, que o `catalogo-de-regras.md` consome direto.
 - Ofereça um **registro de decisão de negócio** — com parcimônia (teste abaixo).
 
@@ -128,11 +129,11 @@ Formato da regra resolvida:
 2. **Linguagem vaga/sobrecarregada** → proponha o termo canônico. "Você disse 'conta' — é o Cliente ou o Usuário? São coisas diferentes."
 3. **Cenário concreto** → ao discutir relação de domínio, invente um caso que prove o limite.
 4. **Cruzar com o código** → "O código cancela o pedido inteiro, mas você disse que dá pra cancelar item — qual está certo?"
-5. **Atualizar doc inline** → termo/regra resolvido, atualize o `business-context.md` já, sem acumular.
+5. **Atualizar doc inline** → termo/regra resolvido, atualize o `business-context.md` já (nos dois destinos), sem acumular.
 
 ## Onde a regra de negócio mora no código (guia da F0)
 
-Regra de negócio raramente está escrita — mas vaza no código. Procure, via `@workspace`:
+Regra de negócio raramente está escrita — mas vaza no código. Procure no código do workspace:
 - **Validações** (FluentValidation, DataAnnotations, guards manuais) → pré-condições de negócio.
 - **Transições de enum / máquina de estado** → quais mudanças de status são permitidas.
 - **Checagens de autorização/permissão** → **"quem decide"**.
@@ -144,7 +145,7 @@ Cada achado é uma **regra candidata** — leve pro grilling como "encontrei ist
 
 ## Atualização do `business-context.md` (glossário inline)
 
-`business-context.md` é **glossário e fonte de verdade de negócio — não spec, não detalhe de implementação.** Formato por termo:
+`business-context.md` é **glossário e fonte de verdade de negócio — não spec, não detalhe de implementação.** Toda atualização vale para os dois destinos do contexto de negócio (mantenha-os idênticos fora o frontmatter). Formato por termo:
 
 ```md
 **Estorno**:
@@ -168,24 +169,30 @@ Faltou um? Pule.
 - ❌ Despejar um checklist fixo de lentes — é exatamente o que torna o grilling ruim.
 - ❌ Várias perguntas na mesma mensagem.
 - ❌ Não propor a própria resposta recomendada.
-- ❌ Perguntar o que o `@workspace` revela.
+- ❌ Perguntar o que o código do workspace revela.
 - ❌ Repetir um ramo já resolvido.
 - ❌ Encerrar a sessão com ramo `○` aberto (sem ao menos marcá-lo `[a confirmar]`).
 
 ## Saída esperada
 
 - **Sessão interativa**, fase a fase, uma pergunta por vez.
-- **`business-context.md` atualizado inline** — o entregável principal.
+- **`business-context.md` atualizado inline, nos dois destinos do contexto de negócio** — o entregável principal.
 - **Tabela de regras resolvidas** (regra · origem no código · dono · se-violada) para o `catalogo-de-regras.md`.
-- *Opcional:* relatório HTML de fechamento seguindo `.amazonq/rules/frontend-style.md` (callouts `.finding--*`), só se o usuário pedir um artefato revisável.
+- *Opcional:* relatório HTML de fechamento seguindo a rule da trilha `frontend` (callouts `.finding--*`; `.amazonq/rules/frontend-style.md` ou `.github/instructions/frontend-style.instructions.md`, conforme a ferramenta), só se o usuário pedir um artefato revisável.
 
-## Exemplo de invocação no Amazon Q
+## Exemplo de invocação
 
-> `@workspace` aberto no `pagamentos-api`. Use `prompts/negocio/grill-negocio.md`. Quero estressar meu entendimento das regras de estorno — me interrogue por fases, uma pergunta por vez, e atualiza o `business-context.md` conforme a gente fecha.
+> Estou no `pagamentos-api`. Use `prompts/negocio/grill-negocio.md`. Quero estressar meu entendimento das regras de estorno — me interrogue por fases, uma pergunta por vez, e atualiza o `business-context.md` conforme a gente fecha.
+
+| Ferramenta | Como invocar |
+|---|---|
+| Amazon Q (IDE ou `q chat`) | Mensagem nomeando o prompt, como acima |
+| Copilot (VS Code / Visual Studio / JetBrains) | `/grill-negocio` |
+| Copilot CLI | Gatilho natural — a instruction roteia |
 
 ## Referências
 - Núcleo clonado: `grill-me` + `grill-with-docs` (mattpocock).
-- Rule da trilha: `.amazonq/rules/negocio-style.md` (hooks + gate).
-- Fonte de verdade: `.amazonq/rules/business-context.md` (criada por `analisador-de-dominio.md`).
+- Rule da trilha: `negocio-style.md` (hooks + gate).
+- Fonte de verdade: `business-context.md`, nos dois destinos do contexto de negócio (criado por `analisador-de-dominio.md`).
 - Consumidores da saída: `prompts/negocio/catalogo-de-regras.md`, `glossario-de-negocio.md`.
-- Esqueleto HTML do relatório opcional: `.amazonq/rules/frontend-style.md`.
+- Esqueleto HTML do relatório opcional: `frontend-style.md`.

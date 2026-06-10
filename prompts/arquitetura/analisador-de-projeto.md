@@ -2,21 +2,21 @@
 
 > ## STATUS
 >
-> Este é o **PRIMEIRO prompt** a rodar quando o Amazon Q é invocado em um workspace novo.
-> Sua função é entender o projeto real e produzir `.amazonq/rules/project-context.md` —
-> arquivo que serve como **fonte de verdade** para todas as gerações de documentação subsequentes.
+> Este é o **PRIMEIRO prompt** a rodar quando o assistente é invocado em um workspace novo.
+> Sua função é entender o projeto real e produzir o contexto do projeto em DOIS destinos —
+> `.amazonq/rules/project-context.md` e `.github/instructions/project-context.instructions.md` —
+> que servem como **fonte de verdade** para todas as gerações de documentação subsequentes.
 >
 > Outros prompts (`arquiteto-de-sistema`, `gerador-adr`, etc.) **dependem** desse contexto.
 > Sem ele, eles vão vazar conteúdo do exemplo (Liquidação Transacional).
 >
-> A **única regra rígida de visual** é a convenção de diagramas em
-> `.amazonq/rules/architecture-style.md` § 1, que **não muda independente do projeto**.
+> A **única regra rígida de visual** é a convenção de diagramas na rule da trilha `arquitetura` § 1 (`.amazonq/rules/architecture-style.md` ou `.github/instructions/architecture-style.instructions.md`, conforme a ferramenta), que **não muda independente do projeto**.
 
 ## Quando usar
 
-- **Primeira invocação** do Amazon Q em um repositório (gate obrigatório).
+- **Primeira invocação** do assistente em um repositório (gate obrigatório).
 - Quando o usuário pede explicitamente: "analisa o projeto", "refresh project context", "atualiza o contexto".
-- Quando `.amazonq/rules/project-context.md` **não existe** ou está obsoleto (> 6 meses).
+- Quando o par de contexto do projeto (`.amazonq/rules/project-context.md` + `.github/instructions/project-context.instructions.md`) **não existe** ou está obsoleto (> 6 meses).
 
 Outros prompts devem verificar a existência de `project-context.md` antes de gerar e, se ausente, instruir o usuário a invocar este analisador primeiro.
 
@@ -28,7 +28,7 @@ não a aspiração.
 
 ## Metodologia — 3 fases
 
-### Fase 1 — Detecção automática (use `@workspace`, NÃO pergunte ainda)
+### Fase 1 — Detecção automática (explore o código do workspace, NÃO pergunte ainda)
 
 Leia os artefatos abaixo na ordem. Pare quando tiver clareza suficiente.
 
@@ -81,14 +81,29 @@ Liste de perguntas **na ordem**:
 
 Se o usuário responder "não sei" para alguma — **registre como `[a confirmar com <quem provavelmente sabe>]`** em vez de inventar.
 
-### Fase 3 — Gerar `.amazonq/rules/project-context.md`
+### Fase 3 — Gerar o contexto do projeto (destino duplo)
 
-Crie o arquivo usando o template abaixo. Preencha com o que foi detectado + respondido.
+Crie os arquivos usando o template abaixo. Preencha com o que foi detectado + respondido.
 Onde não souber e o usuário também não, marque `[a confirmar]`.
+
+### Destino duplo do arquivo gerado
+
+Gere o MESMO conteúdo em dois arquivos (um por ferramenta de assistente):
+
+1. `.amazonq/rules/project-context.md` — sem frontmatter (lido pelo Q Developer).
+2. `.github/instructions/project-context.instructions.md` — começando com o frontmatter literal:
+
+   ```
+   ---
+   applyTo: "**"
+   ---
+   ```
+
+   seguido do MESMO conteúdo do arquivo 1.
 
 **Após criar**, exiba ao usuário:
 - Resumo do que ficou no `project-context.md` (top 5 pontos).
-- Avise: "Esse arquivo agora é a fonte de verdade. Edite se algo estiver errado. Depois posso seguir gerando docs."
+- Avise: "Esse contexto agora é a fonte de verdade (dois arquivos, mesmo conteúdo). Edite se algo estiver errado. Depois posso seguir gerando docs."
 
 ---
 
@@ -97,7 +112,7 @@ Onde não souber e o usuário também não, marque `[a confirmar]`.
 ```markdown
 # Project Context — <Nome do Serviço>
 
-> Este arquivo é lido automaticamente pelo Amazon Q antes de qualquer geração.
+> Este arquivo é lido automaticamente pelo assistente antes de qualquer geração.
 > Tem peso de regra — sobrescreve exemplos quando contrastam.
 > Edite manualmente quando algo mudar; rode o analisador para refresh completo.
 
@@ -163,7 +178,7 @@ Onde não souber e o usuário também não, marque `[a confirmar]`.
 
 ## Padrões do EXEMPLO que NÃO se aplicam aqui
 
-**Crítico.** Liste o que NÃO faz parte deste serviço para que Q não traga do exemplo.
+**Crítico.** Liste o que NÃO faz parte deste serviço para que o assistente não traga do exemplo.
 
 - [ ] Outbox Pattern — <usado | não usado, porque <razão>>
 - [ ] Saga / compensação distribuída — <usado | não usado>
@@ -208,13 +223,16 @@ Antes de declarar o `project-context.md` pronto:
 - [ ] SLO está preenchido OU marcado `[a definir]` — nunca inventado
 - [ ] Squad e Tech Lead preenchidos
 - [ ] Tier de criticidade definido (1, 2 ou 3)
+- [ ] Os dois arquivos de contexto existem com o mesmo conteúdo (fora o frontmatter)?
+- [ ] O arquivo `.instructions.md` começa com `applyTo: "**"`?
 
 ## Saída esperada
 
-- **Arquivo único**: `.amazonq/rules/project-context.md` (criado em modo `write`).
+- **Dois arquivos, mesmo conteúdo**: `.amazonq/rules/project-context.md` e `.github/instructions/project-context.instructions.md` (gerados diretamente no repositório — ver "Destino duplo do arquivo gerado" na Fase 3).
 - **Sumário ao usuário** após criação:
   ```
-  Criei .amazonq/rules/project-context.md (N linhas).
+  Criei .amazonq/rules/project-context.md e
+  .github/instructions/project-context.instructions.md (mesmo conteúdo, N linhas).
   Resumo:
     - Nome: <X>
     - Tier: <Y>
@@ -222,7 +240,7 @@ Antes de declarar o `project-context.md` pronto:
     - 3 padrões do exemplo NÃO se aplicam: <lista>
     - 2 pontos em aberto para confirmar com <quem>
 
-  Confira o arquivo. Edite o que estiver errado.
+  Confira os arquivos. Edite o que estiver errado.
   Depois disso posso gerar a primeira documentação (visão geral, ADR, etc.).
   ```
 - **Não tente gerar mais nada nesta invocação.** O fluxo é: analisar → confirmar → gerar.
@@ -234,9 +252,15 @@ Antes de declarar o `project-context.md` pronto:
 - **Sugerir mudanças arquiteturais** no analisador — fora do escopo. Foco é DESCREVER realidade, não prescrevê-la.
 - **Pular perguntas** — todas precisam de resposta ou `[a confirmar]` explícito.
 
-## Exemplo de invocação no Amazon Q
+## Exemplo de invocação
 
-> @workspace está aberto no repositório `notificacoes-push-api`. Antes de qualquer doc, siga `prompts/arquitetura/analisador-de-projeto.md` para entender o que é esse projeto.
+> Estou no repositório `notificacoes-push-api`. Antes de qualquer doc, siga `prompts/arquitetura/analisador-de-projeto.md` para entender o que é esse projeto.
+
+| Ferramenta | Como invocar |
+|---|---|
+| Amazon Q (IDE ou `q chat`) | Mensagem nomeando o prompt, como acima |
+| Copilot (VS Code / Visual Studio / JetBrains) | `/analisador-de-projeto` |
+| Copilot CLI | Gatilho natural — a instruction roteia |
 
 ## Prompts que consomem o `project-context.md`
 

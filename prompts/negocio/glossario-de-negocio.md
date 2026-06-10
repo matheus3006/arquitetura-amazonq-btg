@@ -2,7 +2,7 @@
 
 > ## STATUS
 >
-> Parte da trilha `negocio`. Referenciado pela `negocio-style.md` (hooks). **Sujeito ao GATE:** exige `.amazonq/rules/business-context.md`.
+> Parte da trilha `negocio`. Referenciado pela rule da trilha `negocio` (hooks — `.amazonq/rules/negocio-style.md` ou `.github/instructions/negocio-style.instructions.md`, conforme a ferramenta). **Sujeito ao GATE:** exige o contexto de negócio (`.amazonq/rules/business-context.md` e `.github/instructions/business-context.instructions.md`).
 >
 > **Renderizador:** transforma a seção "Glossário do domínio" do `business-context.md` em página HTML. **NÃO inventa termos** — o glossário-fonte é mantido pelo `analisador-de-dominio` / `grill-negocio`.
 >
@@ -48,10 +48,16 @@ Esqueleto de `frontend-style.md`. Estrutura:
 - ❌ **Inventar** termo que não está no domínio / `business-context.md`.
 - ❌ Deixar **sinônimo** competindo sem escolher canônico → escolha um, jogue o resto em `_Evitar_`.
 
-## Exemplo de invocação no Amazon Q
+## Exemplo de invocação
 > Com `business-context.md` pronto, use `prompts/negocio/glossario-de-negocio.md` pra gerar a página de glossário do domínio, agrupada por área.
 
+| Ferramenta | Como invocar |
+|---|---|
+| Amazon Q (IDE ou `q chat`) | Mensagem nomeando o prompt, como acima |
+| Copilot (VS Code / Visual Studio / JetBrains) | `/glossario-de-negocio` |
+| Copilot CLI | Gatilho natural — a instruction roteia |
+
 ## Referências
-- Fonte: `.amazonq/rules/business-context.md` (seção Glossário do domínio).
+- Fonte: `business-context.md`, nos dois destinos do contexto de negócio (seção Glossário do domínio).
 - Formato do termo: igual ao `CONTEXT-FORMAT` do `grill-with-docs` (term + `_Evitar_`).
-- Esqueleto HTML: `.amazonq/rules/frontend-style.md`.
+- Esqueleto HTML: rule da trilha `frontend` (`.amazonq/rules/frontend-style.md` ou `.github/instructions/frontend-style.instructions.md`, conforme a ferramenta).

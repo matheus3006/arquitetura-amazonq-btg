@@ -2,8 +2,9 @@
 
 > ## STATUS
 >
-> Parte da trilha `negocio`. Referenciado pela `negocio-style.md` (hooks). **Sujeito ao GATE:**
-> exige `.amazonq/rules/business-context.md` (rode `analisador-de-dominio.md` antes se faltar).
+> Parte da trilha `negocio`. Referenciado pela rule da trilha `negocio` (hooks — `.amazonq/rules/negocio-style.md` ou `.github/instructions/negocio-style.instructions.md`, conforme a ferramenta).
+> **Sujeito ao GATE:** exige o contexto de negócio (`.amazonq/rules/business-context.md` e
+> `.github/instructions/business-context.instructions.md` — rode `analisador-de-dominio.md` antes se faltar).
 >
 > Diagrama segue a **§ 3 da `negocio-style.md`** — classDefs de negócio (`papel/atividade/decisao/
 > externo/desfechoOk/desfechoTriste`) no mesmo `diagram-viewer.js`. **Não** use os classDefs técnicos.
@@ -122,11 +123,17 @@ Esqueleto de `frontend-style.md`. Seções típicas (`<h2 class="section-eyebrow
 - ❌ **Inventar** regra/desfecho não confirmado → `[a confirmar]` + rodar `grill-negocio`.
 - ❌ Misturar **dois processos** na mesma página → separe em arquivos.
 
-## Exemplo de invocação no Amazon Q
-> `@workspace` no `pagamentos-api`, com `business-context.md` pronto. Use `prompts/negocio/mapeador-de-fluxo-de-negocio.md` pra documentar o processo de estorno — caminho feliz e as recusas.
+## Exemplo de invocação
+> Estou no `pagamentos-api`, com `business-context.md` pronto. Use `prompts/negocio/mapeador-de-fluxo-de-negocio.md` pra documentar o processo de estorno — caminho feliz e as recusas.
+
+| Ferramenta | Como invocar |
+|---|---|
+| Amazon Q (IDE ou `q chat`) | Mensagem nomeando o prompt, como acima |
+| Copilot (VS Code / Visual Studio / JetBrains) | `/mapeador-de-fluxo-de-negocio` |
+| Copilot CLI | Gatilho natural — a instruction roteia |
 
 ## Referências
-- Fonte de verdade: `.amazonq/rules/business-context.md`.
-- Convenção de diagrama: `.amazonq/rules/negocio-style.md` § 3.
-- Esqueleto HTML: `.amazonq/rules/frontend-style.md`.
+- Fonte de verdade: `business-context.md`, nos dois destinos do contexto de negócio.
+- Convenção de diagrama: `negocio-style.md` § 3.
+- Esqueleto HTML: rule da trilha `frontend` (`.amazonq/rules/frontend-style.md` ou `.github/instructions/frontend-style.instructions.md`, conforme a ferramenta).
 - Regra/dono faltando: `prompts/negocio/grill-negocio.md`; regras viram página em `catalogo-de-regras.md`.

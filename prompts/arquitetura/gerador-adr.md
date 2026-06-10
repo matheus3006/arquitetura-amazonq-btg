@@ -2,17 +2,17 @@
 
 > ## STATUS
 >
-> Este prompt é referenciado pelas rules em `.amazonq/rules/architecture-style.md` § 2.
+> Este prompt é referenciado pela rule da trilha `arquitetura` § 2 (`.amazonq/rules/architecture-style.md` ou `.github/instructions/architecture-style.instructions.md`, conforme a ferramenta).
 >
 > **Conteúdo das páginas em `templates/`** (incluindo o legado `templates/adr.html` e
 > `templates/exemplo-adr-outbox.html`) é **EXEMPLO**. As ADRs reais que você gerar devem
-> seguir o esqueleto HTML padrão definido em `.amazonq/rules/frontend-style.md` § 1
+> seguir o esqueleto HTML padrão definido na rule da trilha `frontend` § 1 (`.amazonq/rules/frontend-style.md` ou `.github/instructions/frontend-style.instructions.md`, conforme a ferramenta)
 > (com sidebar, hero, sections), **não** os arquivos legados de tema off-white.
 >
 > A **única regra rígida de visual** é a convenção de diagramas em
-> `.amazonq/rules/architecture-style.md` § 1 — usar caso a ADR envolva fluxo novo.
+> `architecture-style.md` § 1 — usar caso a ADR envolva fluxo novo.
 
-Clona o comportamento da skill `engineering:architecture` para Amazon Q.
+Clona o comportamento da skill `engineering:architecture`.
 Produz ADRs em HTML seguindo o padrão **MADR 4.0** adaptado para serviços transacionais.
 
 ## Quando usar
@@ -57,7 +57,7 @@ Se a resposta para alguma é "não aplica", escreva isso explicitamente — não
 
 ### Passo 3 — Gerar HTML
 
-Estrutura: esqueleto padrão (sidebar + main + hero + sections) de `.amazonq/rules/frontend-style.md` § 1.
+Estrutura: esqueleto padrão (sidebar + main + hero + sections) de `frontend-style.md` § 1.
 
 Seções da ADR, na ordem (cada uma como `<h2 class="section-eyebrow">` seguido de conteúdo):
 
@@ -80,7 +80,7 @@ Use `.status-badge` com variante apropriada:
 
 ### Passo 5 — Diagramas (quando aplicável)
 
-Se a decisão envolve fluxo novo, adicione um diagrama seguindo a convenção rígida em `.amazonq/rules/architecture-style.md` § 1:
+Se a decisão envolve fluxo novo, adicione um diagrama seguindo a convenção rígida em `architecture-style.md` § 1:
 
 - `<figure class="diagram-figure">` com `.diagram-viewer[data-diagram]`.
 - `<script type="text/mermaid" data-id>` ao fim do `<body>`.
@@ -89,7 +89,7 @@ Se a decisão envolve fluxo novo, adicione um diagrama seguindo a convenção r�
 
 ### Passo 6 — Nomenclatura e localização
 
-- Leia `@workspace` em `docs/<servico>/adr/` para descobrir o próximo número.
+- Explore `docs/<servico>/adr/` no workspace para descobrir o próximo número.
 - Numeração: zero-padding 4 dígitos. Ex: `0042`.
 - Slug: kebab-case curto. Ex: `0042-outbox-pattern-pagamentos.html`.
 - ADRs **aceitas nunca são editadas**. Para reverter, crie nova ADR com `Status: Supersedes ADR-XXXX`.
@@ -112,14 +112,20 @@ Se a decisão envolve fluxo novo, adicione um diagrama seguindo a convenção r�
 - Diagrama Mermaid seguindo a convenção se a decisão envolve fluxo.
 - Links para ADRs relacionadas via `<a href="NNNN-titulo.html">ADR-NNNN</a>`.
 
-## Exemplo de invocação no Amazon Q
+## Exemplo de invocação
 
 > Quero registrar a decisão de usarmos PostgreSQL com row-level locking em vez de Redis como source of truth de saldo. Siga `prompts/arquitetura/gerador-adr.md`. Contexto: incidente IN-2026-042 mostrou inconsistência por TTL do Redis.
 
+| Ferramenta | Como invocar |
+|---|---|
+| Amazon Q (IDE ou `q chat`) | Mensagem nomeando o prompt, como acima |
+| Copilot (VS Code / Visual Studio / JetBrains) | `/gerador-adr` |
+| Copilot CLI | Gatilho natural — a instruction roteia |
+
 ## Referências
 
-- Esqueleto HTML padrão: `.amazonq/rules/frontend-style.md` § 1.
-- Convenção de diagrama: `.amazonq/rules/architecture-style.md` § 1.
-- Comportamento esperado em ADR: `.amazonq/rules/architecture-style.md` § 6 ("Ao gerar ADR").
+- Esqueleto HTML padrão: `frontend-style.md` § 1.
+- Convenção de diagrama: `architecture-style.md` § 1.
+- Comportamento esperado em ADR: `architecture-style.md` § 6 ("Ao gerar ADR").
 - Página de exemplo bem estruturada (para referência de FORMA, não de conteúdo): `templates/01-visao-geral.html`.
 - Prompt complementar para revisão pós-criação: `prompts/arquitetura/grill-doc.md`.

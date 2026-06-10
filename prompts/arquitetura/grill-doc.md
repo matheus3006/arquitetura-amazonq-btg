@@ -2,17 +2,17 @@
 
 > ## STATUS
 >
-> Este prompt é referenciado pelas rules em `.amazonq/rules/architecture-style.md` § 2.
+> Este prompt é referenciado pela rule da trilha `arquitetura` § 2 (`.amazonq/rules/architecture-style.md` ou `.github/instructions/architecture-style.instructions.md`, conforme a ferramenta).
 >
 > **Conteúdo das páginas em `templates/`** (serviço fictício "Liquidação Transacional", etc.)
 > é **EXEMPLO** para demonstrar a aplicação dos prompts. Quando revisar documentação real,
 > compare o que está escrito com o **código e domínio do usuário**, não com o exemplo.
 >
 > A **única regra rígida de visual** é a convenção de diagramas em
-> `.amazonq/rules/architecture-style.md` § 1 — verifique se diagramas existentes seguem
+> `architecture-style.md` § 1 — verifique se diagramas existentes seguem
 > a convenção e marque divergências.
 
-Clona o comportamento da skill `grill-with-docs` para Amazon Q.
+Clona o comportamento da skill `grill-with-docs`.
 Estressa documentos arquiteturais procurando por mentiras, omissões, ambiguidades e incoerências com a realidade.
 
 ## Quando usar
@@ -89,7 +89,7 @@ Saída em HTML. Estrutura:
 <article class="grill-report">
   <header class="doc-header">
     <h1>Relatório de Grilling — <doc revisado></h1>
-    <p class="doc-meta">Revisor: Amazon Q + Persona Grill · Data: YYYY-MM-DD</p>
+    <p class="doc-meta">Revisor: assistente + Persona Grill · Data: YYYY-MM-DD</p>
   </header>
 
   <section>
@@ -137,10 +137,16 @@ Use callouts coloridos:
 - **Não substitua o autor.** Sugira correções, não reescreva o documento inteiro.
 - **Priorize.** Críticos primeiro. Estilo por último.
 
-## Exemplo de invocação no Amazon Q
+## Exemplo de invocação
 
-> Aplique `prompts/arquitetura/grill-doc.md` em `docs/pagamentos/architecture.html` e `docs/pagamentos/adr/0001-outbox.html`. `@workspace` aberto no repo `pagamentos-api`. Cruze com o código real e me dê o relatório.
+> Aplique `prompts/arquitetura/grill-doc.md` em `docs/pagamentos/architecture.html` e `docs/pagamentos/adr/0001-outbox.html`, no repo `pagamentos-api`. Cruze com o código real e me dê o relatório.
+
+| Ferramenta | Como invocar |
+|---|---|
+| Amazon Q (IDE ou `q chat`) | Mensagem nomeando o prompt, como acima |
+| Copilot (VS Code / Visual Studio / JetBrains) | `/grill-doc` |
+| Copilot CLI | Gatilho natural — a instruction roteia |
 
 ## Referências
-- Rules base: `.amazonq/rules/architecture-style.md`
+- Rules base: `architecture-style.md` (rule da trilha `arquitetura`)
 - Prompts complementares: `arquiteto-de-sistema.md` (para reescrever após críticas), `gerador-adr.md` (para abrir ADRs faltantes).
