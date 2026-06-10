@@ -1,6 +1,6 @@
 # Pack de documentacao arquitetural — instrucoes para o GitHub Copilot
 
-> GERADO por `tools/sync-copilot.sh` a partir de `.amazonq/rules/` — NAO edite a mao.
+> GERADO por `tools/sync-copilot.sh` (ferramenta de manutencao do pack de origem — nao existe nos repos instalados) a partir de `.amazonq/rules/` — NAO edite a mao.
 > Este repositorio usa o pack `arquitetura` com Amazon Q **e** GitHub Copilot.
 
 ## Como este repo esta organizado para o Copilot

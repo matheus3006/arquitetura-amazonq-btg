@@ -127,7 +127,7 @@ Paths de saída dos analisadores ganham o destino duplo da seção 5. As mençõ
 
 **`planejador-de-implementacao.md`** (porte de `writing-plans`): a partir de um spec/requisito, produzir plano em etapas pequenas e independentemente verificáveis (cada etapa: o que muda, como verificar, critério de pronto), salvo em `docs/planos/<data>-<slug>.md`. Pressupõe design já discutido; aponta para o `brainstorm-arquitetural` quando não há.
 
-**Enriquecimento do `brainstorm-arquitetural.md`** (porte da disciplina de `brainstorming`): uma pergunta por vez com preferência por múltipla escolha; 2-3 abordagens com trade-offs e recomendação antes de fechar; design apresentado por seções com aprovação; saída final alimenta `gerador-adr.md` (terminal state mantido — pré-ADR). Visual companion e Skill tool não portam.
+**Enriquecimento do `brainstorm-arquitetural.md`** (porte da disciplina de `brainstorming`): uma pergunta por vez com preferência por múltipla escolha; 2-3 abordagens com trade-offs antes de fechar (sem recomendação do assistente — o prompt proíbe deliberadamente "recomendar a favorita disfarçada"; o usuário decide); design apresentado por seções com aprovação; saída final alimenta `gerador-adr.md` (terminal state mantido — pré-ADR). Visual companion e Skill tool não portam.
 
 Método de porte (já validado no pack): preservar fases, gates e árvore de decisão; nunca achatar em checklist; atribuição da skill de origem no bloco STATUS.
 
