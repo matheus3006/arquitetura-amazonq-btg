@@ -828,6 +828,7 @@ Run para localizar: `grep -rn -iE 'amazon q|@workspace|modo write' prompts/arqui
 | `em modo write` / `no modo write` | `gerando o arquivo no repositório` |
 | `Revisor: Amazon Q + Persona Grill` (template de output do grill-doc) | `Revisor: assistente + Persona Grill` |
 | `## Exemplo de invocação no Amazon Q` | `## Exemplo de invocação` |
+| Referências a `.amazonq/rules/<rule>.md § N` (em STATUS e corpo) | `a rule da trilha <X> § N (\`.amazonq/rules/<rule>.md\` ou \`.github/instructions/<rule>.instructions.md\`, conforme a ferramenta)` — mesmo padrão já usado nos prompts de engenharia |
 
 - [ ] **Step 5: Tabela de invocação por ferramenta em cada prompt**
 
