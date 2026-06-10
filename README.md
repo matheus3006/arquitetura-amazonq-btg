@@ -57,7 +57,7 @@ Mensagens prontas para cada gatilho: [COMO-USAR.html](COMO-USAR.html).
 
 Uma única regra rígida: **a convenção de diagramas** (Mermaid + viewer + 4 classDefs com cores fixas).
 
-Tudo o mais — paleta, nomes, padrões, glossário — é **convenção adaptável**. O conteúdo das páginas em `templates/` é **exemplo, não blueprint**. O analisador de projeto (rodado na primeira invocação em cada repo) lê o código real e produz `.amazonq/rules/project-context.md` para evitar drift do exemplo.
+Tudo o mais — paleta, nomes, padrões, glossário — é **convenção adaptável**. O conteúdo das páginas em `templates/` é **exemplo, não blueprint**. O analisador de projeto (rodado na primeira invocação em cada repo) lê o código real e produz o par de contexto do projeto (`.amazonq/rules/` + `.github/instructions/`) para evitar drift do exemplo.
 
 ## Como funciona
 
@@ -122,7 +122,7 @@ arquitetura/
 │       └── business-context.md                  ← (gerado por-projeto — não versionar)
 ├── .github/                                     ← gerado por tools/sync-copilot.sh — não editar
 │   ├── copilot-instructions.md
-│   ├── instructions/                            ← 4 rules + 2 context placeholders (.instructions.md)
+│   ├── instructions/                            ← 4 rules (.instructions.md); contexto por-projeto é gerado aqui pelos analisadores
 │   ├── prompts/                                 ← slash commands (18 arquivos .prompt.md)
 │   └── skills/                                  ← Agent Skills (18 subpastas com SKILL.md)
 ├── prompts/
@@ -131,7 +131,7 @@ arquitetura/
 │   ├── negocio/                                 ← 5 prompts (analisador-dominio, catalogo, glossario, grill, mapeador)
 │   └── engenharia/                              ← 2 prompts (depurador-sistematico, planejador-de-implementacao)
 ├── tools/
-│   ├── manifest.tsv                             ← mapeamento rules → .github/ (fonte do sync)
+│   ├── manifest.tsv                             ← slug → trilha → descrição (gera os 36 wrappers)
 │   └── sync-copilot.sh                          ← gera/valida a camada .github/
 ├── design-system/
 │   ├── tokens.css                               ← cores, espaço, tipografia, raios, sombras, motion
@@ -173,7 +173,7 @@ Essa convenção **não muda** quando o resto do visual (paleta, tipografia, etc
 
 3. **Diga**: "Analisa esse projeto antes de começar a documentar."
 
-4. **O assistente vai detectar o código, perguntar o necessário, criar `project-context.md`** (em `.amazonq/rules/` e/ou `.github/instructions/` dependendo da ferramenta). Revise.
+4. **O assistente vai detectar o código, perguntar o necessário, criar `project-context.md`** (sempre nos DOIS destinos: `.amazonq/rules/` e `.github/instructions/`). Revise.
 
 5. **Daí em diante**, todas as gerações de documentação respeitam o contexto do projeto. Exemplos:
    - "Gera a visão geral do serviço"
