@@ -2,7 +2,7 @@
 
 > ## STATUS
 >
-> Este prompt é referenciado pela rule `.amazonq/rules/engenharia-style.md` § 1.
+> Este prompt é referenciado pela rule da trilha `engenharia` § 1 (`.amazonq/rules/engenharia-style.md` ou `.github/instructions/engenharia-style.instructions.md`, conforme a ferramenta).
 >
 > O output é um plano em Markdown — não HTML.
 
@@ -18,6 +18,8 @@ Clona o comportamento da skill `superpowers:writing-plans`.
 O plano pressupõe que O QUE fazer já está decidido. Se a abordagem ainda está em aberto,
 pare e sugira `prompts/arquitetura/brainstorm-arquitetural.md` primeiro. Não planeje em
 cima de decisão que não existe.
+Spec que cobre subsistemas independentes demais para um plano só → divida: um plano por
+subsistema, cada um entregando software verificável sozinho.
 
 ## Persona
 
@@ -50,7 +52,9 @@ Dependências explícitas ("a Etapa 4 exige a 2"). O caminho que entrega valor v
 mais cedo vem primeiro. Inclua etapa final de validação de ponta a ponta.
 
 ### Passo 4 — Salvar e resumir
-Salve em `docs/planos/<AAAA-MM-DD>-<slug-da-feature>.md`. Termine com: quantas etapas,
+O arquivo salvo começa com um cabeçalho de 3 linhas — **Objetivo** (1 frase), **Decisão de
+origem** (link para a ADR/brainstorm) e **Maior risco** — seguido das etapas. Salve em
+`docs/planos/<AAAA-MM-DD>-<slug-da-feature>.md`. Termine a resposta com: quantas etapas,
 qual a primeira, qual o maior risco.
 
 ## Auto-revisão antes de entregar
@@ -59,6 +63,12 @@ qual a primeira, qual o maior risco.
 - [ ] Algum requisito do spec/decisão ficou sem etapa?
 - [ ] Nomes e assinaturas consistentes entre as etapas?
 - [ ] Nenhum placeholder?
+
+## Saída esperada
+
+Um único arquivo Markdown em `docs/planos/<AAAA-MM-DD>-<slug>.md`: cabeçalho de 3 linhas
+(Objetivo, Decisão de origem, Maior risco) + etapas no formato do Passo 2, ordenadas por
+dependência. No chat, só o resumo de fechamento — o plano vive no arquivo.
 
 ## Exemplo de invocação
 
@@ -70,7 +80,7 @@ qual a primeira, qual o maior risco.
 |---|---|
 | Amazon Q (IDE ou `q chat`) | Mensagem nomeando o prompt, como acima |
 | Copilot (VS Code / Visual Studio / JetBrains) | `/planejador-de-implementacao` |
-| Copilot CLI | Gatilho natural ("planeja a implementação") |
+| Copilot CLI | Gatilho natural ("planeja a implementação") — a instruction roteia |
 
 ## Referências
 - Decisão em aberto? Antes: `prompts/arquitetura/brainstorm-arquitetural.md` → `gerador-adr.md`.

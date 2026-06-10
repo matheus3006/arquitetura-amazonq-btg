@@ -2,7 +2,7 @@
 
 > ## STATUS
 >
-> Este prompt é referenciado pela rule `.amazonq/rules/engenharia-style.md` § 1.
+> Este prompt é referenciado pela rule da trilha `engenharia` § 1 (`.amazonq/rules/engenharia-style.md` ou `.github/instructions/engenharia-style.instructions.md`, conforme a ferramenta).
 >
 > Debugging é metodologia de investigação — não produz HTML. O output é a causa raiz
 > demonstrada com evidência + o fix mínimo verificado.
@@ -43,6 +43,8 @@ exato — não prossiga por descrição.
 1. Liste no máximo 3 suspeitos, ordenados por probabilidade, cada um com o porquê.
 2. Para o suspeito nº 1, busque evidência no código/log/config que CONFIRME ou ELIMINE.
 3. Eliminou? Próximo suspeito. NÃO acumule mudanças "pra ver se resolve".
+4. Existe código semelhante que FUNCIONA? Compare com o quebrado e liste TODAS as diferenças
+   — a causa costuma morar nelas.
 
 **Gate de saída:** uma frase no formato "A causa é X, demonstrada por Y", onde Y é código,
 log ou config concreto (`arquivo:linha`).
@@ -52,11 +54,16 @@ log ou config concreto (`arquivo:linha`).
 2. Declare o que o fix NÃO cobre (casos relacionados ficam listados para depois).
 3. Aplique UMA mudança por vez. Duas hipóteses ≠ uma mudança dupla.
 
+**Gate de saída:** o diff contém apenas a mudança que ataca a causa demonstrada — nada além.
+
 ### Fase 4 — Verificar
 1. Rode a reprodução da Fase 1 — o sintoma sumiu?
 2. Rode os testes relacionados — nada regrediu?
 3. Aplique a Disciplina de conclusão (`engenharia-style.md` § 2): output real na resposta;
    falhou = reportar como falhando.
+4. Verificação falhou? NÃO empilhe outro fix — volte à Fase 2 levando a evidência nova.
+   Três fixes falhados → PARE e questione a abordagem/arquitetura com o usuário antes de
+   qualquer quarta tentativa.
 
 **Gate de saída:** evidência de verificação na resposta. "Deve funcionar agora" é proibido.
 
