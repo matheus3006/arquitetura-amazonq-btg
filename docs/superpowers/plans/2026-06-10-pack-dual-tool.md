@@ -917,7 +917,7 @@ git commit -m "feat: camada Copilot gerada (instructions, prompt files, skills)"
 #
 # Copia: .amazonq/rules/ (4 rules) + .github/ (camada Copilot: instructions,
 #        prompts, skills) + prompts/ (4 trilhas) + design-system/*.css +
-#        templates/{diagram-viewer,sidebar}.js + COMO-USAR.md
+#        templates/{diagram-viewer,sidebar}.js + COMO-USAR.html
 # NAO copia: arquivos de contexto por-servico (project/business-context nos
 #        dois lados) — sao gerados pelos analisadores e preservados em re-runs.
 set -euo pipefail
@@ -1002,11 +1002,11 @@ if [ "$WITH_EXAMPLES" = "1" ]; then
   fi
 fi
 
-# 6) Guia de uso
-if cp "$PACK_DIR/COMO-USAR.md" "$TARGET/COMO-USAR.md" 2>/dev/null && [ -f "$TARGET/COMO-USAR.md" ]; then
-  echo "  ✓ COMO-USAR.md"
+# 6) Guia de uso (mensagens prontas — abra no navegador)
+if cp "$PACK_DIR/COMO-USAR.html" "$TARGET/COMO-USAR.html" 2>/dev/null && [ -f "$TARGET/COMO-USAR.html" ]; then
+  echo "  ✓ COMO-USAR.html"
 else
-  echo "  ⚠ COMO-USAR.md nao copiado (destino bloqueado?)"
+  echo "  ⚠ COMO-USAR.html nao copiado (destino bloqueado?)"
 fi
 
 # 7) Limpeza de lixo do Finder
@@ -1022,7 +1022,7 @@ echo "   Negocio:    \"analisa o dominio\" → \"grilla o negocio\""
 echo "   Frontend:   \"polir essa pagina\""
 echo "   Engenharia: \"investiga esse bug\" · \"planeja a implementacao\""
 echo ""
-echo "📖 Todos os gatilhos, por ferramenta: COMO-USAR.md"
+echo "📖 Mensagens prontas por trilha: abra COMO-USAR.html no navegador"
 ```
 
 - [ ] **Step 2: Smoke test imediato**
@@ -1031,7 +1031,7 @@ Run:
 ```bash
 bash -n install.sh && T="$(mktemp -d)" && bash install.sh "$T" && find "$T" -type f | wc -l && bash install.sh --help | head -3 && bash install.sh --typo "$T"; echo "typo-exit=$?"; rm -rf "$T"
 ```
-Expected: instalação ok; contagem de arquivos ≈ 65 (4 rules + 1 copilot-instructions + 4 instructions + 18 prompt files + 18 SKILL.md + 18 prompts canônicos + 2 css + 2 js + COMO-USAR — confira o número exato e anote); `--help` mostra só o cabeçalho (SEM `!/usr/bin/env`); `--typo` → `Opcao desconhecida` e `typo-exit=1`.
+Expected: instalação ok; contagem de arquivos ≈ 68 (4 rules + 1 copilot-instructions + 4 instructions + 18 prompt files + 18 SKILL.md + 18 prompts canônicos + 2 css + 2 js + COMO-USAR.html — confira o número exato e anote); `--help` mostra só o cabeçalho (SEM `!/usr/bin/env`); `--typo` → `Opcao desconhecida` e `typo-exit=1`.
 
 - [ ] **Step 3: Commit**
 
@@ -1062,7 +1062,7 @@ REGRA DURA: o arquivo final deve ser 100% ASCII (sem em-dash, sem acento, sem em
     pwsh install.ps1 -WithExamples            # inclui as paginas HTML de exemplo
 
   Copia: .amazonq/rules/ (4 rules) + .github/ (camada Copilot) + prompts/ (4 trilhas)
-         + design-system/*.css + templates/{diagram-viewer,sidebar}.js + COMO-USAR.md
+         + design-system/*.css + templates/{diagram-viewer,sidebar}.js + COMO-USAR.html
   NAO copia: arquivos de contexto por-servico (project/business-context nos dois lados).
 #>
 param(
@@ -1148,12 +1148,12 @@ if ($WithExamples) {
   }
 }
 
-# 6) Guia de uso
-Copy-Item (Join-Path $PackDir 'COMO-USAR.md') (Join-Path $Target 'COMO-USAR.md') -Force -ErrorAction SilentlyContinue
-if (Test-Path -PathType Leaf (Join-Path $Target 'COMO-USAR.md')) {
-  Write-Host "  + COMO-USAR.md"
+# 6) Guia de uso (mensagens prontas - abra no navegador)
+Copy-Item (Join-Path $PackDir 'COMO-USAR.html') (Join-Path $Target 'COMO-USAR.html') -Force -ErrorAction SilentlyContinue
+if (Test-Path -PathType Leaf (Join-Path $Target 'COMO-USAR.html')) {
+  Write-Host "  + COMO-USAR.html"
 } else {
-  Write-Host "  ! COMO-USAR.md nao copiado (destino bloqueado?)"
+  Write-Host "  ! COMO-USAR.html nao copiado (destino bloqueado?)"
 }
 
 # 7) Limpeza de lixo do Finder
@@ -1166,7 +1166,7 @@ Write-Host '   Tecnica:    "documenta esse servico"   (Copilot IDE: /analisador-
 Write-Host '   Negocio:    "analisa o dominio" -> "grilla o negocio"'
 Write-Host '   Frontend:   "polir essa pagina"'
 Write-Host '   Engenharia: "investiga esse bug" / "planeja a implementacao"'
-Write-Host "`nTodos os gatilhos, por ferramenta: COMO-USAR.md"
+Write-Host "`nMensagens prontas por trilha: abra COMO-USAR.html no navegador"
 ```
 
 - [ ] **Step 2: Verificar ASCII puro e paridade**
@@ -1229,9 +1229,17 @@ New:
 - `prompts/` → as 4 trilhas inteiras (`arquitetura`, `frontend`, `negocio`, `engenharia`)
 - `design-system/*.css`
 - `templates/diagram-viewer.js` e `templates/sidebar.js`
-- `COMO-USAR.md`
+- `COMO-USAR.html`
 ```
 E na frase seguinte ("Não copie..."), atualizar para citar os 4 arquivos de contexto (2 em `.amazonq/rules/`, 2 em `.github/instructions/`).
+
+- [ ] **Step 3b: Opção de instalação via IA (logo acima das vias bash/PowerShell)**
+
+```markdown
+**Via assistente de IA (qualquer plataforma):** aponte o seu assistente (Amazon Q, Copilot,
+Claude...) para o arquivo [`INSTALAR.md`](INSTALAR.md) do pack e diga:
+> Siga o INSTALAR.md deste pack e instale no repositório `<caminho-do-meu-servico>`.
+```
 
 - [ ] **Step 4: "Como funciona" — acrescentar nota dual-tool antes do diagrama ASCII**
 
@@ -1268,70 +1276,388 @@ git commit -m "docs: README dual-tool (Copilot + trilha engenharia + secao de ma
 
 ---
 
-### Task 13: COMO-USAR dual-tool
+### Task 13: `COMO-USAR.html` — mensagens prontas (substitui COMO-USAR.md)
 
 **Files:**
-- Modify: `COMO-USAR.md`
+- Create: `COMO-USAR.html`
+- Delete: `COMO-USAR.md` (via `git rm`)
 
-- [ ] **Step 1: Substituir título e introdução (linhas 1-5)**
+Página no design system do pack (dark, `file://`-compatível, scripts clássicos). Um card por prompt (18), agrupados por trilha, cada um com a mensagem pronta + botão Copiar + atalho `/slug` do Copilot.
 
-New:
-```markdown
-# Como usar o pack — Amazon Q e GitHub Copilot
+- [ ] **Step 1: Validar nomes das variáveis de token**
 
-O pack funciona com os dois assistentes, sem configuração manual:
+Run: `grep -oE -- '--[a-z0-9-]+' design-system/tokens.css | sort -u`
+O HTML do Step 2 usa `var(--nome, fallback)` em todo lugar. Compare cada `var(--*)` usado com a lista real e corrija os NOMES divergentes (os fallbacks garantem que a página não quebra, mas o nome certo deve ser usado — regra da casa: nunca hardcode sem var).
 
-- **Amazon Q** lê `.amazonq/rules/` sozinho (IDE ou `q chat`). Fale em linguagem natural
-  com o repo aberto e ele identifica a intenção e carrega o prompt certo.
-- **GitHub Copilot** aplica `.github/instructions/` sozinho (VS Code, Visual Studio,
-  JetBrains e Copilot CLI). Os mesmos gatilhos funcionam; nas IDEs você também tem
-  slash commands (`/analisador-de-projeto`, `/gerador-adr`, ...) e no CLI os prompts
-  existem como Agent Skills.
+- [ ] **Step 2: Criar `COMO-USAR.html` (conteúdo completo)**
 
-## Como invocar, por ferramenta
+As 18 mensagens abaixo são o conteúdo de fato — não as altere ao montar a página. Estrutura de card é idêntica para todos; estão todos listados.
 
-| Ferramenta | Como invocar |
-|---|---|
-| Amazon Q (IDE / `q chat`) | Gatilho natural ("documenta esse serviço") ou mensagem nomeando o prompt |
-| Copilot IDE (VS Code / VS / JetBrains) | Gatilho natural OU `/<slug>` (ex.: `/grill-negocio`) |
-| Copilot CLI | Gatilho natural; prompts também disponíveis como skills |
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Como usar · Pack arquitetura (Amazon Q + Copilot)</title>
+  <meta name="description" content="Mensagens prontas para extrair o máximo dos prompts do pack.">
+  <link rel="stylesheet" href="design-system/tokens.css">
+  <link rel="stylesheet" href="design-system/components.css">
+  <style>
+    .guide { max-width: 1040px; margin: 0 auto; padding: var(--space-8, 48px) var(--space-4, 24px); }
+    .guide-hero h1 { margin: 0 0 8px; }
+    .guide-hero p { color: var(--color-text-muted, #9aa3b2); max-width: 70ch; }
+    .trilha { margin-top: var(--space-8, 48px); }
+    .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: var(--space-4, 20px); margin-top: var(--space-4, 20px); }
+    .msg-card { border: 1px solid var(--color-border, #232a36); border-radius: var(--radius-md, 10px); padding: var(--space-4, 20px); background: var(--color-surface, #11151d); display: flex; flex-direction: column; gap: 10px; }
+    .msg-card h3 { margin: 0; font-size: 1rem; }
+    .msg-card .quando { color: var(--color-text-muted, #9aa3b2); font-size: .85rem; margin: 0; }
+    .msg { white-space: pre-wrap; font-family: var(--font-mono, ui-monospace, monospace); font-size: .82rem; line-height: 1.5; background: var(--color-bg, #0a0c12); border: 1px solid var(--color-border, #232a36); border-radius: var(--radius-sm, 6px); padding: 12px; margin: 0; }
+    .msg b { color: var(--color-accent, #4a8fe7); }
+    .card-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; }
+    .slug { font-family: var(--font-mono, ui-monospace, monospace); font-size: .78rem; color: var(--color-text-muted, #9aa3b2); }
+    .copy-btn { cursor: pointer; border: 1px solid var(--color-border, #232a36); background: var(--color-surface-2, #1a2030); color: var(--color-text, #e8ecf3); border-radius: var(--radius-sm, 6px); padding: 6px 12px; font-size: .8rem; transition: background-color 150ms var(--ease-out-strong, ease-out), transform 100ms var(--ease-out-strong, ease-out); }
+    .copy-btn:hover { background: var(--color-surface-3, #232c42); }
+    .copy-btn:active { transform: scale(0.97); }
+    @media print { .copy-btn { display: none; } }
+  </style>
+</head>
+<body>
+  <main class="guide">
+    <header class="guide-hero">
+      <h1>Como usar o pack</h1>
+      <p>Mensagens prontas para copiar e mandar pro assistente (Amazon Q ou GitHub Copilot).
+         Troque os <b>[CAMPOS]</b> e envie. Nomear o prompt e mandar "seguir todo o processo"
+         é o que faz o assistente executar o fluxo inteiro em vez de responder por cima.</p>
+    </header>
+
+    <section class="trilha">
+      <h2 class="section-eyebrow">Como invocar, por ferramenta</h2>
+      <table>
+        <thead><tr><th>Ferramenta</th><th>Como invocar</th></tr></thead>
+        <tbody>
+          <tr><td>Amazon Q (IDE / <code>q chat</code>)</td><td>Cole a mensagem do card</td></tr>
+          <tr><td>Copilot IDE (VS Code / Visual Studio / JetBrains)</td><td>Cole a mensagem OU use o atalho <code>/slug</code> indicado no card</td></tr>
+          <tr><td>Copilot CLI</td><td>Cole a mensagem (os prompts também existem como skills)</td></tr>
+        </tbody>
+      </table>
+      <p><strong>Primeira vez no repositório?</strong> Rode o card nº 1 antes de qualquer outro —
+         todo o resto depende do contexto que ele gera. Para docs de negócio, rode também o nº 8.</p>
+    </section>
+
+    <section class="trilha">
+      <h2 class="section-eyebrow">Trilha técnica</h2>
+      <div class="cards">
+
+        <article class="msg-card">
+          <h3>1 · Preparar o repositório</h3>
+          <p class="quando">Primeira invocação em repo novo, ou quando o código mudou muito.</p>
+          <pre class="msg">Quero preparar este repositório para gerar documentação. Analise a aplicação <b>[NOME_DA_APLICACAO]</b>. Siga todo o processo descrito em prompts/arquitetura/analisador-de-projeto.md: detecte a stack e os padrões, me mostre o que encontrou, pergunte o que o código não revela (uma pergunta por vez) e gere o contexto do projeto nos dois destinos.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /analisador-de-projeto</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>2 · Visão geral de arquitetura</h3>
+          <p class="quando">Documentar o serviço do zero ou atualizar a visão geral.</p>
+          <pre class="msg">Quero a visão geral de arquitetura da aplicação <b>[NOME_DA_APLICACAO]</b>. Siga todo o processo descrito em prompts/arquitetura/arquiteto-de-sistema.md: faça as 5 perguntas-âncora antes de gerar qualquer conteúdo, e produza o HTML no padrão da casa com os diagramas na convenção rígida.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /arquiteto-de-sistema</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>3 · Registrar uma decisão (ADR)</h3>
+          <p class="quando">Decisão tomada (ou madura o suficiente) que precisa virar registro.</p>
+          <pre class="msg">Quero registrar a decisão <b>[DECISAO]</b> como ADR. Siga todo o processo descrito em prompts/arquitetura/gerador-adr.md: formato MADR, mínimo 3 decision drivers e 2 opções consideradas, trade-offs explícitos e métrica de validação ("como saberemos que deu certo?").</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /gerador-adr</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>4 · Runbook operacional</h3>
+          <p class="quando">Documentação de operação: failure modes, on-call, SLO.</p>
+          <pre class="msg">Quero o runbook operacional de <b>[SERVICO_OU_FLUXO]</b>. Siga todo o processo descrito em prompts/arquitetura/gerador-runbook.md: cada failure mode com sintoma observável, query de log/métrica para confirmar, ação imediata e mitigação permanente. Não invente SLO — me pergunte.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /gerador-runbook</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>5 · Fluxo transacional (técnico)</h3>
+          <p class="quando">Sequência de chamadas, payloads, estados — visão de runtime.</p>
+          <pre class="msg">Quero documentar o fluxo técnico de <b>[FLUXO]</b> na aplicação <b>[NOME_DA_APLICACAO]</b>. Siga todo o processo descrito em prompts/arquitetura/documentador-fluxo.md: sequence diagram com autonumber, payloads relevantes e os estados de erro/retry.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /documentador-fluxo</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>6 · Revisar documentação (grill técnico)</h3>
+          <p class="quando">Auditar uma página/ADR existente procurando furos.</p>
+          <pre class="msg">Revise a documentação <b>[PAGINA_OU_ADR]</b> procurando furos. Siga todo o processo descrito em prompts/arquitetura/grill-doc.md: aplique as 7 lentes na ordem (terminologia, decisões disfarçadas de premissa, garantias vs implementação, janelas sem número...) e gere o relatório estruturado.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /grill-doc</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>7 · Brainstorm (antes de decidir)</h3>
+          <p class="quando">Ainda não decidiu? Sempre antes de uma ADR.</p>
+          <pre class="msg">Estou pensando em <b>[IDEIA_OU_PROBLEMA]</b> e ainda não decidi. Siga todo o processo descrito em prompts/arquitetura/brainstorm-arquitetural.md: reformule o problema antes de discutir solução, uma pergunta por vez, mínimo 4 opções de naturezas diferentes, e feche com aprovação por seções.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /brainstorm-arquitetural</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+      </div>
+    </section>
+
+    <section class="trilha">
+      <h2 class="section-eyebrow">Trilha de negócio</h2>
+      <div class="cards">
+
+        <article class="msg-card">
+          <h3>8 · Mapear o domínio</h3>
+          <p class="quando">Primeira doc de negócio do repo, ou refresh após mudanças grandes.</p>
+          <pre class="msg">Quero o mapeamento da arquitetura de negócio (fluxo de negócio). Analise a aplicação <b>[NOME_DA_APLICACAO]</b>. Siga todo o processo descrito em prompts/negocio/analisador-de-dominio.md: detecte as regras candidatas no código (validações, enums, autorização), os atores e os eventos, me grile por fases pra confirmar o que o código não revela, e gere o contexto de negócio nos dois destinos.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /analisador-de-dominio</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>9 · Grill do negócio (interrogatório)</h3>
+          <p class="quando">Tirar do código o que ele não conta: regra não-escrita, dono, exceções.</p>
+          <pre class="msg">Quero aprofundar as regras de negócio de <b>[PROCESSO_OU_AREA]</b> na aplicação <b>[NOME_DA_APLICACAO]</b>. Siga todo o processo descrito em prompts/negocio/grill-negocio.md: me interrogue por fases, uma pergunta por vez, propondo sua resposta recomendada, mostrando o ledger ✓/▸/○ a cada rodada, e atualize o contexto de negócio (nos dois destinos) conforme fechamos.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /grill-negocio</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>10 · Fluxo de negócio (feliz/triste)</h3>
+          <p class="quando">Desenho visual do processo com desfechos positivos e de exceção.</p>
+          <pre class="msg">Quero o desenho do fluxo de negócio de <b>[PROCESSO]</b> na aplicação <b>[NOME_DA_APLICACAO]</b>. Siga todo o processo descrito em prompts/negocio/mapeador-de-fluxo-de-negocio.md: caminho feliz e pelo menos um caminho triste, com o diagrama no padrão da casa (classes papel/atividade/decisao/desfecho).</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /mapeador-de-fluxo-de-negocio</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>11 · Catálogo de regras</h3>
+          <p class="quando">Inventário das regras de negócio com origem, dono e consequência.</p>
+          <pre class="msg">Quero o catálogo de regras de negócio da aplicação <b>[NOME_DA_APLICACAO]</b>, agrupado por capacidade. Siga todo o processo descrito em prompts/negocio/catalogo-de-regras.md: toda regra com origem no código (arquivo:símbolo) ou marcada como regra de processo, dono e consequência de negócio.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /catalogo-de-regras</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>12 · Glossário do domínio</h3>
+          <p class="quando">Linguagem ubíqua: os termos do negócio, sem detalhe de implementação.</p>
+          <pre class="msg">Quero a página de glossário do domínio da aplicação <b>[NOME_DA_APLICACAO]</b>. Siga todo o processo descrito em prompts/negocio/glossario-de-negocio.md: termos do contexto de negócio, definição operacional curta, sem virar spec técnica.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /glossario-de-negocio</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+      </div>
+    </section>
+
+    <section class="trilha">
+      <h2 class="section-eyebrow">Trilha frontend</h2>
+      <div class="cards">
+
+        <article class="msg-card">
+          <h3>13 · Melhorar o visual (controlado)</h3>
+          <p class="quando">Decisões visuais propostas uma a uma, com seu OK antes de aplicar.</p>
+          <pre class="msg">Quero melhorar o visual de <b>[PAGINA]</b>. Siga todo o processo descrito em prompts/frontend/designer-ux-controlado.md: proponha cada decisão visual antes de aplicar, uma por vez, e espere minha aprovação em cada uma.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /designer-ux-controlado</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>14 · Escolher direção visual</h3>
+          <p class="quando">Antes de criar algo novo: estilo, paleta, referências.</p>
+          <pre class="msg">Quero escolher uma direção visual para <b>[PROJETO_OU_PAGINA]</b>. Siga todo o processo descrito em prompts/frontend/designer-ui-pro-max.md: apresente opções do catálogo de estilos e paletas adequadas ao contexto, com prós e contras, e me deixe escolher.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /designer-ui-pro-max</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>15 · Design system (estender/auditar)</h3>
+          <p class="quando">Padronizar componentes, auditar tokens, evitar drift visual.</p>
+          <pre class="msg">Quero <b>[ESTENDER_OU_AUDITAR]</b> o design system deste repositório. Siga todo o processo descrito em prompts/frontend/design-system-arquitetura.md: audite tokens e componentes existentes, aponte inconsistências e proponha a mudança sem quebrar o que já existe.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /design-system-arquitetura</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>16 · Polir (acabamento)</h3>
+          <p class="quando">A página funciona mas falta o acabamento fino.</p>
+          <pre class="msg">Quero polir <b>[PAGINA]</b>. Siga todo o processo descrito em prompts/frontend/polidor-ui.md: aplique o checklist de polimento na ordem (microespaçamento, easing, estados, press feedback), sempre usando os tokens do design system — nada hardcoded.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /polidor-ui</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+      </div>
+    </section>
+
+    <section class="trilha">
+      <h2 class="section-eyebrow">Trilha engenharia</h2>
+      <div class="cards">
+
+        <article class="msg-card">
+          <h3>17 · Investigar bug (causa raiz)</h3>
+          <p class="quando">Comportamento inesperado — antes de qualquer tentativa de correção.</p>
+          <pre class="msg"><b>[SINTOMA — cole o erro/stack trace real]</b>
+
+Siga todo o processo descrito em prompts/engenharia/depurador-sistematico.md: quero a causa raiz demonstrada com evidência (arquivo:linha) ANTES de qualquer proposta de correção, e o fix mínimo verificado ao final.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /depurador-sistematico</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>18 · Plano de implementação</h3>
+          <p class="quando">Decisão aprovada que vira código — antes de codar.</p>
+          <pre class="msg">A decisão <b>[DECISAO_OU_ADR]</b> foi aprovada. Siga todo o processo descrito em prompts/engenharia/planejador-de-implementacao.md: gere o plano em etapas pequenas e independentemente verificáveis — cada etapa com arquivos exatos, mudança concreta, comando de verificação e critério de pronto.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /planejador-de-implementacao</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // script clássico (não module) — funciona em file://
+    document.addEventListener('click', function (ev) {
+      var btn = ev.target.closest('.copy-btn');
+      if (!btn) return;
+      var pre = btn.closest('.msg-card').querySelector('.msg');
+      var text = pre.innerText;
+      function done() {
+        btn.textContent = 'Copiado!';
+        setTimeout(function () { btn.textContent = 'Copiar'; }, 1600);
+      }
+      function fallback() {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); done(); } catch (e) {}
+        document.body.removeChild(ta);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, fallback);
+      } else {
+        fallback();
+      }
+    });
+  </script>
+</body>
+</html>
 ```
 
-- [ ] **Step 2: Neutralizar menções a `@workspace` no corpo**
+- [ ] **Step 3: Remover o COMO-USAR.md**
 
-Run: `grep -n "@workspace" COMO-USAR.md`
-Em cada uma: "com `@workspace` aberto no repo" → "com o repo aberto no assistente". A dica do bloco `> 💡` permanece (vale para os dois assistentes).
+Run: `git rm COMO-USAR.md`
 
-- [ ] **Step 3: Acrescentar as trilhas que faltavam (depois da tabela "Trilha TÉCNICA")**
+- [ ] **Step 4: Verificar**
 
-```markdown
-## Trilha FRONTEND
-
-| Pra... | Diga algo como |
-|---|---|
-| Decisões visuais (uma por vez) | `como deixar essa página bonita` · `melhora o visual` |
-| Catálogo de estilos/paletas | `que estilo combina com isso` · `paleta` |
-| Design system (estender/auditar) | `padroniza os componentes` · `tokens` |
-| Polimento final | `polir` · `micro-interações` · `acabamento` |
-
-## Trilha ENGENHARIA
-
-| Pra... | Diga algo como |
-|---|---|
-| Investigar bug (causa raiz primeiro) | `investiga esse bug` · `debugga` · `por que está quebrando` |
-| Plano de implementação | `planeja a implementação` · `quebra em etapas` |
-```
-
-- [ ] **Step 4: Atualizar a frase "No fim, dois arquivos em `.amazonq/rules/`"**
-
-Old: `No fim, dois arquivos em `.amazonq/rules/`.`
-New: `No fim, os arquivos de contexto nos dois lados: `.amazonq/rules/` (Q) e `.github/instructions/` (Copilot).`
+Run: `grep -c 'prompts/' COMO-USAR.html && grep -c 'msg-card' COMO-USAR.html && grep -n 'type="module"' COMO-USAR.html ; echo "module-exit=$?"`
+Expected: 18 referências a `prompts/`; 18+ `msg-card` (1 por card no mínimo); `module-exit=1` (nenhum ES module — regra da casa para `file://`). Abra `file:///.../COMO-USAR.html` no navegador e teste o botão Copiar de 1 card por trilha.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add COMO-USAR.md
-git commit -m "docs: COMO-USAR dual-tool com as 4 trilhas e invocacao por ferramenta"
+git add COMO-USAR.html
+git commit -m "feat: COMO-USAR.html com mensagens prontas por trilha (substitui o .md)"
+```
+
+---
+
+### Task 13b: `INSTALAR.md` — guia de instalação para o assistente de IA
+
+**Files:**
+- Create: `INSTALAR.md`
+
+- [ ] **Step 1: Criar o arquivo (conteúdo completo)**
+
+````markdown
+# INSTALAR.md — guia de instalação (para o seu assistente de IA executar)
+
+> **Você, assistente** (Amazon Q, GitHub Copilot, Claude ou outro agente com acesso a
+> arquivos): este arquivo é um runbook para VOCÊ executar, não um texto para resumir ao
+> usuário. Siga os passos na ordem. O objetivo é instalar o pack `arquitetura` no
+> repositório do serviço do usuário.
+
+## Passo 0 — Confirme o alvo
+
+Identifique a RAIZ do repositório do serviço onde o pack será instalado. Se não estiver
+claro pelo contexto, pergunte ao usuário. Duas regras:
+
+- NUNCA instale dentro do próprio pack (o diretório que contém este INSTALAR.md).
+- O alvo deve ser a raiz do repo (onde fica o `.git/`), não uma subpasta.
+
+## Passo 1 — Caminho preferido: rode o script
+
+Se você pode executar comandos de shell:
+
+- **macOS / Linux:** `bash <caminho-do-pack>/install.sh <raiz-do-repo-alvo>`
+- **Windows:** `powershell -ExecutionPolicy Bypass -File <caminho-do-pack>\install.ps1 -Target <raiz-do-repo-alvo>`
+- Opcional: acrescente `--with-examples` (sh) ou `-WithExamples` (ps1) para incluir as
+  páginas HTML de exemplo.
+
+O script é idempotente e termina com a lista do que copiou. Se der erro, a mensagem é
+autoexplicativa (alvo inexistente, opção desconhecida, alvo = próprio pack) — corrija e
+rode de novo. Se o script funcionou, pule para o Passo 3.
+
+## Passo 2 — Fallback: cópia manual (se você não pode rodar shell)
+
+Copie do pack para a raiz do repo alvo, preservando a estrutura de pastas:
+
+| Origem (pack) | Destino (repo alvo) |
+|---|---|
+| `.amazonq/rules/architecture-style.md`, `frontend-style.md`, `negocio-style.md`, `engenharia-style.md` | `.amazonq/rules/` |
+| `.github/copilot-instructions.md` | `.github/` |
+| `.github/instructions/*.instructions.md` (as 4 de estilo) | `.github/instructions/` |
+| `.github/prompts/` (inteira) | `.github/prompts/` |
+| `.github/skills/` (inteira) | `.github/skills/` |
+| `prompts/arquitetura/`, `prompts/frontend/`, `prompts/negocio/`, `prompts/engenharia/` (inteiras) | `prompts/` |
+| `design-system/*.css` | `design-system/` |
+| `templates/diagram-viewer.js`, `templates/sidebar.js` | `templates/` |
+| `COMO-USAR.html` | raiz do repo |
+
+**NUNCA copie (nem sobrescreva se existirem no alvo):**
+
+- `.amazonq/rules/project-context.md` e `.amazonq/rules/business-context.md`
+- `.github/instructions/project-context.instructions.md` e `business-context.instructions.md`
+
+Esses 4 são por-serviço, gerados pelos analisadores DEPOIS da instalação. Se já existem
+no alvo, é uma instalação anterior — preserve-os intactos.
+
+Também não copie: `templates/*.html` (exemplos, só se o usuário pedir), `tools/`,
+`INSTALAR.md`, `README.md`, `LICENSE`, `docs/` — são do pack, não do serviço.
+
+## Passo 3 — Verifique a instalação
+
+Confira que TODOS estes paths existem no repo alvo (via shell ou listagem de arquivos):
+
+- `.amazonq/rules/` com as 4 rules de estilo
+- `.github/copilot-instructions.md` + `.github/instructions/` com 4 arquivos `.instructions.md`
+- `.github/prompts/` com 18 arquivos `.prompt.md` e `.github/skills/` com 18 subpastas
+- `prompts/` com as 4 trilhas (7 + 4 + 5 + 2 = 18 arquivos `.md`)
+- `design-system/` com 2 `.css`; `templates/` com os 2 `.js`; `COMO-USAR.html` na raiz
+
+Se algo faltar, volte ao passo que o copia. Não declare a instalação concluída sem
+esta verificação (evidência antes de afirmação).
+
+## Passo 4 — Re-instalação / atualização
+
+Rodar de novo é seguro: os scripts (e a regra do Passo 2) preservam os 4 arquivos de
+contexto por-serviço. O resto é sobrescrito com a versão nova do pack — é o esperado.
+
+## Passo 5 — Oriente o usuário (primeiro uso)
+
+Ao terminar, diga ao usuário, nas suas palavras:
+
+1. A instalação está completa e verificada (mostre a lista do Passo 3).
+2. O primeiro passo de uso é gerar o contexto do projeto: mensagem "analisa o projeto"
+   (Amazon Q) ou `/analisador-de-projeto` (Copilot IDE). Sem isso, o pack bloqueia
+   gerações de documentação de propósito.
+3. As mensagens prontas para todos os fluxos estão em `COMO-USAR.html` — abrir no navegador.
+
+## Regras para você, assistente
+
+- Não modifique nenhum arquivo do pack ao copiar — cópia fiel.
+- Não rode `tools/sync-copilot.sh` no repo alvo: é ferramenta de manutenção do pack.
+- Não commite nada sem o usuário pedir.
+````
+
+- [ ] **Step 2: Verificar consistência com os installers**
+
+Run: `diff <(grep -oE '(architecture|frontend|negocio|engenharia)-style' INSTALAR.md | sort -u) <(grep -oE '(architecture|frontend|negocio|engenharia)-style' install.sh | sort -u)`
+Expected: diff vazio (as mesmas 4 rules citadas). Confira manualmente que a tabela do Passo 2 cobre exatamente o que o `install.sh` copia (itens 1-6) e que a lista de "nunca copie" tem os 4 arquivos de contexto.
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add INSTALAR.md
+git commit -m "feat: INSTALAR.md — runbook de instalacao para o assistente de IA executar"
 ```
 
 ---
@@ -1382,11 +1708,13 @@ Expected: `guard-exit=1` com a mensagem do pack; `0`; ≥ 12 html copiados.
 
 ```bash
 bash tools/sync-copilot.sh --check
-grep -rn -iE '@workspace|modo write' prompts/ COMO-USAR.md ; echo "neutro-exit=$?"
+grep -rn -iE '@workspace|modo write' prompts/ COMO-USAR.html ; echo "neutro-exit=$?"
 grep -rn 'templates/negocio' . --include='*.md' ; echo "pendurado-exit=$?"
+[ -f COMO-USAR.html ] && [ ! -e COMO-USAR.md ] && [ -f INSTALAR.md ] && echo "guias-ok"
+grep -rn 'COMO-USAR\.md' README.md install.sh install.ps1 INSTALAR.md ; echo "ref-velha-exit=$?"
 git status --porcelain
 ```
-Expected: `OK: .github/ em sincronia...`; `neutro-exit=1`; `pendurado-exit=1`; working tree limpo.
+Expected: `OK: .github/ em sincronia...`; `neutro-exit=1`; `pendurado-exit=1`; `guias-ok`; `ref-velha-exit=1` (nenhuma referência ao .md antigo); working tree limpo.
 
 - [ ] **Step 6: Passos manuais do usuário (fora desta máquina) — registrar como pendência na entrega**
 
@@ -1399,6 +1727,7 @@ Expected: `OK: .github/ em sincronia...`; `neutro-exit=1`; `pendurado-exit=1`; w
 
 ## Self-review (do plano contra o spec)
 
-- **Spec §3 estrutura** → Tasks 1-6, 9 ✓ · **§4 camada gerada** → Tasks 2, 9 ✓ · **§5 gate duplo** → Tasks 3, 8 ✓ · **§6 neutralização** → Task 8 ✓ · **§7 trilha engenharia** → Tasks 4-7 ✓ · **§8 fixes auditoria** → Tasks 3, 10, 11, 14 ✓ · **§9 README/COMO-USAR** → Tasks 12, 13 ✓ · **§10 validação** → Task 14 ✓.
+- **Spec §3 estrutura** → Tasks 1-6, 9 ✓ · **§4 camada gerada** → Tasks 2, 9 ✓ · **§5 gate duplo** → Tasks 3, 8 ✓ · **§6 neutralização** → Task 8 ✓ · **§7 trilha engenharia** → Tasks 4-7 ✓ · **§8 fixes auditoria** → Tasks 3, 10, 11, 14 ✓ · **§9 README/COMO-USAR.html/INSTALAR.md** → Tasks 12, 13, 13b ✓ · **§10 validação** → Task 14 ✓.
+- Mudança de escopo pós-aprovação (registrada no spec): COMO-USAR vira `.html` de mensagens prontas (Task 13) e nasce `INSTALAR.md` como runbook para o assistente de IA (Task 13b). Installers e validação atualizados em conformidade.
 - Placeholders: nenhum — todo arquivo novo tem conteúdo integral; edições têm old/new exatos ou regra de transformação + gate de grep.
 - Consistência: slugs do manifest = nomes dos arquivos em `prompts/` (18/18); frase de auto-load padronizada (Task 3) = alvo do sed (Task 2); paths citados nos prompts novos existem após Task 9.

@@ -18,6 +18,8 @@ Evoluir o pack `arquitetura` (hoje AmazonQ-only) para funcionar por completo no 
 | Wrappers | `.prompt.md` (IDEs) **e** `SKILL.md` (CLI + Claude Code) para cada prompt | Cobertura completa das superfícies escolhidas; gerados do mesmo manifest. |
 | Skills superpowers | systematic-debugging, writing-plans (trilha nova); verification-before-completion (seção de rule); brainstorming (enriquece prompt existente). TDD fora. | Resposta do time. Orquestração (subagentes, worktrees) não porta — depende do harness do Claude Code. |
 | Identidade | README/COMO-USAR dual-tool; repo NÃO é renomeado no GitHub | Só texto nesta rodada. |
+| Formato do guia de uso | `COMO-USAR.html` (substitui o .md): página no design system do pack, focada em **mensagens prontas para copiar** por trilha/prompt | Decisão do usuário: o guia é para humanos copiarem mensagens que extraem o máximo dos prompts; HTML permite cards + botão copiar e dogfooda o design system. |
+| Guia de instalação | `INSTALAR.md` novo: guia escrito **para o assistente de IA do usuário executar** (passos, fallback manual, verificação) | Decisão do usuário: quem instala aponta a própria IA (Q/Copilot/Claude) para o arquivo e diz "instala". |
 
 ## 3. Estrutura final do repo
 
@@ -50,7 +52,9 @@ arquitetura/
 ├── design-system/                   ← inalterado
 ├── templates/                       ← inalterado
 ├── install.sh / install.ps1         ← corrigidos + copiam camada nova
-├── README.md / COMO-USAR.md         ← dual-tool
+├── README.md                        ← dual-tool
+├── COMO-USAR.html                   ← guia de uso: mensagens prontas por trilha (substitui COMO-USAR.md)
+├── INSTALAR.md                      ← guia de instalação PARA O ASSISTENTE DE IA executar
 └── docs/superpowers/specs/          ← este documento
 ```
 
@@ -152,10 +156,11 @@ Método de porte (já validado no pack): preservar fases, gates e árvore de dec
 - Remover a linha `templates/negocio/*` da tabela de `negocio-style.md` (diretório nunca existiu).
 - Condicionar a âncora `templates/01-visao-geral.html` em `architecture-style.md` ao install com `--with-examples` ("caso contrário, siga o esqueleto abaixo").
 
-## 9. README e COMO-USAR
+## 9. README, COMO-USAR.html e INSTALAR.md
 
-- README: posicionamento "pack para Amazon Q e GitHub Copilot"; seção de instalação manual completa (incluindo `prompts/frontend`, `prompts/engenharia`, `.github/`, COMO-USAR.md); árvore de estrutura atualizada (hoje está defasada); "Como funciona" com os dois caminhos (Q: rules auto-load; Copilot: instructions auto-attach + `/comandos`); nota sobre `tools/sync-copilot.sh` para mantenedores.
-- COMO-USAR: tabela única de gatilhos das 4 trilhas + coluna "como invocar" por ferramenta; passa a ser verdadeiro o "todos os gatilhos".
+- README: posicionamento "pack para Amazon Q e GitHub Copilot"; instalação aponta para `INSTALAR.md` (via IA) e para os scripts (via humano); árvore de estrutura atualizada; "Como funciona" com os dois caminhos; nota sobre `tools/sync-copilot.sh` para mantenedores.
+- **COMO-USAR.html** (substitui COMO-USAR.md): página no design system do pack (tokens + components, scripts clássicos, funciona em `file://`), com um card por prompt (18), agrupados por trilha, cada um com a **mensagem pronta** ("siga todo o processo descrito em ...") com `[CAMPOS]` para trocar, botão copiar, e a alternativa `/slug` para Copilot IDE. É o arquivo que os installers copiam para o repo do serviço.
+- **INSTALAR.md**: guia imperativo escrito para o assistente de IA do usuário executar de ponta a ponta: obter o pack, rodar o script da plataforma (ou fallback de cópia manual com lista exata), NUNCA copiar arquivos de contexto, verificar a instalação (comandos + esperado) e orientar o usuário ao primeiro passo (analisador). Não é copiado para o repo alvo — vive no pack.
 
 ## 10. Validação
 
