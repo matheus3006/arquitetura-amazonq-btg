@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Como usar · Pack arquitetura (Amazon Q + Copilot)</title>
+  <meta name="description" content="Mensagens prontas para extrair o máximo dos prompts do pack.">
+  <link rel="stylesheet" href="design-system/tokens.css">
+  <link rel="stylesheet" href="design-system/components.css">
+  <style>
+    .guide { max-width: 1040px; margin: 0 auto; padding: var(--space-8, 48px) var(--space-4, 24px); }
+    .guide-hero h1 { margin: 0 0 8px; }
+    .guide-hero p { color: var(--color-text-muted, #9aa3b2); max-width: 70ch; }
+    .trilha { margin-top: var(--space-8, 48px); }
+    .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: var(--space-4, 20px); margin-top: var(--space-4, 20px); }
+    .msg-card { border: 1px solid var(--color-border, #232a36); border-radius: var(--radius-md, 10px); padding: var(--space-4, 20px); background: var(--color-surface, #11151d); display: flex; flex-direction: column; gap: 10px; }
+    .msg-card h3 { margin: 0; font-size: 1rem; }
+    .msg-card .quando { color: var(--color-text-muted, #9aa3b2); font-size: .85rem; margin: 0; }
+    .msg { white-space: pre-wrap; font-family: var(--font-mono, ui-monospace, monospace); font-size: .82rem; line-height: 1.5; background: var(--color-bg, #0a0c12); border: 1px solid var(--color-border, #232a36); border-radius: var(--radius-sm, 6px); padding: 12px; margin: 0; }
+    .msg b { color: var(--color-accent, #4a8fe7); }
+    .card-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; }
+    .slug { font-family: var(--font-mono, ui-monospace, monospace); font-size: .78rem; color: var(--color-text-muted, #9aa3b2); }
+    .copy-btn { cursor: pointer; border: 1px solid var(--color-border, #232a36); background: var(--color-surface-2, #1a2030); color: var(--color-text-primary, #e8ecf3); border-radius: var(--radius-sm, 6px); padding: 6px 12px; font-size: .8rem; transition: background-color 150ms var(--ease-out-strong, ease-out), transform 100ms var(--ease-out-strong, ease-out); }
+    .copy-btn:hover { background: var(--color-surface-hover, #232c42); }
+    .copy-btn:active { transform: scale(0.97); }
+    @media print { .copy-btn { display: none; } }
+  </style>
+</head>
+<body>
+  <main class="guide">
+    <header class="guide-hero">
+      <h1>Como usar o pack</h1>
+      <p>Mensagens prontas para copiar e mandar pro assistente (Amazon Q ou GitHub Copilot).
+         Troque os <b>[CAMPOS]</b> e envie. Nomear o prompt e mandar "seguir todo o processo"
+         é o que faz o assistente executar o fluxo inteiro em vez de responder por cima.</p>
+    </header>
+
+    <section class="trilha">
+      <h2 class="section-eyebrow">Como invocar, por ferramenta</h2>
+      <table>
+        <thead><tr><th>Ferramenta</th><th>Como invocar</th></tr></thead>
+        <tbody>
+          <tr><td>Amazon Q (IDE / <code>q chat</code>)</td><td>Cole a mensagem do card</td></tr>
+          <tr><td>Copilot IDE (VS Code / Visual Studio / JetBrains)</td><td>Cole a mensagem OU use o atalho <code>/slug</code> indicado no card</td></tr>
+          <tr><td>Copilot CLI</td><td>Cole a mensagem (os prompts também existem como skills)</td></tr>
+        </tbody>
+      </table>
+      <p><strong>Primeira vez no repositório?</strong> Rode o card nº 1 antes de qualquer outro —
+         todo o resto depende do contexto que ele gera. Para docs de negócio, rode também o nº 8.</p>
+    </section>
+
+    <section class="trilha">
+      <h2 class="section-eyebrow">Trilha técnica</h2>
+      <div class="cards">
+
+        <article class="msg-card">
+          <h3>1 · Preparar o repositório</h3>
+          <p class="quando">Primeira invocação em repo novo, ou quando o código mudou muito.</p>
+          <pre class="msg">Quero preparar este repositório para gerar documentação. Analise a aplicação <b>[NOME_DA_APLICACAO]</b>. Siga todo o processo descrito em prompts/arquitetura/analisador-de-projeto.md: detecte a stack e os padrões, me mostre o que encontrou, pergunte o que o código não revela (uma pergunta por vez) e gere o contexto do projeto nos dois destinos.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /analisador-de-projeto</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>2 · Visão geral de arquitetura</h3>
+          <p class="quando">Documentar o serviço do zero ou atualizar a visão geral.</p>
+          <pre class="msg">Quero a visão geral de arquitetura da aplicação <b>[NOME_DA_APLICACAO]</b>. Siga todo o processo descrito em prompts/arquitetura/arquiteto-de-sistema.md: faça as 5 perguntas-âncora antes de gerar qualquer conteúdo, e produza o HTML no padrão da casa com os diagramas na convenção rígida.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /arquiteto-de-sistema</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>3 · Registrar uma decisão (ADR)</h3>
+          <p class="quando">Decisão tomada (ou madura o suficiente) que precisa virar registro.</p>
+          <pre class="msg">Quero registrar a decisão <b>[DECISAO]</b> como ADR. Siga todo o processo descrito em prompts/arquitetura/gerador-adr.md: formato MADR, mínimo 3 decision drivers e 2 opções consideradas, trade-offs explícitos e métrica de validação ("como saberemos que deu certo?").</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /gerador-adr</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>4 · Runbook operacional</h3>
+          <p class="quando">Documentação de operação: failure modes, on-call, SLO.</p>
+          <pre class="msg">Quero o runbook operacional de <b>[SERVICO_OU_FLUXO]</b>. Siga todo o processo descrito em prompts/arquitetura/gerador-runbook.md: cada failure mode com sintoma observável, query de log/métrica para confirmar, ação imediata e mitigação permanente. Não invente SLO — me pergunte.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /gerador-runbook</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>5 · Fluxo transacional (técnico)</h3>
+          <p class="quando">Sequência de chamadas, payloads, estados — visão de runtime.</p>
+          <pre class="msg">Quero documentar o fluxo técnico de <b>[FLUXO]</b> na aplicação <b>[NOME_DA_APLICACAO]</b>. Siga todo o processo descrito em prompts/arquitetura/documentador-fluxo.md: sequence diagram com autonumber, payloads relevantes e os estados de erro/retry.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /documentador-fluxo</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>6 · Revisar documentação (grill técnico)</h3>
+          <p class="quando">Auditar uma página/ADR existente procurando furos.</p>
+          <pre class="msg">Revise a documentação <b>[PAGINA_OU_ADR]</b> procurando furos. Siga todo o processo descrito em prompts/arquitetura/grill-doc.md: aplique as 7 lentes na ordem (terminologia, decisões disfarçadas de premissa, garantias vs implementação, janelas sem número...) e gere o relatório estruturado.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /grill-doc</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>7 · Brainstorm (antes de decidir)</h3>
+          <p class="quando">Ainda não decidiu? Sempre antes de uma ADR.</p>
+          <pre class="msg">Estou pensando em <b>[IDEIA_OU_PROBLEMA]</b> e ainda não decidi. Siga todo o processo descrito em prompts/arquitetura/brainstorm-arquitetural.md: reformule o problema antes de discutir solução, uma pergunta por vez, mínimo 4 opções de naturezas diferentes, e feche com aprovação por seções.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /brainstorm-arquitetural</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+      </div>
+    </section>
+
+    <section class="trilha">
+      <h2 class="section-eyebrow">Trilha de negócio</h2>
+      <div class="cards">
+
+        <article class="msg-card">
+          <h3>8 · Mapear o domínio</h3>
+          <p class="quando">Primeira doc de negócio do repo, ou refresh após mudanças grandes.</p>
+          <pre class="msg">Quero o mapeamento da arquitetura de negócio (fluxo de negócio). Analise a aplicação <b>[NOME_DA_APLICACAO]</b>. Siga todo o processo descrito em prompts/negocio/analisador-de-dominio.md: detecte as regras candidatas no código (validações, enums, autorização), os atores e os eventos, me grile por fases pra confirmar o que o código não revela, e gere o contexto de negócio nos dois destinos.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /analisador-de-dominio</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>9 · Grill do negócio (interrogatório)</h3>
+          <p class="quando">Tirar do código o que ele não conta: regra não-escrita, dono, exceções.</p>
+          <pre class="msg">Quero aprofundar as regras de negócio de <b>[PROCESSO_OU_AREA]</b> na aplicação <b>[NOME_DA_APLICACAO]</b>. Siga todo o processo descrito em prompts/negocio/grill-negocio.md: me interrogue por fases, uma pergunta por vez, propondo sua resposta recomendada, mostrando o ledger ✓/▸/○ a cada rodada, e atualize o contexto de negócio (nos dois destinos) conforme fechamos.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /grill-negocio</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>10 · Fluxo de negócio (feliz/triste)</h3>
+          <p class="quando">Desenho visual do processo com desfechos positivos e de exceção.</p>
+          <pre class="msg">Quero o desenho do fluxo de negócio de <b>[PROCESSO]</b> na aplicação <b>[NOME_DA_APLICACAO]</b>. Siga todo o processo descrito em prompts/negocio/mapeador-de-fluxo-de-negocio.md: caminho feliz e pelo menos um caminho triste, com o diagrama no padrão da casa (classes papel/atividade/decisao/desfecho).</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /mapeador-de-fluxo-de-negocio</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>11 · Catálogo de regras</h3>
+          <p class="quando">Inventário das regras de negócio com origem, dono e consequência.</p>
+          <pre class="msg">Quero o catálogo de regras de negócio da aplicação <b>[NOME_DA_APLICACAO]</b>, agrupado por capacidade. Siga todo o processo descrito em prompts/negocio/catalogo-de-regras.md: toda regra com origem no código (arquivo:símbolo) ou marcada como regra de processo, dono e consequência de negócio.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /catalogo-de-regras</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>12 · Glossário do domínio</h3>
+          <p class="quando">Linguagem ubíqua: os termos do negócio, sem detalhe de implementação.</p>
+          <pre class="msg">Quero a página de glossário do domínio da aplicação <b>[NOME_DA_APLICACAO]</b>. Siga todo o processo descrito em prompts/negocio/glossario-de-negocio.md: termos do contexto de negócio, definição operacional curta, sem virar spec técnica.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /glossario-de-negocio</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+      </div>
+    </section>
+
+    <section class="trilha">
+      <h2 class="section-eyebrow">Trilha frontend</h2>
+      <div class="cards">
+
+        <article class="msg-card">
+          <h3>13 · Melhorar o visual (controlado)</h3>
+          <p class="quando">Decisões visuais propostas uma a uma, com seu OK antes de aplicar.</p>
+          <pre class="msg">Quero melhorar o visual de <b>[PAGINA]</b>. Siga todo o processo descrito em prompts/frontend/designer-ux-controlado.md: proponha cada decisão visual antes de aplicar, uma por vez, e espere minha aprovação em cada uma.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /designer-ux-controlado</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>14 · Escolher direção visual</h3>
+          <p class="quando">Antes de criar algo novo: estilo, paleta, referências.</p>
+          <pre class="msg">Quero escolher uma direção visual para <b>[PROJETO_OU_PAGINA]</b>. Siga todo o processo descrito em prompts/frontend/designer-ui-pro-max.md: apresente opções do catálogo de estilos e paletas adequadas ao contexto, com prós e contras, e me deixe escolher.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /designer-ui-pro-max</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>15 · Design system (estender/auditar)</h3>
+          <p class="quando">Padronizar componentes, auditar tokens, evitar drift visual.</p>
+          <pre class="msg">Quero <b>[ESTENDER_OU_AUDITAR]</b> o design system deste repositório. Siga todo o processo descrito em prompts/frontend/design-system-arquitetura.md: audite tokens e componentes existentes, aponte inconsistências e proponha a mudança sem quebrar o que já existe.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /design-system-arquitetura</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>16 · Polir (acabamento)</h3>
+          <p class="quando">A página funciona mas falta o acabamento fino.</p>
+          <pre class="msg">Quero polir <b>[PAGINA]</b>. Siga todo o processo descrito em prompts/frontend/polidor-ui.md: aplique o checklist de polimento na ordem (microespaçamento, easing, estados, press feedback), sempre usando os tokens do design system — nada hardcoded.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /polidor-ui</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+      </div>
+    </section>
+
+    <section class="trilha">
+      <h2 class="section-eyebrow">Trilha engenharia</h2>
+      <div class="cards">
+
+        <article class="msg-card">
+          <h3>17 · Investigar bug (causa raiz)</h3>
+          <p class="quando">Comportamento inesperado — antes de qualquer tentativa de correção.</p>
+          <pre class="msg"><b>[SINTOMA — cole o erro/stack trace real]</b>
+
+Siga todo o processo descrito em prompts/engenharia/depurador-sistematico.md: quero a causa raiz demonstrada com evidência (arquivo:linha) ANTES de qualquer proposta de correção, e o fix mínimo verificado ao final.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /depurador-sistematico</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>18 · Plano de implementação</h3>
+          <p class="quando">Decisão aprovada que vira código — antes de codar.</p>
+          <pre class="msg">A decisão <b>[DECISAO_OU_ADR]</b> foi aprovada. Siga todo o processo descrito em prompts/engenharia/planejador-de-implementacao.md: gere o plano em etapas pequenas e independentemente verificáveis — cada etapa com arquivos exatos, mudança concreta, comando de verificação e critério de pronto.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /planejador-de-implementacao</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // script clássico (não module) — funciona em file://
+    document.addEventListener('click', function (ev) {
+      var btn = ev.target.closest('.copy-btn');
+      if (!btn) return;
+      var pre = btn.closest('.msg-card').querySelector('.msg');
+      var text = pre.innerText;
+      function done() {
+        btn.textContent = 'Copiado!';
+        setTimeout(function () { btn.textContent = 'Copiar'; }, 1600);
+      }
+      function fallback() {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); done(); } catch (e) {}
+        document.body.removeChild(ta);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, fallback);
+      } else {
+        fallback();
+      }
+    });
+  </script>
+</body>
+</html>
