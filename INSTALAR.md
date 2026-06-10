@@ -20,7 +20,7 @@ Se você pode executar comandos de shell:
 - **macOS / Linux:** `bash <caminho-do-pack>/install.sh <raiz-do-repo-alvo>`
 - **Windows:** `powershell -ExecutionPolicy Bypass -File <caminho-do-pack>\install.ps1 -Target <raiz-do-repo-alvo>`
 - Opcional: acrescente `--with-examples` (sh) ou `-WithExamples` (ps1) para incluir as
-  páginas HTML de exemplo.
+  páginas HTML de exemplo. Só use se o usuário pedir as páginas de exemplo.
 
 O script é idempotente e termina com a lista do que copiou. Se der erro, a mensagem é
 autoexplicativa (alvo inexistente, opção desconhecida, alvo = próprio pack) — corrija e
@@ -47,7 +47,7 @@ Copie do pack para a raiz do repo alvo, preservando a estrutura de pastas:
 - `.amazonq/rules/project-context.md` e `.amazonq/rules/business-context.md`
 - `.github/instructions/project-context.instructions.md` e `business-context.instructions.md`
 
-Esses 4 são por-serviço, gerados pelos analisadores DEPOIS da instalação. Se já existem
+Esses arquivos NÃO existem no pack — a regra é sobre nunca sobrescrevê-los no repositório alvo quando já existirem lá. Esses 4 são por-serviço, gerados pelos analisadores DEPOIS da instalação. Se já existem
 no alvo, é uma instalação anterior — preserve-os intactos.
 
 Também não copie: `templates/*.html` (exemplos, só se o usuário pedir), `tools/`,
@@ -57,10 +57,10 @@ Também não copie: `templates/*.html` (exemplos, só se o usuário pedir), `too
 
 Confira que TODOS estes paths existem no repo alvo (via shell ou listagem de arquivos):
 
-- `.amazonq/rules/` com as 4 rules de estilo
-- `.github/copilot-instructions.md` + `.github/instructions/` com 4 arquivos `.instructions.md`
+- `.amazonq/rules/` com as 4 rules de estilo (mais os arquivos de contexto, se já gerados)
+- `.github/copilot-instructions.md` + `.github/instructions/` com 4 arquivos `*-style.instructions.md` (mais os de contexto, se os analisadores já rodaram neste repo)
 - `.github/prompts/` com 18 arquivos `.prompt.md` e `.github/skills/` com 18 subpastas
-- `prompts/` com as 4 trilhas (7 + 4 + 5 + 2 = 18 arquivos `.md`)
+- `prompts/` com as 4 trilhas (arquitetura 7, frontend 4, negocio 5, engenharia 2 — 18 arquivos `.md`)
 - `design-system/` com 2 `.css`; `templates/` com os 2 `.js`; `COMO-USAR.html` na raiz
 
 Se algo faltar, volte ao passo que o copia. Não declare a instalação concluída sem
