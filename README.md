@@ -1,23 +1,30 @@
-# arquitetura-amazonq-btg
+# arquitetura — pack de documentação para Amazon Q e GitHub Copilot
 
-Starter pack de documentação arquitetural para serviços **.NET transacionais** usando **Amazon Q Developer** como assistente.
+Starter pack de documentação arquitetural para serviços **.NET transacionais**, usando
+**Amazon Q Developer** ou **GitHub Copilot** (VS Code, Visual Studio, JetBrains, CLI) como assistente.
 
-Transforma o Q em um especialista que entende seu projeto antes de gerar documentação,
+Transforma o assistente em um especialista que entende seu projeto antes de gerar documentação,
 produz HTML semântico com pan/zoom em diagramas, e segue convenções verificáveis.
 
 ## O que esse repositório é
 
 Um pacote pronto para clonar dentro de cada serviço .NET do seu time. Inclui:
 
-- **Rules** lidas automaticamente pelo Amazon Q
-- **Prompts** que clonam comportamento de skills especializadas (arquitetura, frontend, polish)
+- **Rules** lidas automaticamente pelo Amazon Q (`.amazonq/rules/`)
+- **Camada Copilot gerada** (`.github/`): instructions auto-aplicadas, slash commands (`/gerador-adr`, ...) e Agent Skills — gerada de `.amazonq/rules/` por `tools/sync-copilot.sh`, nunca editada à mão
+- **Prompts** que clonam comportamento de skills especializadas — 4 trilhas (arquitetura, frontend, negocio, engenharia)
+- **Trilha de engenharia**: debugging sistemático, planejamento de implementação e disciplina de verificação (portes do superpowers)
 - **Design system** dark com paleta institucional + animações sutis
 - **Template viewer** para diagramas Mermaid com pan/zoom estilo Figma, fundo claro com traços escuros
 - **12 páginas HTML de exemplo** documentando um serviço fictício ("Liquidação Transacional") como referência de forma e qualidade
 
 ## Instalação rápida
 
-"Instalar" = colocar 4 coisas na **raiz** do repo do serviço (`.amazonq/rules/`, `prompts/`, `design-system/`, `templates/*.js`). O Amazon Q lê `.amazonq/rules/` sozinho a partir daí. Escolha a via:
+"Instalar" = colocar os arquivos do pack na **raiz** do repo do serviço. O Amazon Q lê `.amazonq/rules/` automaticamente; o Copilot lê `.github/instructions/` automaticamente. Escolha a via:
+
+**Via assistente de IA (qualquer plataforma):** aponte o seu assistente (Amazon Q, Copilot,
+Claude...) para o arquivo [`INSTALAR.md`](INSTALAR.md) do pack e diga:
+> Siga o INSTALAR.md deste pack e instale no repositório `<caminho-do-meu-servico>`.
 
 **macOS / Linux (bash):**
 ```bash
@@ -33,16 +40,18 @@ pwsh arquitetura-amazonq-btg\install.ps1 -Target C:\repos\seu-servico
 ```
 
 **Manual (qualquer OS, sem script):** copie do pack pro repo do serviço, mantendo a estrutura:
-- `.amazonq/rules/` → `architecture-style.md`, `frontend-style.md`, `negocio-style.md`
-- `prompts/arquitetura/` e `prompts/negocio/` (as duas pastas inteiras)
+- `.amazonq/rules/` → as 4 rules (`architecture-style`, `frontend-style`, `negocio-style`, `engenharia-style`)
+- `.github/` → `copilot-instructions.md`, `instructions/` (as 4), `prompts/` e `skills/` inteiras
+- `prompts/` → as 4 trilhas inteiras (`arquitetura`, `frontend`, `negocio`, `engenharia`)
 - `design-system/*.css`
 - `templates/diagram-viewer.js` e `templates/sidebar.js`
+- `COMO-USAR.html`
 
-**Não** copie `project-context.md` / `business-context.md` — são gerados por-serviço pelos analisadores.
+**Não** copie os arquivos de contexto por-projeto: `project-context.md` e `business-context.md` (em `.amazonq/rules/`) nem `project-context.instructions.md` e `business-context.instructions.md` (em `.github/instructions/`) — são gerados por-serviço pelos analisadores.
 
-Como usar (todos os gatilhos): [COMO-USAR.md](COMO-USAR.md).
+Mensagens prontas para cada gatilho: [COMO-USAR.html](COMO-USAR.html).
 
-> O pack tem **duas trilhas**: a **técnica** (arquitetura .NET) e a de **negócio** (regras, fluxos caminho feliz/triste, glossário — derivados do código). Os instaladores entregam as duas.
+> O pack tem **quatro trilhas: técnica, negócio, frontend e engenharia**. Os instaladores entregam as quatro.
 
 ## Filosofia
 
@@ -51,6 +60,10 @@ Uma única regra rígida: **a convenção de diagramas** (Mermaid + viewer + 4 c
 Tudo o mais — paleta, nomes, padrões, glossário — é **convenção adaptável**. O conteúdo das páginas em `templates/` é **exemplo, não blueprint**. O analisador de projeto (rodado na primeira invocação em cada repo) lê o código real e produz `.amazonq/rules/project-context.md` para evitar drift do exemplo.
 
 ## Como funciona
+
+> O fluxo abaixo descreve o Amazon Q. No Copilot é o mesmo desenho com outros nomes:
+> `.github/instructions/` no lugar de `.amazonq/rules/` (auto-aplicadas), `/analisador-de-projeto`
+> como atalho, e o contexto gerado nos DOIS lados (`project-context.md` + `project-context.instructions.md`).
 
 ```
 Dev clona esse repo para dentro do projeto .NET dele
@@ -91,47 +104,45 @@ Q gera HTML usando dados do projeto REAL (não do exemplo)
 ## Estrutura
 
 ```
-arquitetura-amazonq-btg/
+arquitetura/
 ├── README.md                                    ← este arquivo
+├── INSTALAR.md                                  ← guia de instalação (leitura pelo assistente)
+├── COMO-USAR.html                               ← mensagens prontas para cada gatilho
 ├── LICENSE                                      ← MIT
 ├── .gitignore
+├── install.sh                                   ← instalador macOS/Linux
+├── install.ps1                                  ← instalador Windows PowerShell
 ├── .amazonq/
-│   └── rules/
+│   └── rules/                                   ← FONTE CANÔNICA — edite aqui
 │       ├── architecture-style.md                ← regra universal — princípios + hooks + diagrama
 │       ├── frontend-style.md                    ← regra universal — HTML/CSS/typography
-│       └── project-context.md                   ← (não existe ainda — analisador cria por projeto)
+│       ├── negocio-style.md                     ← regra universal — domínio, regras, glossário
+│       ├── engenharia-style.md                  ← regra universal — debugging + implementação
+│       ├── project-context.md                   ← (gerado por-projeto — não versionar)
+│       └── business-context.md                  ← (gerado por-projeto — não versionar)
+├── .github/                                     ← gerado por tools/sync-copilot.sh — não editar
+│   ├── copilot-instructions.md
+│   ├── instructions/                            ← 4 rules + 2 context placeholders (.instructions.md)
+│   ├── prompts/                                 ← slash commands (18 arquivos .prompt.md)
+│   └── skills/                                  ← Agent Skills (18 subpastas com SKILL.md)
 ├── prompts/
-│   ├── arquitetura/
-│   │   ├── analisador-de-projeto.md             ← roda PRIMEIRO em todo repo novo
-│   │   ├── arquiteto-de-sistema.md              ← persona de arquiteto sênior
-│   │   ├── gerador-adr.md                       ← ADRs em formato MADR
-│   │   ├── gerador-runbook.md                   ← runbooks operacionais
-│   │   ├── documentador-fluxo.md                ← fluxos transacionais com sequence diagrams
-│   │   ├── grill-doc.md                         ← revisor cético de documentação
-│   │   └── brainstorm-arquitetural.md           ← parceiro de pensamento pré-ADR
-│   └── frontend/
-│       ├── designer-ux-controlado.md            ← decisões visuais propostas antes de aplicadas
-│       ├── designer-ui-pro-max.md               ← catálogo de estilos e paletas
-│       ├── design-system-arquitetura.md         ← extensão e auditoria do design system
-│       └── polidor-ui.md                        ← polimento estilo Emil Kowalski
+│   ├── arquitetura/                             ← 7 prompts (analisador, arquiteto, ADR, runbook, fluxo, grill, brainstorm)
+│   ├── frontend/                                ← 4 prompts (ux-controlado, ui-pro-max, design-system, polidor)
+│   ├── negocio/                                 ← 5 prompts (analisador-dominio, catalogo, glossario, grill, mapeador)
+│   └── engenharia/                              ← 2 prompts (depurador-sistematico, planejador-de-implementacao)
+├── tools/
+│   ├── manifest.tsv                             ← mapeamento rules → .github/ (fonte do sync)
+│   └── sync-copilot.sh                          ← gera/valida a camada .github/
 ├── design-system/
 │   ├── tokens.css                               ← cores, espaço, tipografia, raios, sombras, motion
 │   └── components.css                           ← componentes prontos (callouts, badges, cards, tables, etc.)
-└── templates/
-    ├── index.html                               ← portal de exemplo
-    ├── 01-visao-geral.html                      ← visão geral arquitetural
-    ├── 02-padroes.html                          ← camadas, Hexagonal, fitness functions
-    ├── 03-dados.html                            ← payload, transformações, eventos
-    ├── 04-configuracoes.html                    ← env vars, feature flags, limites
-    ├── 05-nova-funcionalidade.html              ← guia end-to-end de adição de feature
-    ├── 06-infraestrutura.html                   ← topologia AWS, pipeline, observabilidade, DR
-    ├── 07-fluxo-autorizacao.html                ← fluxo principal com diagramas e payloads
-    ├── 08-fluxo-estorno.html                    ← fluxo de reversão
-    ├── 09-fluxo-contingencia.html               ← modo degradado
-    ├── 13-dicionario.html                       ← dicionário canonical dos campos
-    ├── 14-enums.html                            ← enums e códigos
-    ├── sidebar.js                               ← navegação compartilhada
-    └── diagram-viewer.js                        ← leitor Mermaid + pan/zoom
+├── templates/
+│   ├── index.html                               ← portal de exemplo
+│   ├── 01-visao-geral.html … 14-enums.html      ← 11 páginas de exemplo (serviço fictício)
+│   ├── sidebar.js                               ← navegação compartilhada
+│   └── diagram-viewer.js                        ← leitor Mermaid + pan/zoom
+└── docs/
+    └── superpowers/                             ← specs e planos de desenvolvimento do pack
 ```
 
 ## A convenção de diagrama — única regra rígida de visual
@@ -155,16 +166,16 @@ Essa convenção **não muda** quando o resto do visual (paleta, tipografia, etc
 
 1. **Instale o pack no seu projeto** (seção _Instalação rápida_ acima):
    ```bash
-   bash /caminho/arquitetura-amazonq-btg/install.sh   # de dentro do repo do serviço
+   bash /caminho/arquitetura/install.sh   # de dentro do repo do serviço
    ```
 
-2. **Abra o Amazon Q** com `@workspace` no projeto.
+2. **Abra o seu assistente** (Amazon Q, Copilot, ou outro) no projeto.
 
 3. **Diga**: "Analisa esse projeto antes de começar a documentar."
 
-4. **Q vai detectar o código, perguntar o necessário, criar `.amazonq/rules/project-context.md`.** Revise.
+4. **O assistente vai detectar o código, perguntar o necessário, criar `project-context.md`** (em `.amazonq/rules/` e/ou `.github/instructions/` dependendo da ferramenta). Revise.
 
-5. **Daí em diante**, todas as gerações de documentação respeitam o `project-context.md`. Exemplos:
+5. **Daí em diante**, todas as gerações de documentação respeitam o contexto do projeto. Exemplos:
    - "Gera a visão geral do serviço"
    - "Cria uma ADR sobre a decisão de usar DynamoDB em vez de PostgreSQL"
    - "Documenta o fluxo de notificação push"
@@ -175,7 +186,7 @@ Essa convenção **não muda** quando o resto do visual (paleta, tipografia, etc
 Abra qualquer página em `templates/` direto no navegador (Chrome ou Firefox):
 
 ```
-file:///caminho/para/arquitetura-amazonq-btg/templates/index.html
+file:///caminho/para/arquitetura/templates/index.html
 ```
 
 Os scripts são classic (não module) — funciona em `file://` sem servidor.
@@ -189,6 +200,16 @@ Para gerar PDF, `Cmd+P` → Salvar como PDF → marcar "Gráficos de fundo". Pri
 3. **Auditável.** Cada documento traz autor, data, versão, status.
 4. **Não confiar em disciplina** quando há alternativa verificável (fitness function, lint, alarme).
 5. **Linguagem direta.** Frases curtas. Sem "robusto", "escalável", "moderno". Números concretos.
+
+## Para mantenedores do pack
+
+`.amazonq/rules/` é a fonte canônica. A camada `.github/` é GERADA — não edite à mão.
+Depois de editar qualquer rule ou o `tools/manifest.tsv`:
+
+    bash tools/sync-copilot.sh           # regenera .github/
+    bash tools/sync-copilot.sh --check   # confirma que esta em sincronia (use antes de commitar)
+
+Commite o `.github/` regenerado junto com a mudança canônica.
 
 ## Contribuindo
 
