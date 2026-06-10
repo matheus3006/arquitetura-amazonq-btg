@@ -193,7 +193,7 @@ EOF
   cat > "$OUT/skills/$slug/SKILL.md" <<EOF
 ---
 name: $slug
-description: $desc
+description: "$desc"
 ---
 
 Siga TODO o processo descrito em \`$canonical\` (na raiz deste repositorio), fase por
