@@ -28,6 +28,7 @@ com ou sem contexto de projeto. Quando o contexto existir, use-o.
 
 Pedido ambíguo entre investigar e implementar ("conserta o X") → primeiro o depurador
 (causa raiz demonstrada), depois proponha o planejador se a correção for maior que um fix pontual.
+Dúvida ainda pré-decisão ("não sei qual abordagem") → `prompts/arquitetura/brainstorm-arquitetural.md` primeiro (ver architecture-style § 2).
 
 ---
 
