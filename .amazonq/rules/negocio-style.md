@@ -57,7 +57,7 @@ O contexto de negócio tem **peso de regra**, igual a esta. Quando define um ter
 | `prompts/negocio/*.md` | **REGRA** (metodologia) | Carregue conforme a tabela de hooks § 2. |
 | `design-system/*.css`, `templates/diagram-viewer.js`, `sidebar.js` | **REGRA** (reuso) | Mesmos do pack técnico. Não duplicar, não substituir. |
 
-A doc de negócio **mora junto** da técnica, no mesmo repo do serviço, e **compartilha** o `project-context.md`.
+A doc de negócio **mora junto** da técnica, no mesmo repo do serviço, e **compartilha** o par de contexto do projeto.
 
 ---
 
@@ -77,7 +77,7 @@ Nunca misture as duas numa mesma página. Um mesmo fluxo pode ter as duas docs �
 
 | Quando o usuário pedir / mencionar | Carregue |
 |---|---|
-| **Primeira doc de negócio** OU "analisa o domínio", "mapeia o negócio", `business-context.md` ausente | `prompts/negocio/analisador-de-dominio.md` (antes de qualquer outro) |
+| **Primeira doc de negócio** OU "analisa o domínio", "mapeia o negócio", par de contexto de negócio ausente/incompleto (ver gate) | `prompts/negocio/analisador-de-dominio.md` (antes de qualquer outro) |
 | "documentar fluxo de negócio", "caminho feliz", "caminho triste", "processo de negócio", "como o negócio funciona" | `prompts/negocio/mapeador-de-fluxo-de-negocio.md` |
 | "catálogo de regras", "regras de negócio", "que regras existem", "lista as regras" | `prompts/negocio/catalogo-de-regras.md` |
 | "glossário de negócio", "linguagem ubíqua", "termos do domínio", "dicionário de negócio" | `prompts/negocio/glossario-de-negocio.md` |
@@ -127,7 +127,7 @@ Idêntico ao da trilha técnica: siga `.amazonq/rules/frontend-style.md` § 1 e 
 
 Herdam as da trilha técnica (PT-BR, voz ativa, sem qualificadores vagos, números concretos), com **duas diferenças**:
 
-1. **Linguagem de NEGÓCIO, não jargão técnico.** Não vaze `idempotency`, `outbox`, `retry`, `circuit breaker` pra doc de negócio — isso é da trilha técnica. Use os termos do `business-context.md` (glossário do domínio).
+1. **Linguagem de NEGÓCIO, não jargão técnico.** Não vaze `idempotency`, `outbox`, `retry`, `circuit breaker` pra doc de negócio — isso é da trilha técnica. Use os termos do contexto de negócio (glossário do domínio).
 2. **Toda regra cita origem + dono + consequência.** Origem no código (`arquivo:símbolo`) ou `[regra de processo, fora do código]`; dono (papel responsável); o que acontece de **negócio** se violada.
 
 ---
@@ -136,7 +136,7 @@ Herdam as da trilha técnica (PT-BR, voz ativa, sem qualificadores vagos, númer
 
 - **Fluxo de negócio SEM caminho triste → recuse.** Peça pelo menos um desfecho de exceção/recusa.
 - **Não inventar regra.** Se não está no código nem foi confirmada, marque `[a confirmar com <quem>]`.
-- **Glossário (`business-context.md`) é glossário** — sem detalhe de implementação, sem virar spec.
+- **Glossário do contexto de negócio é glossário** — sem detalhe de implementação, sem virar spec.
 - **Regra documentada = regra rastreável.** Sem origem nem dono, não entra no catálogo — vira ponto aberto.
 
 ---
@@ -152,7 +152,7 @@ Herdam as da trilha técnica (PT-BR, voz ativa, sem qualificadores vagos, númer
 
 ## 8. Auto-checklist antes de entregar (negocio)
 
-- [ ] Carreguei `business-context.md` (e o `project-context.md`)?
+- [ ] Carreguei o contexto de negócio (e o contexto do projeto) do meu lado da ferramenta?
 - [ ] Roteei certo (§ 1) — isso é mesmo trilha de negócio, não técnica?
 - [ ] Linguagem de negócio, sem jargão técnico vazando?
 - [ ] Toda regra tem **origem + dono + consequência**?

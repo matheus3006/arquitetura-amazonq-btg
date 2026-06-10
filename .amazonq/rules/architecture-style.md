@@ -47,7 +47,7 @@ Antes de qualquer coisa, entenda como tratar o que existe aqui:
 |---|---|---|
 | `.amazonq/rules/architecture-style.md` (este arquivo) | **REGRA** | Aplique sempre. Convenções de geração e hooks de prompt. |
 | `.amazonq/rules/frontend-style.md` | **REGRA** | Aplique sempre. Estrutura HTML e padrão de diagramas. |
-| Contexto do projeto: `.amazonq/rules/project-context.md` + `.github/instructions/project-context.instructions.md` | **REGRA por projeto** (gerada pelo analisador, nos dois destinos) | Define este projeto específico. Sobrescreve exemplos. Se não existir, executar o analisador antes de qualquer geração. |
+| Contexto do projeto: `.amazonq/rules/project-context.md` + `.github/instructions/project-context.instructions.md` | **REGRA por projeto** (gerada pelo analisador, nos dois destinos) | Define este projeto específico. Sobrescreve exemplos. Se não existirem (ou só um existir), agir conforme o gate acima (analisador ou espelhamento). |
 | `prompts/arquitetura/*.md` | **REGRA** (metodologia) | Carregue conforme tabela de hooks. Siga a metodologia descrita. |
 | `prompts/frontend/*.md` | **REGRA** (metodologia) | Carregue para tarefas visuais. |
 | `design-system/tokens.css` e `components.css` | **REGRA** (CSS) | Use `var(--*)` sempre. Nunca hardcode cor/espaço/raio. |
@@ -137,7 +137,7 @@ Antes de responder, identifique se a intenção do usuário casa com algum gatil
 
 | Quando o usuário pedir / mencionar | Carregue este prompt |
 |---|---|
-| **Primeira invocação em um repositório** OU "analisa o projeto", "refresh project context", "atualiza contexto" OU `project-context.md` ausente | `prompts/arquitetura/analisador-de-projeto.md` (sempre antes de qualquer outro prompt) |
+| **Primeira invocação em um repositório** OU "analisa o projeto", "refresh project context", "atualiza contexto" OU par de contexto do projeto ausente/incompleto (ver gate) | `prompts/arquitetura/analisador-de-projeto.md` (sempre antes de qualquer outro prompt) |
 | "documentar serviço", "começar arquitetura", "system context", "container diagram", "visão geral" | `prompts/arquitetura/arquiteto-de-sistema.md` |
 | "criar ADR", "registrar decisão", "decisão arquitetural", "MADR", "trade-off" | `prompts/arquitetura/gerador-adr.md` |
 | "runbook", "documentação operacional", "failure mode", "on-call", "SLO" | `prompts/arquitetura/gerador-runbook.md` |
