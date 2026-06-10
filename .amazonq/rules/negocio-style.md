@@ -43,7 +43,7 @@ de domínio o consome. Se faltar, sugira rodar `analisador-de-projeto.md` antes;
 seguir a partir do código.
 
 O contexto de negócio tem **peso de regra**, igual a esta. Quando define um termo ou regra,
-**sobrescreve** qualquer exemplo em `templates/`.
+**sobrescreve** qualquer exemplo em `docs/arquitetura/templates/`.
 
 ---
 
@@ -55,7 +55,7 @@ O contexto de negócio tem **peso de regra**, igual a esta. Quando define um ter
 | Contexto de negócio: `.amazonq/rules/business-context.md` + `.github/instructions/business-context.instructions.md` | **REGRA por projeto** (gerada pelo analisador de domínio) | Fonte de verdade de negócio. Sobrescreve exemplos. |
 | Contexto do projeto: `.amazonq/rules/project-context.md` + `.github/instructions/project-context.instructions.md` | **REGRA por projeto** (trilha técnica, reusada) | Contexto de código que o negócio consome. |
 | `prompts/negocio/*.md` | **REGRA** (metodologia) | Carregue conforme a tabela de hooks § 2. |
-| `design-system/*.css`, `templates/diagram-viewer.js`, `sidebar.js` | **REGRA** (reuso) | Mesmos do pack técnico. Não duplicar, não substituir. |
+| `docs/arquitetura/design-system/*.css`, `docs/arquitetura/templates/diagram-viewer.js`, `docs/arquitetura/templates/sidebar.js` | **REGRA** (reuso) | Mesmos do pack técnico. Não duplicar, não substituir. |
 
 A doc de negócio **mora junto** da técnica, no mesmo repo do serviço, e **compartilha** o par de contexto do projeto.
 
@@ -120,6 +120,8 @@ classDef desfechoTriste fill:#e85a5a,stroke:#0a0c12,color:#ffffff,stroke-width:2
 ## 4. Esqueleto de página HTML
 
 Idêntico ao da trilha técnica: siga `.amazonq/rules/frontend-style.md` § 1 e o esqueleto de `architecture-style.md` § 3 (mesmo `shell`, `sidebar.js`, `tokens.css` + `components.css`, `diagram-viewer.js`). **O que muda são as seções de conteúdo**, definidas por cada prompt — não a estrutura.
+
+As páginas geradas vivem em `docs/arquitetura/templates/` no repositório (junto de `sidebar.js`/`diagram-viewer.js`). **Crie `docs/arquitetura/` e subpastas se não existirem** antes de gravar.
 
 ---
 

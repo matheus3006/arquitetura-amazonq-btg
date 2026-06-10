@@ -35,7 +35,7 @@ os dois arquivos de contexto existem?
 ```
 
 O contexto do projeto tem **peso de regra**, igual a este arquivo. Quando ele afirma "não usamos Outbox",
-isso **sobrescreve** qualquer exemplo em `templates/` que mencione Outbox.
+isso **sobrescreve** qualquer exemplo em `docs/arquitetura/templates/` que mencione Outbox.
 
 ---
 
@@ -50,9 +50,9 @@ Antes de qualquer coisa, entenda como tratar o que existe aqui:
 | Contexto do projeto: `.amazonq/rules/project-context.md` + `.github/instructions/project-context.instructions.md` | **REGRA por projeto** (gerada pelo analisador, nos dois destinos) | Define este projeto específico. Sobrescreve exemplos. Se não existirem (ou só um existir), agir conforme o gate acima (analisador ou espelhamento). |
 | `prompts/arquitetura/*.md` | **REGRA** (metodologia) | Carregue conforme tabela de hooks. Siga a metodologia descrita. |
 | `prompts/frontend/*.md` | **REGRA** (metodologia) | Carregue para tarefas visuais. |
-| `design-system/tokens.css` e `components.css` | **REGRA** (CSS) | Use `var(--*)` sempre. Nunca hardcode cor/espaço/raio. |
-| `templates/*.html` | **EXEMPLO** | Páginas de um serviço **fictício** chamado "Liquidação Transacional". Demonstram aplicação dos prompts. **Substitua toda substância (nomes, decisões, latências, stack, glossário) pelo serviço REAL** ao gerar nova documentação. Mantenha apenas o esqueleto estrutural. |
-| `templates/sidebar.js` e `templates/diagram-viewer.js` | **REGRA** (runtime) | Inclua em toda página gerada. Não substitua por alternativa. |
+| `docs/arquitetura/design-system/tokens.css` e `components.css` | **REGRA** (CSS) | Use `var(--*)` sempre. Nunca hardcode cor/espaço/raio. |
+| `docs/arquitetura/templates/*.html` | **EXEMPLO** | Páginas de um serviço **fictício** chamado "Liquidação Transacional". Demonstram aplicação dos prompts. **Substitua toda substância (nomes, decisões, latências, stack, glossário) pelo serviço REAL** ao gerar nova documentação. Mantenha apenas o esqueleto estrutural. |
+| `docs/arquitetura/templates/sidebar.js` e `docs/arquitetura/templates/diagram-viewer.js` | **REGRA** (runtime) | Inclua em toda página gerada. Não substitua por alternativa. |
 
 **Resumo:** estilo de redação, convenção de diagrama, estrutura HTML básica, fluxo dos prompts → **regra**.
 Conteúdo concreto, nomes de serviços, decisões específicas, valores de latência, terminologia de domínio → **exemplo, adaptar à realidade**.
@@ -66,7 +66,7 @@ Esta é **a única regra prescritiva sobre visual** neste workspace. Aplicação
 ### 1.1 Tecnologia: Mermaid via `diagram-viewer.js`
 
 - Use **Mermaid** (não outras ferramentas de diagrama, não imagens PNG, não SVG estático).
-- Renderização via o leitor estático em `templates/diagram-viewer.js`. Esse leitor:
+- Renderização via o leitor estático em `docs/arquitetura/templates/diagram-viewer.js`. Esse leitor:
   - Carrega Mermaid e Panzoom como `<script>` clássicos (não ES Modules — quebram em `file://`).
   - Lê a fonte do diagrama de `<script type="text/mermaid" data-id="...">` no fim do `<body>`.
   - Renderiza com tema `neutral` (fundo claro, traços escuros — boa legibilidade).
@@ -155,7 +155,9 @@ Quando gerar HTML final, **sempre** aplique também `.amazonq/rules/frontend-sty
 
 ## 3. Esqueleto de página HTML
 
-Todo HTML novo segue este esqueleto (demonstrado em `templates/01-visao-geral.html` quando o pack foi instalado com `--with-examples`; sem os exemplos, o esqueleto abaixo é a referência completa). Detalhamento em `frontend-style.md`.
+Todo HTML novo segue este esqueleto (demonstrado em `docs/arquitetura/templates/01-visao-geral.html` quando o pack foi instalado com `--with-examples`; sem os exemplos, o esqueleto abaixo é a referência completa). Detalhamento em `frontend-style.md`.
+
+As páginas geradas vivem em `docs/arquitetura/templates/` no repositório (junto de `sidebar.js`/`diagram-viewer.js`). **Crie `docs/arquitetura/` e subpastas se não existirem** antes de gravar.
 
 ```html
 <!DOCTYPE html>
@@ -229,6 +231,8 @@ Os termos abaixo são definição operacional **no exemplo fictício** "Liquida�
 ---
 
 ## 6. Comportamento de geração
+
+Toda página HTML gerada é gravada em `docs/arquitetura/templates/` (crie os diretórios se não existirem).
 
 ### Ao gerar ADR
 - Mínimo 3 decision drivers. Mínimo 2 opções consideradas.

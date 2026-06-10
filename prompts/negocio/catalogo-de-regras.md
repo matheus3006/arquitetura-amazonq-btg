@@ -6,7 +6,7 @@
 >
 > **Renderizador:** lê a seção "Regras de negócio" do `business-context.md` e a transforma em página HTML navegável. **NÃO descobre regras do zero** — quem faz isso é o `analisador-de-dominio` / `grill-negocio`.
 >
-> Conteúdo de `templates/` é EXEMPLO.
+> Conteúdo de `docs/arquitetura/templates/` é EXEMPLO.
 
 Clona DDD (invariantes) + `operations:process-doc`. Curadoria da **lista canônica de regras de negócio** — agrupa, sinaliza lacunas, nunca inventa.
 

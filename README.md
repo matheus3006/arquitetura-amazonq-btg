@@ -43,13 +43,13 @@ pwsh arquitetura-amazonq-btg\install.ps1 -Target C:\repos\seu-servico
 - `.amazonq/rules/` → as 4 rules (`architecture-style`, `frontend-style`, `negocio-style`, `engenharia-style`)
 - `.github/` → `copilot-instructions.md`, `instructions/` (as 4), `prompts/` e `skills/` inteiras
 - `prompts/` → as 4 trilhas inteiras (`arquitetura`, `frontend`, `negocio`, `engenharia`)
-- `design-system/*.css`
-- `templates/diagram-viewer.js` e `templates/sidebar.js`
-- `COMO-USAR.html`
+- `docs/arquitetura/design-system/*.css`
+- `docs/arquitetura/templates/diagram-viewer.js` e `docs/arquitetura/templates/sidebar.js`
+- `docs/arquitetura/COMO-USAR.html`
 
 **Não** copie os arquivos de contexto por-projeto: `project-context.md` e `business-context.md` (em `.amazonq/rules/`) nem `project-context.instructions.md` e `business-context.instructions.md` (em `.github/instructions/`) — são gerados por-serviço pelos analisadores.
 
-Mensagens prontas para cada gatilho: [COMO-USAR.html](COMO-USAR.html).
+Mensagens prontas para cada gatilho: [COMO-USAR.html](docs/arquitetura/COMO-USAR.html).
 
 > O pack tem **quatro trilhas: técnica, negócio, frontend e engenharia**. Os instaladores entregam as quatro.
 
@@ -57,7 +57,7 @@ Mensagens prontas para cada gatilho: [COMO-USAR.html](COMO-USAR.html).
 
 Uma única regra rígida: **a convenção de diagramas** (Mermaid + viewer + 4 classDefs com cores fixas).
 
-Tudo o mais — paleta, nomes, padrões, glossário — é **convenção adaptável**. O conteúdo das páginas em `templates/` é **exemplo, não blueprint**. O analisador de projeto (rodado na primeira invocação em cada repo) lê o código real e produz o par de contexto do projeto (`.amazonq/rules/` + `.github/instructions/`) para evitar drift do exemplo.
+Tudo o mais — paleta, nomes, padrões, glossário — é **convenção adaptável**. O conteúdo das páginas em `docs/arquitetura/templates/` é **exemplo, não blueprint**. O analisador de projeto (rodado na primeira invocação em cada repo) lê o código real e produz o par de contexto do projeto (`.amazonq/rules/` + `.github/instructions/`) para evitar drift do exemplo.
 
 ## Como funciona
 
@@ -94,7 +94,7 @@ Dev: "ok, agora gera a visão geral"
        ↓
 Q lê architecture-style.md + project-context.md + arquiteto-de-sistema.md
        ↓
-Q gera HTML usando dados do projeto REAL (não do exemplo)
+Q gera HTML em docs/arquitetura/templates/ usando dados do projeto REAL (não do exemplo)
   • Sidebar via sidebar.js
   • Hero com nome real do serviço
   • Diagramas seguindo a convenção rígida (cores fixas)
@@ -107,7 +107,6 @@ Q gera HTML usando dados do projeto REAL (não do exemplo)
 arquitetura/
 ├── README.md                                    ← este arquivo
 ├── INSTALAR.md                                  ← guia de instalação (leitura pelo assistente)
-├── COMO-USAR.html                               ← mensagens prontas para cada gatilho
 ├── LICENSE                                      ← MIT
 ├── .gitignore
 ├── install.sh                                   ← instalador macOS/Linux
@@ -133,15 +132,17 @@ arquitetura/
 ├── tools/
 │   ├── manifest.tsv                             ← slug → trilha → descrição (gera os 36 wrappers)
 │   └── sync-copilot.sh                          ← gera/valida a camada .github/
-├── design-system/
-│   ├── tokens.css                               ← cores, espaço, tipografia, raios, sombras, motion
-│   └── components.css                           ← componentes prontos (callouts, badges, cards, tables, etc.)
-├── templates/
-│   ├── index.html                               ← portal de exemplo
-│   ├── 01-visao-geral.html … 14-enums.html      ← 11 páginas de exemplo (serviço fictício)
-│   ├── sidebar.js                               ← navegação compartilhada
-│   └── diagram-viewer.js                        ← leitor Mermaid + pan/zoom
 └── docs/
+    ├── arquitetura/                             ← espelha o layout do repo alvo
+    │   ├── COMO-USAR.html                       ← mensagens prontas para cada gatilho
+    │   ├── design-system/
+    │   │   ├── tokens.css                       ← cores, espaço, tipografia, raios, sombras, motion
+    │   │   └── components.css                   ← componentes prontos (callouts, badges, cards, tables, etc.)
+    │   └── templates/                           ← runtime + exemplos + páginas geradas
+    │       ├── index.html                       ← portal de exemplo
+    │       ├── 01-visao-geral.html … 14-enums.html ← 11 páginas de exemplo (serviço fictício)
+    │       ├── sidebar.js                       ← navegação compartilhada
+    │       └── diagram-viewer.js                ← leitor Mermaid + pan/zoom
     └── superpowers/                             ← specs e planos de desenvolvimento do pack
 ```
 
@@ -183,10 +184,10 @@ Essa convenção **não muda** quando o resto do visual (paleta, tipografia, etc
 
 ## Visualizar o exemplo localmente
 
-Abra qualquer página em `templates/` direto no navegador (Chrome ou Firefox):
+Abra qualquer página em `docs/arquitetura/templates/` direto no navegador (Chrome ou Firefox):
 
 ```
-file:///caminho/para/arquitetura/templates/index.html
+file:///caminho/para/arquitetura/docs/arquitetura/templates/index.html
 ```
 
 Os scripts são classic (não module) — funciona em `file://` sem servidor.
@@ -220,4 +221,4 @@ Conteúdo do exemplo "Liquidação Transacional"? Não substitua — é exemplo 
 
 MIT — veja [LICENSE](LICENSE).
 
-Conteúdo de exemplo em `templates/` é fictício, não representa nenhum sistema real.
+Conteúdo de exemplo em `docs/arquitetura/templates/` é fictício, não representa nenhum sistema real.

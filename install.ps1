@@ -8,7 +8,7 @@
     pwsh install.ps1 -WithExamples            # inclui as paginas HTML de exemplo
 
   Copia: .amazonq/rules/ (4 rules) + .github/ (camada Copilot) + prompts/ (4 trilhas)
-         + design-system/*.css + templates/{diagram-viewer,sidebar}.js + COMO-USAR.html
+         + docs/arquitetura/ (css do design system, js dos templates e COMO-USAR.html)
   NAO copia: arquivos de contexto por-servico (project/business-context nos dois lados).
 #>
 param(
@@ -76,52 +76,52 @@ foreach ($t in 'arquitetura','frontend','negocio','engenharia') {
 Write-Host "  + prompts/{arquitetura,frontend,negocio,engenharia}"
 
 # 4) Design system
-$dsDst = Join-Path $Target 'design-system'
+$dsDst = Join-Path $Target 'docs/arquitetura/design-system'
 New-Item -ItemType Directory -Force -Path $dsDst | Out-Null
-Copy-Item (Join-Path $PackDir 'design-system/*.css') $dsDst -Force
-Write-Host "  + design-system/*.css"
+Copy-Item (Join-Path $PackDir 'docs/arquitetura/design-system/*.css') $dsDst -Force
+Write-Host "  + docs/arquitetura/design-system/*.css"
 
 # 5) Runtime dos templates
-$tplDst = Join-Path $Target 'templates'
+$tplDst = Join-Path $Target 'docs/arquitetura/templates'
 New-Item -ItemType Directory -Force -Path $tplDst | Out-Null
-Copy-Item (Join-Path $PackDir 'templates/diagram-viewer.js') $tplDst -Force
-Copy-Item (Join-Path $PackDir 'templates/sidebar.js')        $tplDst -Force
-Write-Host "  + templates/diagram-viewer.js + sidebar.js"
+Copy-Item (Join-Path $PackDir 'docs/arquitetura/templates/diagram-viewer.js') $tplDst -Force
+Copy-Item (Join-Path $PackDir 'docs/arquitetura/templates/sidebar.js')        $tplDst -Force
+Write-Host "  + docs/arquitetura/templates/diagram-viewer.js + sidebar.js"
 
 # 5b) Paginas de exemplo (opcional)
 if ($WithExamples) {
-  $html = Get-ChildItem (Join-Path $PackDir 'templates') -Filter '*.html' -ErrorAction SilentlyContinue
+  $html = Get-ChildItem (Join-Path $PackDir 'docs/arquitetura/templates') -Filter '*.html' -ErrorAction SilentlyContinue
   if ($html) {
     $html | Copy-Item -Destination $tplDst -Force -ErrorAction SilentlyContinue
     $copied = @(Get-ChildItem $tplDst -Filter '*.html' -ErrorAction SilentlyContinue)
     if ($copied.Count -ge $html.Count) {
-      Write-Host "  + templates/*.html (exemplos)"
+      Write-Host "  + docs/arquitetura/templates/*.html (exemplos)"
     } else {
-      Write-Host "  ! templates/*.html copiados parcialmente ($($copied.Count) de $($html.Count))"
+      Write-Host "  ! docs/arquitetura/templates/*.html copiados parcialmente ($($copied.Count) de $($html.Count))"
     }
   } else {
-    Write-Host "  ! templates/*.html nao copiados (nenhum .html no pack?)"
+    Write-Host "  ! docs/arquitetura/templates/*.html nao copiados (nenhum .html no pack?)"
   }
 }
 
 # 6) Guia de uso (mensagens prontas - abra no navegador)
-$comoSrc = Join-Path $PackDir 'COMO-USAR.html'
-$comoDst = Join-Path $Target 'COMO-USAR.html'
+$comoSrc = Join-Path $PackDir 'docs/arquitetura/COMO-USAR.html'
+$comoDst = Join-Path $Target 'docs/arquitetura/COMO-USAR.html'
 if (-not (Test-Path -PathType Leaf $comoSrc)) {
-  Write-Host "  ! COMO-USAR.html ausente no pack - pulado"
+  Write-Host "  ! docs/arquitetura/COMO-USAR.html ausente no pack - pulado"
 } elseif (Test-Path -PathType Container $comoDst) {
-  Write-Host "  ! COMO-USAR.html nao copiado (existe um DIRETORIO com esse nome no alvo)"
+  Write-Host "  ! docs/arquitetura/COMO-USAR.html nao copiado (existe um DIRETORIO com esse nome no alvo)"
 } else {
   Copy-Item $comoSrc $comoDst -Force -ErrorAction SilentlyContinue
   if (Test-Path -PathType Leaf $comoDst) {
-    Write-Host "  + COMO-USAR.html"
+    Write-Host "  + docs/arquitetura/COMO-USAR.html"
   } else {
-    Write-Host "  ! COMO-USAR.html nao copiado (destino bloqueado?)"
+    Write-Host "  ! docs/arquitetura/COMO-USAR.html nao copiado (destino bloqueado?)"
   }
 }
 
 # 7) Limpeza de lixo do Finder
-Get-ChildItem -Path $promptsDst, $ghDst, $tplDst, $dsDst -Recurse -Force -Filter '.DS_Store' -ErrorAction SilentlyContinue |
+Get-ChildItem -Path $promptsDst, $ghDst, (Join-Path $Target 'docs/arquitetura') -Recurse -Force -Filter '.DS_Store' -ErrorAction SilentlyContinue |
   Remove-Item -Force -ErrorAction SilentlyContinue
 
 Write-Host "`n[ok] Instalado. O Amazon Q le .amazonq/rules/ e o Copilot le .github/ automaticamente.`n"
@@ -130,4 +130,4 @@ Write-Host '   Tecnica:    "documenta esse servico"   (Copilot IDE: /analisador-
 Write-Host '   Negocio:    "analisa o dominio" -> "grilla o negocio"'
 Write-Host '   Frontend:   "polir essa pagina"'
 Write-Host '   Engenharia: "investiga esse bug" / "planeja a implementacao"'
-Write-Host "`nMensagens prontas por trilha: abra COMO-USAR.html no navegador"
+Write-Host "`nMensagens prontas por trilha: abra docs/arquitetura/COMO-USAR.html no navegador"

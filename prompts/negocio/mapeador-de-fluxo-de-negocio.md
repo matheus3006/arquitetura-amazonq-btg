@@ -9,7 +9,7 @@
 > Diagrama segue a **§ 3 da `negocio-style.md`** — classDefs de negócio (`papel/atividade/decisao/
 > externo/desfechoOk/desfechoTriste`) no mesmo `diagram-viewer.js`. **Não** use os classDefs técnicos.
 >
-> Conteúdo de `templates/` é EXEMPLO. Use atores, estados e regras do domínio REAL.
+> Conteúdo de `docs/arquitetura/templates/` é EXEMPLO. Use atores, estados e regras do domínio REAL.
 
 Clona BPMN / event-storming + `operations:process-doc`, com lente de **negócio**. Desenha **como o negócio funciona** — gatilho, atividades, pontos de decisão (onde uma regra ramifica) e os desfechos **feliz e tristes** — num diagrama fácil de ler.
 

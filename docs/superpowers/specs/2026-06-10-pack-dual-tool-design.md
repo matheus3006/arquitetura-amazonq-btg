@@ -169,6 +169,10 @@ Método de porte (já validado no pack): preservar fases, gates e árvore de dec
 3. **Conteúdo:** grep de varredura pós-neutralização (`amazon q|amazonq|@workspace|modo write`) deve retornar zero em `prompts/` (exceto menções legítimas em tabelas de invocação por ferramenta); grep de paths pendurados (`templates/negocio`, refs a arquivos inexistentes) deve retornar zero no repo inteiro.
 4. **Smoke manual (usuário, no trabalho):** VS Code `/gerador-adr`; CLI com gatilho natural; Amazon Q com fluxo atual (regressão).
 
+## 11-A. Adendo (2026-06-10, pós-merge) — saída em `docs/arquitetura/`
+
+Decisão do usuário: todo artefato `.html`/`.css`/`.js` do pack vive em `docs/arquitetura/` no projeto alvo (criada pelo agente/installer se não existir). Escolhas: estrutura interna **espelhada** (`docs/arquitetura/design-system/` + `docs/arquitetura/templates/`, páginas geradas em `templates/` junto do runtime js — preserva os hrefs relativos `../design-system/` das páginas), `COMO-USAR.html` **dentro** de `docs/arquitetura/`, nome em **minúscula**. O próprio pack adota o mesmo layout (instalar = copiar `docs/arquitetura/` inteiro). Rules ganham instrução explícita de salvar páginas geradas em `docs/arquitetura/templates/`, criando os diretórios se preciso. Referências absolutas-da-raiz nos 23 arquivos afetados ganham o prefixo; hrefs relativos internos dos HTML não mudam.
+
 ## 11. Fora de escopo desta rodada
 
 - TDD como prompt (decisão do time).

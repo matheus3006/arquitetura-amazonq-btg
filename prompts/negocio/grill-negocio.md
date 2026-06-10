@@ -11,7 +11,7 @@
 > O produto da sessão é o *entendimento resolvido*, capturado **inline** no `business-context.md`
 > conforme cada ramo fecha. Um relatório HTML de fechamento é opcional, não o objetivo.
 >
-> Conteúdo de `templates/` é **EXEMPLO**. Interrogue contra o **código e o domínio reais** do usuário.
+> Conteúdo de `docs/arquitetura/templates/` é **EXEMPLO**. Interrogue contra o **código e o domínio reais** do usuário.
 
 Clona o comportamento de `grill-me` + `grill-with-docs`, com **lente de negócio**.
 Interroga o usuário implacavelmente sobre o negócio por trás do sistema — regras, donos de decisão,

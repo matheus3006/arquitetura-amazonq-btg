@@ -6,7 +6,7 @@
 >
 > Use após o visual base estar aprovado. Muitas das técnicas listadas abaixo (press feedback,
 > easings customizados, scrollbar, focus premium, stagger) **já estão aplicadas** no
-> `design-system/components.css` atual. Use este prompt para auditar onde falta ou estender
+> `docs/arquitetura/design-system/components.css` atual. Use este prompt para auditar onde falta ou estender
 > a polimentos novos.
 >
 > Polimento visual **não substitui** a convenção de diagramas em `architecture-style.md`
@@ -176,5 +176,5 @@ Quando não há conteúdo (lista vazia, busca sem resultado), apresente:
 
 ## Referências
 - Pré-requisito: visual base aprovado em `designer-ux-controlado.md`.
-- Componentes a polir: `design-system/components.css`.
-- Tokens necessários: `--ease-*`, `--dur-*` em `design-system/tokens.css`.
+- Componentes a polir: `docs/arquitetura/design-system/components.css`.
+- Tokens necessários: `--ease-*`, `--dur-*` em `docs/arquitetura/design-system/tokens.css`.

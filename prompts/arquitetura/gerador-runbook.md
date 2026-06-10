@@ -4,7 +4,7 @@
 >
 > Este prompt é referenciado pela rule da trilha `arquitetura` § 2 (`.amazonq/rules/architecture-style.md` ou `.github/instructions/architecture-style.instructions.md`, conforme a ferramenta).
 >
-> **Conteúdo de `templates/runbook.html`** (legado tema off-white) e dos exemplos no fluxo
+> **Conteúdo de `docs/arquitetura/templates/runbook.html`** (legado tema off-white) e dos exemplos no fluxo
 > "Liquidação Transacional" é **EXEMPLO**. Runbooks reais que você gerar devem seguir o
 > esqueleto HTML padrão da rule da trilha `frontend` § 1 (`.amazonq/rules/frontend-style.md` ou `.github/instructions/frontend-style.instructions.md`, conforme a ferramenta) com sidebar + main +
 > hero + sections, **não** o template legado.
@@ -126,5 +126,5 @@ Para failure modes complexos com decisão ramificada, adicione um diagrama segui
 - Esqueleto HTML padrão: `frontend-style.md` § 1.
 - Padrão de diagrama (quando aplicável): `architecture-style.md` § 1.
 - Comportamento esperado em runbook: `architecture-style.md` § 6 ("Ao gerar Runbook").
-- Página exemplo de runbook (em estilo legado off-white, use apenas como referência conceitual): `templates/runbook.html`.
+- Página exemplo de runbook (em estilo legado off-white, use apenas como referência conceitual): `docs/arquitetura/templates/runbook.html`.
 - Prompt complementar para sequence diagrams: `documentador-fluxo.md`.

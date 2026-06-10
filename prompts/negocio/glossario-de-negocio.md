@@ -6,7 +6,7 @@
 >
 > **Renderizador:** transforma a seção "Glossário do domínio" do `business-context.md` em página HTML. **NÃO inventa termos** — o glossário-fonte é mantido pelo `analisador-de-dominio` / `grill-negocio`.
 >
-> Conteúdo de `templates/` é EXEMPLO.
+> Conteúdo de `docs/arquitetura/templates/` é EXEMPLO.
 
 Clona DDD (linguagem ubíqua) + a disciplina de glossário do `grill-with-docs`. Mantém **um** termo canônico por conceito; sinônimos vão pra `_Evitar_`.
 

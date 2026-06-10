@@ -157,5 +157,5 @@ Seções típicas (cada uma como `<h2 class="section-eyebrow">`):
 - Esqueleto HTML padrão: `frontend-style.md` § 1.
 - Padrão de diagrama: `architecture-style.md` § 1.
 - Terminologia transacional: `architecture-style.md` § 5.
-- Página exemplo de fluxo: `templates/07-fluxo-autorizacao.html` (use como referência de FORMA).
+- Página exemplo de fluxo: `docs/arquitetura/templates/07-fluxo-autorizacao.html` (use como referência de FORMA).
 - Prompt complementar: `gerador-adr.md` para decisões que emergem da análise do fluxo.

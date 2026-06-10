@@ -8,7 +8,7 @@
 > opinativo de estilos para escolha rápida.
 >
 > Catálogos abaixo (estilos, paletas, tipografias) são SUGESTÕES. A paleta atual em
-> `design-system/tokens.css` é **convenção da casa adaptável**; a convenção de diagramas
+> `docs/arquitetura/design-system/tokens.css` é **convenção da casa adaptável**; a convenção de diagramas
 > em `architecture-style.md` § 1 é a **única regra rígida** e **não muda**
 > ao trocar de paleta.
 

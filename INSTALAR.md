@@ -38,9 +38,11 @@ Copie do pack para a raiz do repo alvo, preservando a estrutura de pastas:
 | `.github/prompts/` (inteira) | `.github/prompts/` |
 | `.github/skills/` (inteira) | `.github/skills/` |
 | `prompts/arquitetura/`, `prompts/frontend/`, `prompts/negocio/`, `prompts/engenharia/` (inteiras) | `prompts/` |
-| `design-system/*.css` | `design-system/` |
-| `templates/diagram-viewer.js`, `templates/sidebar.js` | `templates/` |
-| `COMO-USAR.html` | raiz do repo |
+| `docs/arquitetura/design-system/*.css` | `docs/arquitetura/design-system/` |
+| `docs/arquitetura/templates/diagram-viewer.js`, `docs/arquitetura/templates/sidebar.js` | `docs/arquitetura/templates/` |
+| `docs/arquitetura/COMO-USAR.html` | `docs/arquitetura/COMO-USAR.html` |
+
+Crie `docs/arquitetura/` (e subpastas) no alvo se não existirem.
 
 **NUNCA copie (nem sobrescreva se existirem no alvo):**
 
@@ -50,8 +52,10 @@ Copie do pack para a raiz do repo alvo, preservando a estrutura de pastas:
 Esses arquivos NÃO existem no pack — a regra é sobre nunca sobrescrevê-los no repositório alvo quando já existirem lá. Esses 4 são por-serviço, gerados pelos analisadores DEPOIS da instalação. Se já existem
 no alvo, é uma instalação anterior — preserve-os intactos.
 
-Também não copie: `templates/*.html` (exemplos, só se o usuário pedir), `tools/`,
-`INSTALAR.md`, `README.md`, `LICENSE`, `docs/` — são do pack, não do serviço.
+Também não copie: `docs/arquitetura/templates/*.html` (exemplos, só se o usuário pedir),
+`tools/`, `INSTALAR.md`, `README.md`, `LICENSE`, `docs/superpowers/` — são do pack, não do
+serviço. Atenção: o resto de `docs/arquitetura/` (css, os 2 `.js` e `COMO-USAR.html`) **é**
+copiado, conforme a tabela acima.
 
 ## Passo 3 — Verifique a instalação
 
@@ -61,7 +65,7 @@ Confira que TODOS estes paths existem no repo alvo (via shell ou listagem de arq
 - `.github/copilot-instructions.md` + `.github/instructions/` com 4 arquivos `*-style.instructions.md` (mais os de contexto, se os analisadores já rodaram neste repo)
 - `.github/prompts/` com 18 arquivos `.prompt.md` e `.github/skills/` com 18 subpastas
 - `prompts/` com as 4 trilhas (arquitetura 7, frontend 4, negocio 5, engenharia 2 — 18 arquivos `.md`)
-- `design-system/` com 2 `.css`; `templates/` com os 2 `.js`; `COMO-USAR.html` na raiz
+- `docs/arquitetura/design-system/` com 2 `.css`; `docs/arquitetura/templates/` com os 2 `.js`; `docs/arquitetura/COMO-USAR.html`
 
 Se algo faltar, volte ao passo que o copia. Não declare a instalação concluída sem
 esta verificação (evidência antes de afirmação).
@@ -79,7 +83,7 @@ Ao terminar, diga ao usuário, nas suas palavras:
 2. O primeiro passo de uso é gerar o contexto do projeto: mensagem "analisa o projeto"
    (Amazon Q) ou `/analisador-de-projeto` (Copilot IDE). Sem isso, o pack bloqueia
    gerações de documentação de propósito.
-3. As mensagens prontas para todos os fluxos estão em `COMO-USAR.html` — abrir no navegador.
+3. As mensagens prontas para todos os fluxos estão em `docs/arquitetura/COMO-USAR.html` — abrir no navegador.
 
 ## Regras para você, assistente
 

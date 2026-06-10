@@ -8,8 +8,8 @@
 #   bash install.sh --help                  # mostra esta ajuda
 #
 # Copia: .amazonq/rules/ (4 rules) + .github/ (camada Copilot: instructions,
-#        prompts, skills) + prompts/ (4 trilhas) + design-system/*.css +
-#        templates/{diagram-viewer,sidebar}.js + COMO-USAR.html
+#        prompts, skills) + prompts/ (4 trilhas) e
+#        docs/arquitetura/ (css do design system, js dos templates, COMO-USAR.html)
 # NAO copia: arquivos de contexto por-servico (project/business-context nos
 #        dois lados) — sao gerados pelos analisadores e preservados em re-runs.
 set -euo pipefail
@@ -76,38 +76,38 @@ done
 echo "  ✓ prompts/{arquitetura,frontend,negocio,engenharia}"
 
 # 4) Design system (CSS reutilizavel)
-mkdir -p "$TARGET/design-system"
-cp "$PACK_DIR/design-system/"*.css "$TARGET/design-system/"
-echo "  ✓ design-system/*.css"
+mkdir -p "$TARGET/docs/arquitetura/design-system"
+cp "$PACK_DIR/docs/arquitetura/design-system/"*.css "$TARGET/docs/arquitetura/design-system/"
+echo "  ✓ docs/arquitetura/design-system/*.css"
 
 # 5) Runtime dos templates (viewer + sidebar)
-mkdir -p "$TARGET/templates"
-cp "$PACK_DIR/templates/diagram-viewer.js" "$TARGET/templates/"
-cp "$PACK_DIR/templates/sidebar.js"        "$TARGET/templates/"
-echo "  ✓ templates/diagram-viewer.js + sidebar.js"
+mkdir -p "$TARGET/docs/arquitetura/templates"
+cp "$PACK_DIR/docs/arquitetura/templates/diagram-viewer.js" "$TARGET/docs/arquitetura/templates/"
+cp "$PACK_DIR/docs/arquitetura/templates/sidebar.js"        "$TARGET/docs/arquitetura/templates/"
+echo "  ✓ docs/arquitetura/templates/diagram-viewer.js + sidebar.js"
 
 # 5b) Paginas de exemplo (opcional — so com --with-examples)
 if [ "$WITH_EXAMPLES" = "1" ]; then
-  if cp "$PACK_DIR/templates/"*.html "$TARGET/templates/" 2>/dev/null; then
-    echo "  ✓ templates/*.html (exemplos)"
+  if cp "$PACK_DIR/docs/arquitetura/templates/"*.html "$TARGET/docs/arquitetura/templates/" 2>/dev/null; then
+    echo "  ✓ docs/arquitetura/templates/*.html (exemplos)"
   else
-    echo "  ⚠ templates/*.html nao copiados (nenhum .html no pack?)"
+    echo "  ⚠ docs/arquitetura/templates/*.html nao copiados (nenhum .html no pack?)"
   fi
 fi
 
 # 6) Guia de uso (mensagens prontas — abra no navegador)
-if [ ! -f "$PACK_DIR/COMO-USAR.html" ]; then
-  echo "  ⚠ COMO-USAR.html ausente no pack — pulado"
-elif [ -d "$TARGET/COMO-USAR.html" ]; then
-  echo "  ⚠ COMO-USAR.html nao copiado (existe um DIRETORIO com esse nome no alvo)"
-elif cp "$PACK_DIR/COMO-USAR.html" "$TARGET/COMO-USAR.html" 2>/dev/null && [ -f "$TARGET/COMO-USAR.html" ]; then
-  echo "  ✓ COMO-USAR.html"
+if [ ! -f "$PACK_DIR/docs/arquitetura/COMO-USAR.html" ]; then
+  echo "  ⚠ docs/arquitetura/COMO-USAR.html ausente no pack — pulado"
+elif [ -d "$TARGET/docs/arquitetura/COMO-USAR.html" ]; then
+  echo "  ⚠ docs/arquitetura/COMO-USAR.html nao copiado (existe um DIRETORIO com esse nome no alvo)"
+elif cp "$PACK_DIR/docs/arquitetura/COMO-USAR.html" "$TARGET/docs/arquitetura/COMO-USAR.html" 2>/dev/null && [ -f "$TARGET/docs/arquitetura/COMO-USAR.html" ]; then
+  echo "  ✓ docs/arquitetura/COMO-USAR.html"
 else
-  echo "  ⚠ COMO-USAR.html nao copiado (destino bloqueado?)"
+  echo "  ⚠ docs/arquitetura/COMO-USAR.html nao copiado (destino bloqueado?)"
 fi
 
 # 7) Limpeza de lixo do Finder
-find "$TARGET/prompts" "$TARGET/.github" "$TARGET/templates" "$TARGET/design-system" \
+find "$TARGET/prompts" "$TARGET/.github" "$TARGET/docs/arquitetura" \
   -name '.DS_Store' -delete 2>/dev/null || true
 
 echo ""
@@ -119,4 +119,4 @@ echo "   Negocio:    \"analisa o dominio\" → \"grilla o negocio\""
 echo "   Frontend:   \"polir essa pagina\""
 echo "   Engenharia: \"investiga esse bug\" · \"planeja a implementacao\""
 echo ""
-echo "📖 Mensagens prontas por trilha: abra COMO-USAR.html no navegador"
+echo "📖 Mensagens prontas por trilha: abra docs/arquitetura/COMO-USAR.html no navegador"

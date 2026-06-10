@@ -4,7 +4,7 @@
 >
 > Este prompt é referenciado pela rule da trilha `arquitetura` § 2 (`.amazonq/rules/architecture-style.md` ou `.github/instructions/architecture-style.instructions.md`, conforme a ferramenta).
 >
-> **Conteúdo das páginas em `templates/`** (serviço fictício "Liquidação Transacional",
+> **Conteúdo das páginas em `docs/arquitetura/templates/`** (serviço fictício "Liquidação Transacional",
 > motor "FICO Falcon", limites em R$, stack específica, etc.) é **EXEMPLO** de aplicação
 > deste prompt. Toda substância (nomes, decisões, latências, stack, glossário, valores)
 > deve ser substituída pelo serviço REAL que você está documentando.
@@ -53,7 +53,7 @@ Especificação completa do padrão de diagramas em `architecture-style.md` § 1
 ### Passo 3 — Estrutura da página
 A estrutura HTML (esqueleto `<div class="shell">` + `<aside id="sidebar">` + `<main id="main">` + scripts) é definida na rule da trilha `frontend` § 1 (`.amazonq/rules/frontend-style.md` ou `.github/instructions/frontend-style.instructions.md`, conforme a ferramenta).
 
-Use a página `templates/01-visao-geral.html` como referência da forma. **Substitua todo o conteúdo** pelo do serviço real.
+Use a página `docs/arquitetura/templates/01-visao-geral.html` como referência da forma. **Substitua todo o conteúdo** pelo do serviço real.
 
 Seções típicas que cubrem o essencial de uma visão geral (adapte conforme a realidade):
 
@@ -91,7 +91,7 @@ Antes de entregar, pergunte ao usuário:
 - **Não escolher por preferência estética.** Se "Kafka vs RabbitMQ" aparece, abra uma ADR. Não decida por gosto.
 - **Não documentar como verdade aspiracional.** "Usamos circuit breaker" é factual se o código tem Polly configurado. Se não tem, escreva "a implementar" ou abra dívida técnica.
 - **Não pular as 5 perguntas-âncora.** Mesmo sob pressão para "entregar logo". O custo de documentar arquitetura sem entender o domínio é uma documentação que mente.
-- **Não copiar conteúdo do exemplo "Liquidação Transacional".** Use as 12 páginas em `templates/` apenas como referência de **forma**.
+- **Não copiar conteúdo do exemplo "Liquidação Transacional".** Use as 12 páginas em `docs/arquitetura/templates/` apenas como referência de **forma**.
 
 ## Exemplo de invocação
 

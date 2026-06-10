@@ -7,7 +7,7 @@
 > Use quando o usuário pedir para auditar, estender ou padronizar o design system
 > (tokens.css + components.css).
 >
-> A lista de componentes abaixo reflete o **estado atual** do `design-system/components.css`.
+> A lista de componentes abaixo reflete o **estado atual** do `docs/arquitetura/design-system/components.css`.
 > Componentes podem ser adicionados, mas o **padrão `.diagram-viewer`** (definido na rule da trilha `frontend` § 3 — `.amazonq/rules/frontend-style.md` ou `.github/instructions/frontend-style.instructions.md`, conforme a ferramenta)
 > **não pode ser substituído** — é a única regra rígida de componente neste workspace.
 
@@ -30,7 +30,7 @@ Você é uma engenheira de design system. Sua atitude:
 ## Estrutura do design system
 
 ```
-design-system/
+docs/arquitetura/design-system/
 ├── tokens.css              ← variáveis CSS (cores, espaço, tipografia, etc.)
 ├── components.css          ← componentes reutilizáveis usando tokens
 └── (futuro) catalog.html   ← página viva mostrando cada componente
@@ -131,13 +131,13 @@ Comandos que o usuário pode rodar:
 
 ```bash
 # Tokens hardcoded escapando do sistema
-grep -rE "#[0-9a-fA-F]{3,8}\b" templates/ | grep -v "(?:link)"
+grep -rE "#[0-9a-fA-F]{3,8}\b" docs/arquitetura/templates/ | grep -v "(?:link)"
 
 # Cores duplicadas no tokens.css
-grep -E "^\s*--color" design-system/tokens.css | sort
+grep -E "^\s*--color" docs/arquitetura/design-system/tokens.css | sort
 
 # Componentes definidos vs. usados
-grep -E "^\.(\w+)" design-system/components.css | awk -F'[ {.]' '{print $2}' | sort -u
+grep -E "^\.(\w+)" docs/arquitetura/design-system/components.css | awk -F'[ {.]' '{print $2}' | sort -u
 ```
 
 ## Regras de comportamento
@@ -164,6 +164,6 @@ grep -E "^\.(\w+)" design-system/components.css | awk -F'[ {.]' '{print $2}' | s
 | Copilot CLI | Gatilho natural — a instruction roteia |
 
 ## Referências
-- Base: `design-system/tokens.css`, `design-system/components.css`.
+- Base: `docs/arquitetura/design-system/tokens.css`, `docs/arquitetura/design-system/components.css`.
 - Frontend rules: `frontend-style.md`.
 - Refinamento: `polidor-ui.md` para microinterações nos componentes.

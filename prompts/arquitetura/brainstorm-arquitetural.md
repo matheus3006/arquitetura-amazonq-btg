@@ -7,7 +7,7 @@
 > Brainstorming é metodologia de pensamento — não produz HTML final. Quando o brainstorm
 > convergir para uma decisão, encaminhe ao `gerador-adr.md` para registro.
 >
-> **Conteúdo das páginas em `templates/`** é EXEMPLO; aplique este prompt ao serviço REAL.
+> **Conteúdo das páginas em `docs/arquitetura/templates/`** é EXEMPLO; aplique este prompt ao serviço REAL.
 
 Clona o comportamento da skill `superpowers:brainstorming` aplicada a decisões de arquitetura.
 

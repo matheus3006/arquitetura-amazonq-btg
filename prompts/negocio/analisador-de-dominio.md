@@ -10,7 +10,7 @@
 > **Isento do GATE** (ele é quem cria o arquivo). Na **Fase 2** ele **delega ao protocolo do
 > `grill-negocio.md`** — não reimplemente o loop, siga aquele (regra de ouro + ledger + fases).
 >
-> Conteúdo de `templates/` é **EXEMPLO**. Reconstrua o negócio do **código e domínio reais**.
+> Conteúdo de `docs/arquitetura/templates/` é **EXEMPLO**. Reconstrua o negócio do **código e domínio reais**.
 
 Clona `grill-with-docs` (domain awareness) + DDD (linguagem ubíqua / bounded contexts) + event-storming. Lê o código, **propõe** a visão de negócio candidata, **confirma com você por grilling**, e grava o `business-context.md`.
 

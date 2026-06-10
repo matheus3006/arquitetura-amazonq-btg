@@ -4,7 +4,7 @@
 >
 > Este prompt é referenciado pela rule da trilha `arquitetura` § 2 (`.amazonq/rules/architecture-style.md` ou `.github/instructions/architecture-style.instructions.md`, conforme a ferramenta).
 >
-> **Conteúdo das páginas em `templates/`** (serviço fictício "Liquidação Transacional", etc.)
+> **Conteúdo das páginas em `docs/arquitetura/templates/`** (serviço fictício "Liquidação Transacional", etc.)
 > é **EXEMPLO** para demonstrar a aplicação dos prompts. Quando revisar documentação real,
 > compare o que está escrito com o **código e domínio do usuário**, não com o exemplo.
 >

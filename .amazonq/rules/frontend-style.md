@@ -11,9 +11,9 @@
 | Item | Status |
 |---|---|
 | Esqueleto HTML, padrão de carregamento de scripts, padrão `.diagram-viewer` | **REGRA** |
-| Tokens de cor, espaço, tipografia em `design-system/tokens.css` | **REGRA de uso** (via `var(--*)`) |
-| Componentes em `design-system/components.css` | **CATÁLOGO disponível** — use o existente, evite reinventar |
-| Conteúdo das páginas em `templates/` | **EXEMPLO** — substitua substância pelo serviço real |
+| Tokens de cor, espaço, tipografia em `docs/arquitetura/design-system/tokens.css` | **REGRA de uso** (via `var(--*)`) |
+| Componentes em `docs/arquitetura/design-system/components.css` | **CATÁLOGO disponível** — use o existente, evite reinventar |
+| Conteúdo das páginas em `docs/arquitetura/templates/` | **EXEMPLO** — substitua substância pelo serviço real |
 | Visual final (paleta navy/azul, dark-only) | **CONVENÇÃO da casa** — discutível com o time real, hoje é o padrão |
 
 ---

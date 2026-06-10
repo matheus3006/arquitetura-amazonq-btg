@@ -4,8 +4,8 @@
 >
 > Este prompt é referenciado pela rule da trilha `arquitetura` § 2 (`.amazonq/rules/architecture-style.md` ou `.github/instructions/architecture-style.instructions.md`, conforme a ferramenta).
 >
-> **Conteúdo das páginas em `templates/`** (incluindo o legado `templates/adr.html` e
-> `templates/exemplo-adr-outbox.html`) é **EXEMPLO**. As ADRs reais que você gerar devem
+> **Conteúdo das páginas em `docs/arquitetura/templates/`** (incluindo o legado `docs/arquitetura/templates/adr.html` e
+> `docs/arquitetura/templates/exemplo-adr-outbox.html`) é **EXEMPLO**. As ADRs reais que você gerar devem
 > seguir o esqueleto HTML padrão definido na rule da trilha `frontend` § 1 (`.amazonq/rules/frontend-style.md` ou `.github/instructions/frontend-style.instructions.md`, conforme a ferramenta)
 > (com sidebar, hero, sections), **não** os arquivos legados de tema off-white.
 >
@@ -127,5 +127,5 @@ Se a decisão envolve fluxo novo, adicione um diagrama seguindo a convenção r�
 - Esqueleto HTML padrão: `frontend-style.md` § 1.
 - Convenção de diagrama: `architecture-style.md` § 1.
 - Comportamento esperado em ADR: `architecture-style.md` § 6 ("Ao gerar ADR").
-- Página de exemplo bem estruturada (para referência de FORMA, não de conteúdo): `templates/01-visao-geral.html`.
+- Página de exemplo bem estruturada (para referência de FORMA, não de conteúdo): `docs/arquitetura/templates/01-visao-geral.html`.
 - Prompt complementar para revisão pós-criação: `prompts/arquitetura/grill-doc.md`.
