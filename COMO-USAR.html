@@ -44,9 +44,10 @@
     <section class="regra-banner">
       <h2>⚠ Regra deste repositório: toda mudança de código começa com uma task</h2>
       <p>Assim que o pack está instalado, o protocolo de controle vale para <strong>todo
-         pedido que mexa em código</strong>. Abra cada um com <code>nova tarefa: &lt;slug&gt; — &lt;descrição&gt;</code>
-         (card 19) — o assistente cria a task em <code>controle/&lt;task-id&gt;/</code>, escreve o plano e
-         pede sua aprovação <em>antes</em> de tocar no código.</p>
+         pedido que mexa em código</strong>. Você <strong>não precisa de comando nem de escrever um
+         slug</strong>: mande o pedido como uma mensagem normal (como esta frase) e o assistente
+         <strong>deriva o slug do próprio pedido</strong>, cria a task em <code>controle/&lt;AAAA-MM-DD-slug&gt;/</code>,
+         escreve o plano e pede sua aprovação <em>antes</em> de tocar no código.</p>
       <p>Isso é <strong>forçado</strong>, não convenção: o <code>pre-commit</code> instalado bloqueia
          qualquer commit que altere código sem os arquivos da task no mesmo commit. Bypass consciente:
          <code>git commit --no-verify</code>.</p>
@@ -296,15 +297,17 @@ Pronto quando: plano salvo em docs/planos/ + resumo (nº de etapas, primeira eta
         </article>
 
         <article class="msg-card">
-          <h3>19 · Nova tarefa (controle de contexto)</h3>
-          <p class="quando">Qualquer mudança no repositório — abre o protocolo de 2 turnos (plano → aprovação → execução).</p>
-          <pre class="msg">nova tarefa: <b>[SLUG]</b> — <b>[DESCRICAO_BREVE]</b>
+          <h3>19 · Abrir uma task (controle de contexto)</h3>
+          <p class="quando">Qualquer mudança de código — descreva o pedido normalmente; o slug se cria sozinho.</p>
+          <pre class="msg"><b>[DESCREVA O QUE QUER MUDAR — uma mensagem normal, como esta]</b>
 
-Objetivo: abrir esta task sob o protocolo de controle — escopo e plano aprovados ANTES de qualquer código, evidências registradas no fechamento, e o mínimo de turnos da minha cota.
+Objetivo: tratar este pedido sob o protocolo de controle — escopo e plano aprovados ANTES de qualquer código, evidências no fechamento, e o mínimo de turnos da minha cota.
 
-Siga o protocolo de prompts/engenharia/controle-de-tarefa.md: neste turno crie SOMENTE controle/&lt;task-id&gt;/ (TASK.md com escopo+ACs e o PLANO — me pergunte o formato .md ou .html junto com as demais dúvidas, num bloco único) e termine pedindo aprovação. Execução apenas depois do meu "aprovado" — e aí tudo num turno: checklist, código, LEDGER com evidências e fechamento.
+Siga o protocolo de prompts/engenharia/controle-de-tarefa.md: derive o slug do meu pedido (não me peça o nome), anuncie o task-id que escolheu, e neste turno crie SOMENTE controle/&lt;task-id&gt;/ (TASK.md com escopo+ACs e o PLANO — me pergunte o formato .md ou .html junto com as demais dúvidas, num bloco único) e termine pedindo aprovação. Execução só depois do meu "aprovado" — e aí tudo num turno: checklist, código, LEDGER com evidências e fechamento.
 
-Pronto quando (turno 1): TASK.md + PLANO criados, aprovação pedida, e NADA fora de controle/ foi tocado.</pre>
+Pronto quando (turno 1): task-id anunciado, TASK.md + PLANO criados, aprovação pedida, e NADA fora de controle/ foi tocado.
+
+(Quer nomear na mão? Comece a mensagem com "nova tarefa: &lt;slug&gt; — ".)</pre>
           <div class="card-foot"><span class="slug">Copilot IDE: /controle-de-tarefa</span><button class="copy-btn" type="button">Copiar</button></div>
         </article>
 

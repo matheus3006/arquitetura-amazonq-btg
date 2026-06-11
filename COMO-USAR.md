@@ -5,7 +5,7 @@
 
 ## ⚠ Regra deste repositório: toda mudança de código começa com uma task
 
-> Assim que o pack está instalado, o protocolo de controle vale para todo pedido que mexa em código. Abra cada um com nova tarefa: <slug> — <descrição> (card 19) — o assistente cria a task em controle/<task-id>/, escreve o plano e pede sua aprovação antes de tocar no código.
+> Assim que o pack está instalado, o protocolo de controle vale para todo pedido que mexa em código. Você não precisa de comando nem de escrever um slug: mande o pedido como uma mensagem normal (como esta frase) e o assistente deriva o slug do próprio pedido, cria a task em controle/<AAAA-MM-DD-slug>/, escreve o plano e pede sua aprovação antes de tocar no código.
 >
 > Isso é forçado, não convenção: o pre-commit instalado bloqueia qualquer commit que altere código sem os arquivos da task no mesmo commit. Bypass consciente: git commit --no-verify.
 >
@@ -284,18 +284,20 @@ Pronto quando: plano salvo em docs/planos/ + resumo (nº de etapas, primeira eta
 
 _Copilot IDE: /planejador-de-implementacao_
 
-### 19 · Nova tarefa (controle de contexto)
+### 19 · Abrir uma task (controle de contexto)
 
-**Quando:** Qualquer mudança no repositório — abre o protocolo de 2 turnos (plano → aprovação → execução).
+**Quando:** Qualquer mudança de código — descreva o pedido normalmente; o slug se cria sozinho.
 
 ```text
-nova tarefa: [SLUG] — [DESCRICAO_BREVE]
+[DESCREVA O QUE QUER MUDAR — uma mensagem normal, como esta]
 
-Objetivo: abrir esta task sob o protocolo de controle — escopo e plano aprovados ANTES de qualquer código, evidências registradas no fechamento, e o mínimo de turnos da minha cota.
+Objetivo: tratar este pedido sob o protocolo de controle — escopo e plano aprovados ANTES de qualquer código, evidências no fechamento, e o mínimo de turnos da minha cota.
 
-Siga o protocolo de prompts/engenharia/controle-de-tarefa.md: neste turno crie SOMENTE controle/<task-id>/ (TASK.md com escopo+ACs e o PLANO — me pergunte o formato .md ou .html junto com as demais dúvidas, num bloco único) e termine pedindo aprovação. Execução apenas depois do meu "aprovado" — e aí tudo num turno: checklist, código, LEDGER com evidências e fechamento.
+Siga o protocolo de prompts/engenharia/controle-de-tarefa.md: derive o slug do meu pedido (não me peça o nome), anuncie o task-id que escolheu, e neste turno crie SOMENTE controle/<task-id>/ (TASK.md com escopo+ACs e o PLANO — me pergunte o formato .md ou .html junto com as demais dúvidas, num bloco único) e termine pedindo aprovação. Execução só depois do meu "aprovado" — e aí tudo num turno: checklist, código, LEDGER com evidências e fechamento.
 
-Pronto quando (turno 1): TASK.md + PLANO criados, aprovação pedida, e NADA fora de controle/ foi tocado.
+Pronto quando (turno 1): task-id anunciado, TASK.md + PLANO criados, aprovação pedida, e NADA fora de controle/ foi tocado.
+
+(Quer nomear na mão? Comece a mensagem com "nova tarefa: <slug> — ".)
 ```
 
 _Copilot IDE: /controle-de-tarefa_

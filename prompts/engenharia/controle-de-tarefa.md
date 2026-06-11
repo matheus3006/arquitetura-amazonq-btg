@@ -13,8 +13,21 @@ uma task cabe em **2 turnos** (trivial: 1), e qualquer retomada custa no máximo
 de leitura (TASK.md + LEDGER.md).
 
 ## Quando usar
-- O usuário escreveu `nova tarefa: <slug> — <descrição>`.
-- O usuário pediu qualquer edição no repositório e não há task ativa em `controle/`.
+- O usuário pediu qualquer edição de código (mensagem normal) e não há task ativa em `controle/`.
+- O usuário escreveu `nova tarefa: <slug> — <descrição>` (override explícito do nome).
+
+## Slug automático (regra, não opção)
+
+O usuário **não escreve o slug** — você o deriva do pedido. No início do Turno 1:
+
+1. Leia o pedido e extraia o núcleo da ação em **kebab-case, 2-4 palavras**, em pt-BR,
+   sem artigos nem stop-words. Ex.: *"precisamos mover a idempotência pro Redis"* →
+   `idempotencia-redis`; *"o cálculo de juros do estorno está errado"* → `fix-juros-estorno`.
+2. Monte o task-id `AAAA-MM-DD-<slug>` com a **data de hoje**. Colidiu com pasta existente?
+   acrescente `-2`, `-3`…
+3. **Anuncie em uma linha** o task-id escolhido (o usuário pode corrigir) e siga direto —
+   **nunca** gaste um turno perguntando o nome. Se o usuário usou `nova tarefa: <slug>`,
+   respeite o slug dele.
 
 ## Estrutura de uma task
 
@@ -29,7 +42,8 @@ Task trivial não tem PLANO — só TASK.md + LEDGER.md.
 
 ## Turno 1 — Plano
 
-1. Crie `controle/<task-id>/TASK.md` pelo template abaixo, com `fase: planejamento`.
+1. Derive o slug e o task-id (ver "Slug automático" acima) e anuncie-o. Crie
+   `controle/<task-id>/TASK.md` pelo template abaixo, com `fase: planejamento`.
 2. Crie o PLANO. Etapas no formato do `prompts/engenharia/planejador-de-implementacao.md`
    (arquivos exatos, mudança concreta, verificação, pronto quando) — para mudança que toca
    3+ arquivos, siga aquele prompt por inteiro.
@@ -126,13 +140,21 @@ Esqueleto mínimo usando o design system do pack (ajuste o caminho relativo se n
 
 ## Exemplo de invocação
 
+> Precisamos mover a chave de idempotência do Postgres para o Redis.
+
+(Pedido normal — o assistente deriva o task-id `AAAA-MM-DD-idempotencia-redis`, anuncia-o
+e abre a task. Sem comando, sem slug escrito à mão.)
+
+Override do nome, quando você quiser controlá-lo:
+
 > nova tarefa: idempotencia-redis — mover chave de idempotência do Postgres para Redis
 
 | Ferramenta | Como invocar |
 |---|---|
-| Amazon Q (IDE ou `q chat`) | `nova tarefa: <slug> — <descrição>` — a rule roteia para este prompt |
-| Copilot (VS Code / Visual Studio / JetBrains) | `/controle-de-tarefa` ou a mesma mensagem |
-| Copilot CLI | Gatilho natural (`nova tarefa: ...`) — a instruction roteia |
+| Amazon Q (IDE ou `q chat`) | Descreva o pedido normalmente — a rule roteia e deriva o slug |
+| Copilot (VS Code / Visual Studio / JetBrains) | Descreva o pedido, ou `/controle-de-tarefa` |
+| Copilot CLI | Gatilho natural (qualquer pedido de código) — a instruction roteia |
+| Kiro (IDE / CLI) | Descreva o pedido — a Agent Skill ativa por descrição |
 
 ## Referências
 - Protocolo resumido + disciplina de cota: `.amazonq/rules/controle-style.md` ou `.github/instructions/controle-style.instructions.md`, conforme a ferramenta

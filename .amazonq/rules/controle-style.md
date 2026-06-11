@@ -10,11 +10,15 @@
 
 ## 1. Regra central
 
-Edição fora de `controle/` exige task ativa. Quando o usuário escrever
-`nova tarefa: <slug> — <descrição>` — ou pedir qualquer mudança sem task ativa —
-carregue `prompts/engenharia/controle-de-tarefa.md` e siga o protocolo completo
-(templates e fases estão lá). Sem declaração explícita? Proponha o slug e abra a task
-você mesmo no turno de plano — não gaste um turno só para perguntar o nome.
+Edição fora de `controle/` exige task ativa. **Qualquer pedido que mexa em código** —
+mandado como mensagem normal, sem comando especial — dispara o protocolo: carregue
+`prompts/engenharia/controle-de-tarefa.md` e siga-o completo (templates e fases lá).
+
+**O slug se cria sozinho.** Derive um slug kebab-case (2-4 palavras) do próprio pedido,
+monte o task-id `AAAA-MM-DD-<slug>` com a data de hoje e abra a task — **nunca peça o nome
+ao usuário** nem espere um comando. Anuncie em uma linha o task-id que escolheu (ele pode
+corrigir) e siga direto pro plano. `nova tarefa: <slug> — <descrição>` continua válido
+como override opcional quando o usuário quiser nomear na mão.
 
 ## 2. Ciclo de vida — 2 turnos (trivial: 1)
 

@@ -25,14 +25,19 @@ Um pacote pronto para clonar dentro de cada serviço .NET do seu time. Inclui:
 ## Protocolo de controle — toda mudança de código nasce de uma task
 
 Depois de instalado num serviço, este pack muda o **fluxo de trabalho diário**: todo pedido
-que mexa em código de produção começa com uma task, antes de qualquer edição.
+que mexa em código de produção começa com uma task, antes de qualquer edição. Você **não
+escreve comando nem slug** — manda o pedido como mensagem normal e o assistente deriva o
+slug do próprio pedido.
 
 ```
-você:        nova tarefa: <slug> — <descrição>
-assistente:  cria controle/<task-id>/ (TASK.md com escopo + ACs + PLANO) e PEDE sua aprovação
+você:        <descreve o que quer mudar — uma mensagem normal, como esta>
+assistente:  deriva um slug do pedido, anuncia o task-id (AAAA-MM-DD-<slug>),
+             cria controle/<task-id>/ (TASK.md com escopo + ACs + PLANO) e PEDE sua aprovação
 você:        "aprovado"
 assistente:  executa o checklist, registra evidências no LEDGER.md e fecha — tudo num turno
 ```
+
+(Quer nomear a task na mão? Comece a mensagem com `nova tarefa: <slug> — …` — override opcional.)
 
 Dois mecanismos garantem isso (ver [ADR-0001](docs/adr/0001-protocolo-de-controle-de-contexto.md) e a rule `controle-style`):
 

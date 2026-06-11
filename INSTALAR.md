@@ -113,8 +113,10 @@ Ao terminar, diga ao usuário, nas suas palavras:
    (Amazon Q e Kiro — no Kiro a skill `analisador-de-projeto` ativa por descrição) ou
    `/analisador-de-projeto` (Copilot IDE). Sem isso, o pack bloqueia gerações de
    documentação de propósito. O contexto é gravado em TRÊS destinos (Q, Copilot e Kiro).
-3. Para mudanças de código com controle de contexto: `nova tarefa: <slug> — <descrição>`
-   abre o protocolo de 2 turnos (plano → aprovação → execução com ledger).
+3. Para mudanças de código com controle de contexto: basta descrever o pedido como
+   mensagem normal — o assistente deriva o slug e abre a task sozinho (protocolo de 2
+   turnos: plano → aprovação → execução com ledger). `nova tarefa: <slug> — …` é override
+   opcional para nomear na mão.
 4. As mensagens prontas para todos os fluxos estão em `COMO-USAR.html`, na raiz do repo — abrir no navegador.
 
 ## Regras para você, assistente
