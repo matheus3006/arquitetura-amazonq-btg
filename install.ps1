@@ -8,7 +8,8 @@
     pwsh install.ps1 -NoExamples              # NAO inclui as paginas HTML de exemplo
 
   Copia: .amazonq/rules/ (5 rules) + .github/ (camada Copilot) + .kiro/ (camada Kiro:
-           steering + Agent Skills) + prompts/ (4 trilhas)
+           steering + Agent Skills) + prompts/ (4 trilhas) + skills/ (biblioteca de
+           25 skills importadas)
          + docs/arquitetura/ (css do design system, js dos templates, COMO-USAR.html
            e paginas HTML de exemplo — referencia de FORMA pros prompts; nunca
            sobrescreve arquivo ja existente no alvo)
@@ -71,7 +72,7 @@ foreach ($f in 'architecture-style','frontend-style','negocio-style','engenharia
 Write-Host "  + .github/instructions/ (5 instructions)"
 Copy-Item (Join-Path $PackDir '.github/prompts/*') (Join-Path $ghDst 'prompts') -Recurse -Force
 Copy-Item (Join-Path $PackDir '.github/skills/*')  (Join-Path $ghDst 'skills')  -Recurse -Force
-Write-Host "  + .github/prompts/ + .github/skills/ (23 wrappers cada)"
+Write-Host "  + .github/prompts/ (23 wrappers) + .github/skills/ (48: 23 wrappers + 25 importadas)"
 
 # 2b) Camada Kiro (steering + Agent Skills). Copiamos SO as 5 rules de estilo:
 #     *-context.md e os foundation files do Kiro (product/tech/structure.md)
@@ -85,7 +86,7 @@ foreach ($f in 'architecture-style','frontend-style','negocio-style','engenharia
 }
 Write-Host "  + .kiro/steering/ (5 rules)"
 Copy-Item (Join-Path $PackDir '.kiro/skills/*') (Join-Path $kiroDst 'skills') -Recurse -Force
-Write-Host "  + .kiro/skills/ (23 Agent Skills)"
+Write-Host "  + .kiro/skills/ (48 Agent Skills: 23 wrappers + 25 importadas)"
 
 # 3) Prompts (4 trilhas)
 $promptsDst = Join-Path $Target 'prompts'
@@ -94,6 +95,12 @@ foreach ($t in 'arquitetura','frontend','negocio','engenharia') {
   Copy-Item (Join-Path $PackDir "prompts/$t") $promptsDst -Recurse -Force
 }
 Write-Host "  + prompts/{arquitetura,frontend,negocio,engenharia}"
+
+# 3b) Biblioteca de skills importadas (fonte canonica das copias verbatim)
+$skillsDst = Join-Path $Target 'skills'
+New-Item -ItemType Directory -Force -Path $skillsDst | Out-Null
+Copy-Item (Join-Path $PackDir 'skills/*') $skillsDst -Recurse -Force
+Write-Host "  + skills/ (biblioteca: 25 skills importadas em 11 categorias)"
 
 # 4) Design system
 $dsDst = Join-Path $Target 'docs/arquitetura/design-system'
@@ -162,7 +169,7 @@ if (-not (Test-Path -PathType Container $gitDir)) {
 }
 
 # 8) Limpeza de lixo do Finder
-Get-ChildItem -Path $promptsDst, $ghDst, $kiroDst, (Join-Path $Target 'docs/arquitetura') -Recurse -Force -Filter '.DS_Store' -ErrorAction SilentlyContinue |
+Get-ChildItem -Path $promptsDst, $skillsDst, $ghDst, $kiroDst, (Join-Path $Target 'docs/arquitetura') -Recurse -Force -Filter '.DS_Store' -ErrorAction SilentlyContinue |
   Remove-Item -Force -ErrorAction SilentlyContinue
 
 Write-Host "`n[ok] Instalado. O Amazon Q le .amazonq/rules/, o Copilot le .github/ e o Kiro le .kiro/ automaticamente.`n"

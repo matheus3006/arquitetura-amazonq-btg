@@ -43,6 +43,7 @@ Copie do pack para a raiz do repo alvo, preservando a estrutura de pastas:
 | `.kiro/steering/*.md` (as 5 de estilo) | `.kiro/steering/` |
 | `.kiro/skills/` (inteira) | `.kiro/skills/` |
 | `prompts/arquitetura/`, `prompts/frontend/`, `prompts/negocio/`, `prompts/engenharia/` (inteiras) | `prompts/` |
+| `skills/` (inteira — biblioteca de 25 skills importadas) | `skills/` |
 | `docs/arquitetura/design-system/*.css` | `docs/arquitetura/design-system/` |
 | `docs/arquitetura/templates/diagram-viewer.js`, `docs/arquitetura/templates/sidebar.js` | `docs/arquitetura/templates/` |
 | `docs/arquitetura/templates/*.html` (exemplos de FORMA — copie **só os que não existem** no alvo; nunca sobrescreva) | `docs/arquitetura/templates/` |
@@ -86,9 +87,10 @@ Confira que TODOS estes paths existem no repo alvo (via shell ou listagem de arq
 - `.amazonq/rules/` com as 5 rules de estilo (mais os arquivos de contexto, se já gerados)
 - `.amazonq/hooks/pre-commit-controle.sh` (e, em repo git, o gancho `.git/hooks/pre-commit` — ou o aviso de pre-commit pre-existente)
 - `.github/copilot-instructions.md` + `.github/instructions/` com 5 arquivos `*-style.instructions.md` (mais os de contexto, se os analisadores já rodaram neste repo)
-- `.github/prompts/` com 23 arquivos `.prompt.md` e `.github/skills/` com 23 subpastas
-- `.kiro/steering/` com as 5 rules de estilo e `.kiro/skills/` com 23 subpastas
+- `.github/prompts/` com 23 arquivos `.prompt.md` e `.github/skills/` com 48 subpastas (23 wrappers + 25 importadas)
+- `.kiro/steering/` com as 5 rules de estilo e `.kiro/skills/` com 48 subpastas
 - `prompts/` com as 4 trilhas (arquitetura 7, frontend 4, negocio 5, engenharia 7 — 23 arquivos `.md`)
+- `skills/` com 11 categorias e 25 subpastas com `SKILL.md` (biblioteca importada)
 - `docs/arquitetura/design-system/` com 2 `.css`; `docs/arquitetura/templates/` com os 2 `.js`; `docs/arquitetura/COMO-USAR.html`
 - `docs/arquitetura/templates/` com as páginas de exemplo (`01-visao-geral.html`, `index.html`, etc.) — exceto se a instalação usou `--no-examples`
 

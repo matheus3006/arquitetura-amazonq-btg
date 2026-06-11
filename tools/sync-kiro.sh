@@ -99,6 +99,21 @@ EOF
 done < "$MANIFEST"
 [ "$count" -gt 0 ] || { echo "ERRO: nenhum wrapper gerado — manifest vazio ou ilegivel?" >&2; exit 1; }
 
+# ── 2b) Biblioteca de skills importadas (skills/<categoria>/<slug>/ → verbatim) ──
+imported=0
+if [ -d "$PACK_DIR/skills" ]; then
+  for d in "$PACK_DIR"/skills/*/*/; do
+    [ -f "$d/SKILL.md" ] || continue
+    slug="$(basename "$d")"
+    if [ -e "$OUT/skills/$slug" ]; then
+      echo "ERRO: colisao de slug '$slug' entre skills/ e os wrappers do manifest." >&2
+      exit 1
+    fi
+    cp -R "$d" "$OUT/skills/$slug"
+    imported=$((imported + 1))
+  done
+fi
+
 # ── 3) Cobertura ─────────────────────────────────────────────────────────────
 for f in "$PACK_DIR"/.amazonq/rules/*-style.md; do
   base="$(basename "$f" .md)"
@@ -127,5 +142,5 @@ if [ "$MODE" = "check" ]; then
   fi
   exit "$status"
 else
-  echo "Gerado: ${#RULES[@]} steering rules + $count skills em $OUT"
+  echo "Gerado: ${#RULES[@]} steering rules + $count skills wrappers + $imported skills importadas em $OUT"
 fi

@@ -17,6 +17,7 @@ Um pacote pronto para clonar dentro de cada serviço .NET do seu time. Inclui:
 - **Prompts** que clonam comportamento de skills especializadas — 4 trilhas (arquitetura, frontend, negocio, engenharia)
 - **Trilha de engenharia**: debugging sistemático, planejamento de implementação e disciplina de verificação (portes do superpowers)
 - **Protocolo de controle de contexto** (`controle-style`): toda edição nasce de uma task em `controle/<task-id>/` — ciclo de 2 turnos otimizado para cota de requests, com watchdog determinístico via pre-commit git
+- **Biblioteca de skills importadas** (`skills/`): 25 Agent Skills copiadas verbatim das melhores fontes (superpowers, product/pm/c-level skills, mattpocock, bencium) em 11 categorias — espelhadas pelas camadas Copilot e Kiro; catálogo em `skills/README.md`
 - **Design system** dark com paleta institucional + animações sutis
 - **Template viewer** para diagramas Mermaid com pan/zoom estilo Figma, fundo claro com traços escuros
 - **12 páginas HTML de exemplo** documentando um serviço fictício ("Liquidação Transacional") como referência de forma e qualidade
@@ -47,6 +48,7 @@ pwsh arquitetura-amazonq-btg\install.ps1 -Target C:\repos\seu-servico
 - `tools/pre-commit-controle.sh` → `.amazonq/hooks/pre-commit-controle.sh` no alvo (e, em repo git, um gancho `.git/hooks/pre-commit` que o chama)
 - `.github/` → `copilot-instructions.md`, `instructions/` (as 5), `prompts/` e `skills/` inteiras
 - `.kiro/` → `steering/` (as 5 rules) e `skills/` inteira
+- `skills/` → inteira (biblioteca de skills importadas)
 - `prompts/` → as 4 trilhas inteiras (`arquitetura`, `frontend`, `negocio`, `engenharia`)
 - `docs/arquitetura/design-system/*.css`
 - `docs/arquitetura/templates/diagram-viewer.js` e `docs/arquitetura/templates/sidebar.js`
@@ -132,10 +134,11 @@ arquitetura/
 │   ├── copilot-instructions.md
 │   ├── instructions/                            ← 5 rules (.instructions.md); contexto por-projeto é gerado aqui pelos analisadores
 │   ├── prompts/                                 ← slash commands (23 arquivos .prompt.md)
-│   └── skills/                                  ← Agent Skills (23 subpastas com SKILL.md)
+│   └── skills/                                  ← Agent Skills (48: 23 wrappers + 25 importadas)
 ├── .kiro/                                       ← gerado por tools/sync-kiro.sh — não editar
 │   ├── steering/                                ← 5 rules (inclusion: always); contexto por-projeto e foundation files são gerados aqui por-serviço
-│   └── skills/                                  ← Agent Skills (23 subpastas com SKILL.md)
+│   └── skills/                                  ← Agent Skills (48: 23 wrappers + 25 importadas)
+├── skills/                                      ← biblioteca importada (FONTE das cópias verbatim — 11 categorias, 25 skills; ver skills/README.md)
 ├── prompts/
 │   ├── arquitetura/                             ← 7 prompts (analisador, arquiteto, ADR, runbook, fluxo, grill, brainstorm)
 │   ├── frontend/                                ← 4 prompts (ux-controlado, ui-pro-max, design-system, polidor)

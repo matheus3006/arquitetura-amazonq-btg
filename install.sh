@@ -9,7 +9,7 @@
 #
 # Copia: .amazonq/rules/ (5 rules) + .github/ (camada Copilot: instructions,
 #        prompts, skills) + .kiro/ (camada Kiro: steering, skills)
-#        + prompts/ (4 trilhas) e
+#        + prompts/ (4 trilhas) + skills/ (biblioteca de 25 skills importadas) e
 #        docs/arquitetura/ (css do design system, js dos templates, COMO-USAR.html,
 #        paginas HTML de exemplo — referencia de FORMA pros prompts; nunca
 #        sobrescreve arquivo ja existente no alvo)
@@ -72,7 +72,7 @@ done
 echo "  ✓ .github/instructions/ (5 instructions)"
 cp -R "$PACK_DIR/.github/prompts/." "$TARGET/.github/prompts/"
 cp -R "$PACK_DIR/.github/skills/."  "$TARGET/.github/skills/"
-echo "  ✓ .github/prompts/ + .github/skills/ (23 wrappers cada)"
+echo "  ✓ .github/prompts/ (23 wrappers) + .github/skills/ (48: 23 wrappers + 25 importadas)"
 
 # 2b) Camada Kiro (steering + Agent Skills). Copiamos SO as 5 rules de estilo:
 #     *-context.md e os foundation files do Kiro (product/tech/structure.md)
@@ -83,7 +83,7 @@ for f in architecture-style frontend-style negocio-style engenharia-style contro
 done
 echo "  ✓ .kiro/steering/ (5 rules)"
 cp -R "$PACK_DIR/.kiro/skills/." "$TARGET/.kiro/skills/"
-echo "  ✓ .kiro/skills/ (23 Agent Skills)"
+echo "  ✓ .kiro/skills/ (48 Agent Skills: 23 wrappers + 25 importadas)"
 
 # 3) Prompts (4 trilhas)
 mkdir -p "$TARGET/prompts"
@@ -91,6 +91,11 @@ for t in arquitetura frontend negocio engenharia; do
   cp -R "$PACK_DIR/prompts/$t" "$TARGET/prompts/"
 done
 echo "  ✓ prompts/{arquitetura,frontend,negocio,engenharia}"
+
+# 3b) Biblioteca de skills importadas (fonte canonica das copias verbatim)
+mkdir -p "$TARGET/skills"
+cp -R "$PACK_DIR/skills/." "$TARGET/skills/"
+echo "  ✓ skills/ (biblioteca: 25 skills importadas em 11 categorias)"
 
 # 4) Design system (CSS reutilizavel)
 mkdir -p "$TARGET/docs/arquitetura/design-system"
@@ -155,7 +160,7 @@ else
 fi
 
 # 8) Limpeza de lixo do Finder
-find "$TARGET/prompts" "$TARGET/.github" "$TARGET/.kiro" "$TARGET/docs/arquitetura" \
+find "$TARGET/prompts" "$TARGET/skills" "$TARGET/.github" "$TARGET/.kiro" "$TARGET/docs/arquitetura" \
   -name '.DS_Store' -delete 2>/dev/null || true
 
 echo ""

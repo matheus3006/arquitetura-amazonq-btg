@@ -148,6 +148,21 @@ EOF
 done < "$MANIFEST"
 [ "$count" -gt 0 ] || { echo "ERRO: nenhum wrapper gerado — manifest vazio ou ilegivel?" >&2; exit 1; }
 
+# ── 3b) Biblioteca de skills importadas (skills/<categoria>/<slug>/ → verbatim) ──
+imported=0
+if [ -d "$PACK_DIR/skills" ]; then
+  for d in "$PACK_DIR"/skills/*/*/; do
+    [ -f "$d/SKILL.md" ] || continue
+    slug="$(basename "$d")"
+    if [ -e "$OUT/skills/$slug" ]; then
+      echo "ERRO: colisao de slug '$slug' entre skills/ e os wrappers do manifest." >&2
+      exit 1
+    fi
+    cp -R "$d" "$OUT/skills/$slug"
+    imported=$((imported + 1))
+  done
+fi
+
 # ── 4) Cobertura ─────────────────────────────────────────────────────────────
 # Toda rule canonica de estilo precisa estar em RULES,
 # e todo prompt canonico precisa de uma linha no manifest.
@@ -178,5 +193,5 @@ if [ "$MODE" = "check" ]; then
   fi
   exit "$status"
 else
-  echo "Gerado: ${#RULES[@]} instructions + copilot-instructions.md + $count prompt files + $count skills em $OUT"
+  echo "Gerado: ${#RULES[@]} instructions + copilot-instructions.md + $count prompt files + $count skills wrappers + $imported skills importadas em $OUT"
 fi
