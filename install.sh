@@ -10,9 +10,9 @@
 # Copia: .amazonq/rules/ (5 rules) + .github/ (camada Copilot: instructions,
 #        prompts, skills) + .kiro/ (camada Kiro: steering, skills)
 #        + prompts/ (4 trilhas) + skills/ (biblioteca de 25 skills importadas) e
-#        docs/arquitetura/ (css do design system, js dos templates, COMO-USAR.html,
-#        paginas HTML de exemplo — referencia de FORMA pros prompts; nunca
-#        sobrescreve arquivo ja existente no alvo)
+#        COMO-USAR.html (raiz) + docs/arquitetura/ (css do design system, js dos
+#        templates, paginas HTML de exemplo — referencia de FORMA pros prompts;
+#        nunca sobrescreve arquivo ja existente no alvo)
 #        + watchdog do protocolo de controle (.amazonq/hooks/ + .git/hooks/pre-commit)
 # NAO copia: arquivos de contexto por-servico (project/business-context nos
 #        tres lados) nem os foundation files do Kiro (product/tech/structure.md)
@@ -131,15 +131,24 @@ else
   fi
 fi
 
-# 6) Guia de uso (mensagens prontas — abra no navegador)
-if [ ! -f "$PACK_DIR/docs/arquitetura/COMO-USAR.html" ]; then
-  echo "  ⚠ docs/arquitetura/COMO-USAR.html ausente no pack — pulado"
-elif [ -d "$TARGET/docs/arquitetura/COMO-USAR.html" ]; then
-  echo "  ⚠ docs/arquitetura/COMO-USAR.html nao copiado (existe um DIRETORIO com esse nome no alvo)"
-elif cp "$PACK_DIR/docs/arquitetura/COMO-USAR.html" "$TARGET/docs/arquitetura/COMO-USAR.html" 2>/dev/null && [ -f "$TARGET/docs/arquitetura/COMO-USAR.html" ]; then
-  echo "  ✓ docs/arquitetura/COMO-USAR.html"
+# 6) Guia de uso (mensagens prontas — fica na RAIZ; abra no navegador)
+if [ ! -f "$PACK_DIR/COMO-USAR.html" ]; then
+  echo "  ⚠ COMO-USAR.html ausente no pack — pulado"
+elif [ -d "$TARGET/COMO-USAR.html" ]; then
+  echo "  ⚠ COMO-USAR.html nao copiado (existe um DIRETORIO com esse nome no alvo)"
+elif cp "$PACK_DIR/COMO-USAR.html" "$TARGET/COMO-USAR.html" 2>/dev/null && [ -f "$TARGET/COMO-USAR.html" ]; then
+  echo "  ✓ COMO-USAR.html (raiz do repo)"
+  if [ -f "$PACK_DIR/COMO-USAR.md" ]; then
+    cp "$PACK_DIR/COMO-USAR.md" "$TARGET/COMO-USAR.md"
+    echo "  ✓ COMO-USAR.md (versao markdown, mesma raiz)"
+  fi
+  # migracao: instalacoes antigas tinham o guia em docs/arquitetura/ — remove a copia obsoleta
+  if [ -f "$TARGET/docs/arquitetura/COMO-USAR.html" ]; then
+    rm "$TARGET/docs/arquitetura/COMO-USAR.html"
+    echo "  ✓ docs/arquitetura/COMO-USAR.html (local antigo) removido — agora vive na raiz"
+  fi
 else
-  echo "  ⚠ docs/arquitetura/COMO-USAR.html nao copiado (destino bloqueado?)"
+  echo "  ⚠ COMO-USAR.html nao copiado (destino bloqueado?)"
 fi
 
 # 7) Watchdog do protocolo de controle (pre-commit git)
@@ -173,4 +182,4 @@ echo "   Frontend:   \"polir essa pagina\""
 echo "   Engenharia: \"investiga esse bug\" · \"planeja a implementacao\""
 echo "   Controle:   \"nova tarefa: <slug> — <descricao>\"  (protocolo de 2 turnos)"
 echo ""
-echo "📖 Mensagens prontas por trilha: abra docs/arquitetura/COMO-USAR.html no navegador"
+echo "📖 Mensagens prontas por trilha: abra COMO-USAR.html (raiz do repo) no navegador"

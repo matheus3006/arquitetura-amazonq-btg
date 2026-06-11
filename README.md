@@ -53,11 +53,11 @@ pwsh arquitetura-amazonq-btg\install.ps1 -Target C:\repos\seu-servico
 - `docs/arquitetura/design-system/*.css`
 - `docs/arquitetura/templates/diagram-viewer.js` e `docs/arquitetura/templates/sidebar.js`
 - `docs/arquitetura/templates/*.html` — páginas de exemplo, usadas pelos prompts como referência de FORMA (copie só as que não existirem no alvo; não sobrescreva páginas já geradas)
-- `docs/arquitetura/COMO-USAR.html`
+- `COMO-USAR.html` → raiz do repo alvo
 
 **Não** copie os arquivos de contexto por-projeto: `project-context.md` e `business-context.md` (em `.amazonq/rules/` e em `.kiro/steering/`) nem `project-context.instructions.md` e `business-context.instructions.md` (em `.github/instructions/`) — são gerados por-serviço pelos analisadores, nos três destinos. Também não toque nos foundation files do Kiro (`.kiro/steering/product.md`, `tech.md`, `structure.md`), gerados pelo próprio Kiro.
 
-Mensagens prontas para cada gatilho: [COMO-USAR.html](docs/arquitetura/COMO-USAR.html).
+Mensagens prontas para cada gatilho: [COMO-USAR.html](COMO-USAR.html) (raiz do repo).
 
 > O pack tem **quatro trilhas: técnica, negócio, frontend e engenharia** — mais o **protocolo de controle de contexto** (rule `controle-style` + prompt `controle-de-tarefa` + pre-commit). Os instaladores entregam tudo.
 
@@ -148,10 +148,12 @@ arquitetura/
 │   ├── manifest.tsv                             ← slug → trilha → descrição (gera os 69 wrappers)
 │   ├── pre-commit-controle.sh                   ← watchdog do protocolo de controle (copiado pros alvos pelos instaladores)
 │   ├── sync-copilot.sh                          ← gera/valida a camada .github/
-│   └── sync-kiro.sh                             ← gera/valida a camada .kiro/
+│   ├── sync-kiro.sh                             ← gera/valida a camada .kiro/
+│   └── sync-como-usar.sh                        ← gera/valida o COMO-USAR.md a partir do .html
+├── COMO-USAR.html                               ← mensagens prontas para cada gatilho (raiz, no pack e nos alvos)
+├── COMO-USAR.md                                 ← versão markdown — GERADA por tools/sync-como-usar.sh, não editar
 └── docs/
     ├── arquitetura/                             ← espelha o layout do repo alvo
-    │   ├── COMO-USAR.html                       ← mensagens prontas para cada gatilho
     │   ├── design-system/
     │   │   ├── tokens.css                       ← cores, espaço, tipografia, raios, sombras, motion
     │   │   └── components.css                   ← componentes prontos (callouts, badges, cards, tables, etc.)
@@ -221,13 +223,14 @@ Para gerar PDF, `Cmd+P` → Salvar como PDF → marcar "Gráficos de fundo". Pri
 
 ## Para mantenedores do pack
 
-`.amazonq/rules/` é a fonte canônica. As camadas `.github/` e `.kiro/` são GERADAS — não edite à mão.
-Depois de editar qualquer rule ou o `tools/manifest.tsv`:
+`.amazonq/rules/` é a fonte canônica (e `COMO-USAR.html` é o canônico do guia). As camadas
+`.github/`, `.kiro/` e o `COMO-USAR.md` são GERADOS — não edite à mão.
+Depois de editar qualquer rule, o `tools/manifest.tsv` ou o `COMO-USAR.html`:
 
-    bash tools/sync-copilot.sh && bash tools/sync-kiro.sh             # regenera .github/ e .kiro/
-    bash tools/sync-copilot.sh --check && bash tools/sync-kiro.sh --check   # confirma sincronia (use antes de commitar)
+    bash tools/sync-copilot.sh && bash tools/sync-kiro.sh && bash tools/sync-como-usar.sh     # regenera tudo
+    bash tools/sync-copilot.sh --check && bash tools/sync-kiro.sh --check && bash tools/sync-como-usar.sh --check   # antes de commitar
 
-Commite o `.github/` e o `.kiro/` regenerados junto com a mudança canônica.
+Commite o gerado junto com a mudança canônica.
 
 ## Contribuindo
 

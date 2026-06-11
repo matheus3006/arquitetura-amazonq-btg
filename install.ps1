@@ -10,9 +10,9 @@
   Copia: .amazonq/rules/ (5 rules) + .github/ (camada Copilot) + .kiro/ (camada Kiro:
            steering + Agent Skills) + prompts/ (4 trilhas) + skills/ (biblioteca de
            25 skills importadas)
-         + docs/arquitetura/ (css do design system, js dos templates, COMO-USAR.html
-           e paginas HTML de exemplo — referencia de FORMA pros prompts; nunca
-           sobrescreve arquivo ja existente no alvo)
+         + COMO-USAR.html (raiz) + docs/arquitetura/ (css do design system, js dos
+           templates e paginas HTML de exemplo — referencia de FORMA pros prompts;
+           nunca sobrescreve arquivo ja existente no alvo)
          + watchdog do protocolo de controle (.amazonq/hooks/ + .git/hooks/pre-commit)
   NAO copia: arquivos de contexto por-servico (project/business-context nos tres lados)
          nem os foundation files do Kiro (product/tech/structure.md).
@@ -133,19 +133,30 @@ if ($NoExamples) {
   }
 }
 
-# 6) Guia de uso (mensagens prontas - abra no navegador)
-$comoSrc = Join-Path $PackDir 'docs/arquitetura/COMO-USAR.html'
-$comoDst = Join-Path $Target 'docs/arquitetura/COMO-USAR.html'
+# 6) Guia de uso (mensagens prontas - fica na RAIZ; abra no navegador)
+$comoSrc = Join-Path $PackDir 'COMO-USAR.html'
+$comoDst = Join-Path $Target 'COMO-USAR.html'
 if (-not (Test-Path -PathType Leaf $comoSrc)) {
-  Write-Host "  ! docs/arquitetura/COMO-USAR.html ausente no pack - pulado"
+  Write-Host "  ! COMO-USAR.html ausente no pack - pulado"
 } elseif (Test-Path -PathType Container $comoDst) {
-  Write-Host "  ! docs/arquitetura/COMO-USAR.html nao copiado (existe um DIRETORIO com esse nome no alvo)"
+  Write-Host "  ! COMO-USAR.html nao copiado (existe um DIRETORIO com esse nome no alvo)"
 } else {
   Copy-Item $comoSrc $comoDst -Force -ErrorAction SilentlyContinue
   if (Test-Path -PathType Leaf $comoDst) {
-    Write-Host "  + docs/arquitetura/COMO-USAR.html"
+    Write-Host "  + COMO-USAR.html (raiz do repo)"
+    $comoMdSrc = Join-Path $PackDir 'COMO-USAR.md'
+    if (Test-Path -PathType Leaf $comoMdSrc) {
+      Copy-Item $comoMdSrc (Join-Path $Target 'COMO-USAR.md') -Force
+      Write-Host "  + COMO-USAR.md (versao markdown, mesma raiz)"
+    }
+    # migracao: instalacoes antigas tinham o guia em docs/arquitetura/
+    $comoOld = Join-Path $Target 'docs/arquitetura/COMO-USAR.html'
+    if (Test-Path -PathType Leaf $comoOld) {
+      Remove-Item $comoOld -Force
+      Write-Host "  + docs/arquitetura/COMO-USAR.html (local antigo) removido - agora vive na raiz"
+    }
   } else {
-    Write-Host "  ! docs/arquitetura/COMO-USAR.html nao copiado (destino bloqueado?)"
+    Write-Host "  ! COMO-USAR.html nao copiado (destino bloqueado?)"
   }
 }
 
@@ -179,4 +190,4 @@ Write-Host '   Negocio:    "analisa o dominio" -> "grilla o negocio"'
 Write-Host '   Frontend:   "polir essa pagina"'
 Write-Host '   Engenharia: "investiga esse bug" / "planeja a implementacao"'
 Write-Host '   Controle:   "nova tarefa: <slug> - <descricao>"  (protocolo de 2 turnos)'
-Write-Host "`nMensagens prontas por trilha: abra docs/arquitetura/COMO-USAR.html no navegador"
+Write-Host "`nMensagens prontas por trilha: abra COMO-USAR.html (raiz do repo) no navegador"

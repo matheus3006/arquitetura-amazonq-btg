@@ -47,7 +47,8 @@ Copie do pack para a raiz do repo alvo, preservando a estrutura de pastas:
 | `docs/arquitetura/design-system/*.css` | `docs/arquitetura/design-system/` |
 | `docs/arquitetura/templates/diagram-viewer.js`, `docs/arquitetura/templates/sidebar.js` | `docs/arquitetura/templates/` |
 | `docs/arquitetura/templates/*.html` (exemplos de FORMA — copie **só os que não existem** no alvo; nunca sobrescreva) | `docs/arquitetura/templates/` |
-| `docs/arquitetura/COMO-USAR.html` | `docs/arquitetura/COMO-USAR.html` |
+| `COMO-USAR.html` | `COMO-USAR.html` (raiz do repo alvo) |
+| `COMO-USAR.md` | `COMO-USAR.md` (raiz do repo alvo — versão markdown gerada) |
 
 Crie `docs/arquitetura/` (e subpastas) no alvo se não existirem.
 
@@ -77,8 +78,8 @@ no alvo, é uma instalação anterior — preserve-os intactos.
 Também não copie: `tools/` (exceto `pre-commit-controle.sh`, que vai para
 `.amazonq/hooks/` conforme a tabela), `INSTALAR.md`, `README.md`, `LICENSE`,
 `docs/superpowers/` — são do pack, não do serviço. Atenção: o resto de
-`docs/arquitetura/` (css, os 2 `.js`, `COMO-USAR.html` e as páginas de exemplo) **é**
-copiado, conforme a tabela acima.
+`docs/arquitetura/` (css, os 2 `.js` e as páginas de exemplo) **é** copiado, assim como
+o `COMO-USAR.html` da raiz, conforme a tabela acima.
 
 ## Passo 3 — Verifique a instalação
 
@@ -91,7 +92,7 @@ Confira que TODOS estes paths existem no repo alvo (via shell ou listagem de arq
 - `.kiro/steering/` com as 5 rules de estilo e `.kiro/skills/` com 48 subpastas
 - `prompts/` com as 4 trilhas (arquitetura 7, frontend 4, negocio 5, engenharia 7 — 23 arquivos `.md`)
 - `skills/` com 11 categorias e 25 subpastas com `SKILL.md` (biblioteca importada)
-- `docs/arquitetura/design-system/` com 2 `.css`; `docs/arquitetura/templates/` com os 2 `.js`; `docs/arquitetura/COMO-USAR.html`
+- `docs/arquitetura/design-system/` com 2 `.css`; `docs/arquitetura/templates/` com os 2 `.js`; `COMO-USAR.html` e `COMO-USAR.md` na raiz do repo
 - `docs/arquitetura/templates/` com as páginas de exemplo (`01-visao-geral.html`, `index.html`, etc.) — exceto se a instalação usou `--no-examples`
 
 Se algo faltar, volte ao passo que o copia. Não declare a instalação concluída sem
@@ -114,7 +115,7 @@ Ao terminar, diga ao usuário, nas suas palavras:
    documentação de propósito. O contexto é gravado em TRÊS destinos (Q, Copilot e Kiro).
 3. Para mudanças de código com controle de contexto: `nova tarefa: <slug> — <descrição>`
    abre o protocolo de 2 turnos (plano → aprovação → execução com ledger).
-4. As mensagens prontas para todos os fluxos estão em `docs/arquitetura/COMO-USAR.html` — abrir no navegador.
+4. As mensagens prontas para todos os fluxos estão em `COMO-USAR.html`, na raiz do repo — abrir no navegador.
 
 ## Regras para você, assistente
 
