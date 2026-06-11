@@ -22,6 +22,29 @@ Um pacote pronto para clonar dentro de cada serviço .NET do seu time. Inclui:
 - **Template viewer** para diagramas Mermaid com pan/zoom estilo Figma, fundo claro com traços escuros
 - **12 páginas HTML de exemplo** documentando um serviço fictício ("Liquidação Transacional") como referência de forma e qualidade
 
+## Protocolo de controle — toda mudança de código nasce de uma task
+
+Depois de instalado num serviço, este pack muda o **fluxo de trabalho diário**: todo pedido
+que mexa em código de produção começa com uma task, antes de qualquer edição.
+
+```
+você:        nova tarefa: <slug> — <descrição>
+assistente:  cria controle/<task-id>/ (TASK.md com escopo + ACs + PLANO) e PEDE sua aprovação
+você:        "aprovado"
+assistente:  executa o checklist, registra evidências no LEDGER.md e fecha — tudo num turno
+```
+
+Dois mecanismos garantem isso (ver [ADR-0001](docs/adr/0001-protocolo-de-controle-de-contexto.md) e a rule `controle-style`):
+
+1. **A rule sempre-on** instrui o assistente: *edição fora de `controle/` exige task ativa*.
+   O ciclo é de **2 turnos** (trivial: 1), desenhado para gastar o mínimo da sua cota de requests.
+2. **O watchdog `pre-commit`** (instalado pelos installers em `.git/hooks/`) **bloqueia** qualquer
+   commit que altere código sem os arquivos da task no mesmo commit. Bypass consciente: `git commit --no-verify`.
+
+**Não se aplica a:** geração de documentação (trilhas técnica/negócio/frontend) e tarefas
+triviais que você declarar. O detalhe do protocolo e os templates estão em
+[`prompts/engenharia/controle-de-tarefa.md`](prompts/engenharia/controle-de-tarefa.md); as mensagens prontas, no card 19 do [`COMO-USAR.md`](COMO-USAR.md).
+
 ## Instalação rápida
 
 "Instalar" = colocar os arquivos do pack na **raiz** do repo do serviço. O Amazon Q lê `.amazonq/rules/` automaticamente; o Copilot lê `.github/instructions/`; o Kiro lê `.kiro/steering/`. Escolha a via:

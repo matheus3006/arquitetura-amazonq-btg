@@ -56,6 +56,16 @@ lines = [
     "",
 ]
 
+banner = re.search(r'<section class="regra-banner">(.*?)</section>', doc, re.S)
+if banner:
+    b = banner.group(1)
+    h2 = strip_tags(re.search(r"<h2>(.*?)</h2>", b, re.S).group(1))
+    lines += [f"## {h2}", ""]
+    for p in re.findall(r"<p[^>]*>(.*?)</p>", b, re.S):
+        lines += ["> " + re.sub(r"\s+", " ", strip_tags(p)), ">"]
+    if lines[-1] == ">":
+        lines[-1] = ""
+
 for section in re.findall(r'<section class="trilha">(.*?)</section>', doc, re.S):
     title = strip_tags(re.search(r'<h2 class="section-eyebrow">(.*?)</h2>', section, re.S).group(1))
     lines += [f"## {title}", ""]

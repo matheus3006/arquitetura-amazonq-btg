@@ -24,16 +24,36 @@
     .copy-btn:hover { background: var(--color-surface-hover, #232c42); }
     .copy-btn:active { transform: scale(0.97); }
     @media print { .copy-btn { display: none; } }
+    .regra-banner { margin-top: var(--space-6, 32px); border: 1px solid var(--color-accent, #4a8fe7); border-left-width: 4px; border-radius: var(--radius-md, 10px); padding: var(--space-4, 20px); background: var(--color-surface, #11151d); }
+    .regra-banner h2 { margin: 0 0 6px; font-size: 1rem; }
+    .regra-banner p { margin: 0 0 8px; color: var(--color-text-primary, #e8ecf3); max-width: 78ch; }
+    .regra-banner p:last-child { margin-bottom: 0; }
+    .regra-banner code { font-family: var(--font-mono, ui-monospace, monospace); font-size: .85em; background: var(--color-bg, #0a0c12); border: 1px solid var(--color-border, #232a36); border-radius: var(--radius-sm, 6px); padding: 1px 6px; }
+    .regra-banner .muted { color: var(--color-text-muted, #9aa3b2); font-size: .9rem; }
   </style>
 </head>
 <body>
   <main class="guide">
     <header class="guide-hero">
       <h1>Como usar o pack</h1>
-      <p>Mensagens prontas para copiar e mandar pro assistente (Amazon Q ou GitHub Copilot).
+      <p>Mensagens prontas para copiar e mandar pro assistente (Amazon Q, GitHub Copilot ou Kiro).
          Troque os <b>[CAMPOS]</b> e envie. Nomear o prompt e mandar "seguir todo o processo"
          é o que faz o assistente executar o fluxo inteiro em vez de responder por cima.</p>
     </header>
+
+    <section class="regra-banner">
+      <h2>⚠ Regra deste repositório: toda mudança de código começa com uma task</h2>
+      <p>Assim que o pack está instalado, o protocolo de controle vale para <strong>todo
+         pedido que mexa em código</strong>. Abra cada um com <code>nova tarefa: &lt;slug&gt; — &lt;descrição&gt;</code>
+         (card 19) — o assistente cria a task em <code>controle/&lt;task-id&gt;/</code>, escreve o plano e
+         pede sua aprovação <em>antes</em> de tocar no código.</p>
+      <p>Isso é <strong>forçado</strong>, não convenção: o <code>pre-commit</code> instalado bloqueia
+         qualquer commit que altere código sem os arquivos da task no mesmo commit. Bypass consciente:
+         <code>git commit --no-verify</code>.</p>
+      <p class="muted">Exceções: geração de documentação (trilhas técnica/negócio/frontend abaixo) e
+         tarefas triviais declaradas por você não exigem o ciclo completo — mas a edição de código de
+         produção, sim. Detalhe do protocolo no card 19 e em <code>prompts/engenharia/controle-de-tarefa.md</code>.</p>
+    </section>
 
     <section class="trilha">
       <h2 class="section-eyebrow">Como invocar, por ferramenta</h2>

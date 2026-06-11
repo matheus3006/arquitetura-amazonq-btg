@@ -3,6 +3,14 @@
 > GERADO de `COMO-USAR.html` por `tools/sync-como-usar.sh` — NAO edite a mao.
 > Prefere botao de copiar? Abra `COMO-USAR.html` (mesma raiz) no navegador.
 
+## ⚠ Regra deste repositório: toda mudança de código começa com uma task
+
+> Assim que o pack está instalado, o protocolo de controle vale para todo pedido que mexa em código. Abra cada um com nova tarefa: <slug> — <descrição> (card 19) — o assistente cria a task em controle/<task-id>/, escreve o plano e pede sua aprovação antes de tocar no código.
+>
+> Isso é forçado, não convenção: o pre-commit instalado bloqueia qualquer commit que altere código sem os arquivos da task no mesmo commit. Bypass consciente: git commit --no-verify.
+>
+> Exceções: geração de documentação (trilhas técnica/negócio/frontend abaixo) e tarefas triviais declaradas por você não exigem o ciclo completo — mas a edição de código de produção, sim. Detalhe do protocolo no card 19 e em prompts/engenharia/controle-de-tarefa.md.
+
 ## Como invocar, por ferramenta
 
 | Ferramenta | Como invocar |
