@@ -16,3 +16,4 @@ glossario-de-negocio	negocio	Gera o glossario do dominio (linguagem ubiqua)
 grill-negocio	negocio	Interrogatorio por fases com ledger para extrair regras nao escritas do dominio
 depurador-sistematico	engenharia	Depuracao sistematica em 4 fases: causa raiz com evidencia antes de qualquer correcao
 planejador-de-implementacao	engenharia	Transforma spec/decisao em plano de etapas pequenas e independentemente verificaveis
+controle-de-tarefa	engenharia	Protocolo de controle de tarefas em 2 turnos: escopo+plano aprovados viram checklist, execucao com ledger de evidencias

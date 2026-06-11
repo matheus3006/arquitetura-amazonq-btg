@@ -5,9 +5,9 @@
 # Fonte canonica:  .amazonq/rules/*.md  +  tools/manifest.tsv  +  prompts/**
 # Gerado (commitado, NUNCA editado a mao):
 #   .github/copilot-instructions.md
-#   .github/instructions/<rule>.instructions.md     (4 rules)
-#   .github/prompts/<slug>.prompt.md                (18 wrappers)
-#   .github/skills/<slug>/SKILL.md                  (18 wrappers)
+#   .github/instructions/<rule>.instructions.md     (5 rules)
+#   .github/prompts/<slug>.prompt.md                (19 wrappers)
+#   .github/skills/<slug>/SKILL.md                  (19 wrappers)
 #
 # Uso:
 #   bash tools/sync-copilot.sh           # (re)gera .github/
@@ -17,7 +17,7 @@ set -euo pipefail
 
 PACK_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MANIFEST="$PACK_DIR/tools/manifest.tsv"
-RULES=(architecture-style frontend-style negocio-style engenharia-style)
+RULES=(architecture-style frontend-style negocio-style engenharia-style controle-style)
 
 case "${1:-}" in
   --check) MODE="check" ;;
@@ -44,6 +44,7 @@ rewrite_for_copilot() {
     -e 's|\.amazonq/rules/frontend-style\.md|.github/instructions/frontend-style.instructions.md|g' \
     -e 's|\.amazonq/rules/negocio-style\.md|.github/instructions/negocio-style.instructions.md|g' \
     -e 's|\.amazonq/rules/engenharia-style\.md|.github/instructions/engenharia-style.instructions.md|g' \
+    -e 's|\.amazonq/rules/controle-style\.md|.github/instructions/controle-style.instructions.md|g' \
     -e 's|Lido automaticamente pelo Amazon Q em todo workspace que contenha esta pasta\.|Aplicado automaticamente pelo GitHub Copilot em todo repositorio que contenha esta pasta (frontmatter `applyTo`).|g'
 }
 
@@ -71,7 +72,8 @@ cat > "$OUT/copilot-instructions.md" <<'EOF'
 
 - As regras completas estao em `.github/instructions/*.instructions.md` (aplicadas
   automaticamente): `architecture-style` (trilha tecnica), `negocio-style` (negocio),
-  `frontend-style` (HTML/CSS), `engenharia-style` (disciplinas de engenharia).
+  `frontend-style` (HTML/CSS), `engenharia-style` (disciplinas de engenharia) e
+  `controle-style` (protocolo de controle de tarefas em `controle/`).
 - A metodologia de cada tarefa mora em `prompts/<trilha>/<nome>.md`. As tabelas de
   gatilhos nas instructions mapeiam a intencao do usuario para o prompt certo. Quando
   um gatilho casar, LEIA o arquivo do prompt e siga TODO o processo descrito, fase por

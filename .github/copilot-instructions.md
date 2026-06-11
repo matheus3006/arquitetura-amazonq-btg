@@ -7,7 +7,8 @@
 
 - As regras completas estao em `.github/instructions/*.instructions.md` (aplicadas
   automaticamente): `architecture-style` (trilha tecnica), `negocio-style` (negocio),
-  `frontend-style` (HTML/CSS), `engenharia-style` (disciplinas de engenharia).
+  `frontend-style` (HTML/CSS), `engenharia-style` (disciplinas de engenharia) e
+  `controle-style` (protocolo de controle de tarefas em `controle/`).
 - A metodologia de cada tarefa mora em `prompts/<trilha>/<nome>.md`. As tabelas de
   gatilhos nas instructions mapeiam a intencao do usuario para o prompt certo. Quando
   um gatilho casar, LEIA o arquivo do prompt e siga TODO o processo descrito, fase por

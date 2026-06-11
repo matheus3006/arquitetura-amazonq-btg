@@ -4,10 +4,9 @@
 >
 > Este prompt é referenciado pela rule da trilha `arquitetura` § 2 (`.amazonq/rules/architecture-style.md` ou `.github/instructions/architecture-style.instructions.md`, conforme a ferramenta).
 >
-> **Conteúdo das páginas em `docs/arquitetura/templates/`** (incluindo o legado `docs/arquitetura/templates/adr.html` e
-> `docs/arquitetura/templates/exemplo-adr-outbox.html`) é **EXEMPLO**. As ADRs reais que você gerar devem
+> **Conteúdo das páginas em `docs/arquitetura/templates/`** é **EXEMPLO**. As ADRs reais que você gerar devem
 > seguir o esqueleto HTML padrão definido na rule da trilha `frontend` § 1 (`.amazonq/rules/frontend-style.md` ou `.github/instructions/frontend-style.instructions.md`, conforme a ferramenta)
-> (com sidebar, hero, sections), **não** os arquivos legados de tema off-white.
+> (com sidebar, hero, sections).
 >
 > A **única regra rígida de visual** é a convenção de diagramas em
 > `architecture-style.md` § 1 — usar caso a ADR envolva fluxo novo.

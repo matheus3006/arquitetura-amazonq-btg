@@ -14,6 +14,7 @@ Um pacote pronto para clonar dentro de cada serviço .NET do seu time. Inclui:
 - **Camada Copilot gerada** (`.github/`): instructions auto-aplicadas, slash commands (`/gerador-adr`, ...) e Agent Skills — gerada de `.amazonq/rules/` por `tools/sync-copilot.sh`, nunca editada à mão
 - **Prompts** que clonam comportamento de skills especializadas — 4 trilhas (arquitetura, frontend, negocio, engenharia)
 - **Trilha de engenharia**: debugging sistemático, planejamento de implementação e disciplina de verificação (portes do superpowers)
+- **Protocolo de controle de contexto** (`controle-style`): toda edição nasce de uma task em `controle/<task-id>/` — ciclo de 2 turnos otimizado para cota de requests, com watchdog determinístico via pre-commit git
 - **Design system** dark com paleta institucional + animações sutis
 - **Template viewer** para diagramas Mermaid com pan/zoom estilo Figma, fundo claro com traços escuros
 - **12 páginas HTML de exemplo** documentando um serviço fictício ("Liquidação Transacional") como referência de forma e qualidade
@@ -40,18 +41,20 @@ pwsh arquitetura-amazonq-btg\install.ps1 -Target C:\repos\seu-servico
 ```
 
 **Manual (qualquer OS, sem script):** copie do pack pro repo do serviço, mantendo a estrutura:
-- `.amazonq/rules/` → as 4 rules (`architecture-style`, `frontend-style`, `negocio-style`, `engenharia-style`)
+- `.amazonq/rules/` → as 5 rules (`architecture-style`, `frontend-style`, `negocio-style`, `engenharia-style`, `controle-style`)
+- `tools/pre-commit-controle.sh` → `.amazonq/hooks/pre-commit-controle.sh` no alvo (e, em repo git, um gancho `.git/hooks/pre-commit` que o chama)
 - `.github/` → `copilot-instructions.md`, `instructions/` (as 4), `prompts/` e `skills/` inteiras
 - `prompts/` → as 4 trilhas inteiras (`arquitetura`, `frontend`, `negocio`, `engenharia`)
 - `docs/arquitetura/design-system/*.css`
 - `docs/arquitetura/templates/diagram-viewer.js` e `docs/arquitetura/templates/sidebar.js`
+- `docs/arquitetura/templates/*.html` — páginas de exemplo, usadas pelos prompts como referência de FORMA (copie só as que não existirem no alvo; não sobrescreva páginas já geradas)
 - `docs/arquitetura/COMO-USAR.html`
 
 **Não** copie os arquivos de contexto por-projeto: `project-context.md` e `business-context.md` (em `.amazonq/rules/`) nem `project-context.instructions.md` e `business-context.instructions.md` (em `.github/instructions/`) — são gerados por-serviço pelos analisadores.
 
 Mensagens prontas para cada gatilho: [COMO-USAR.html](docs/arquitetura/COMO-USAR.html).
 
-> O pack tem **quatro trilhas: técnica, negócio, frontend e engenharia**. Os instaladores entregam as quatro.
+> O pack tem **quatro trilhas: técnica, negócio, frontend e engenharia** — mais o **protocolo de controle de contexto** (rule `controle-style` + prompt `controle-de-tarefa` + pre-commit). Os instaladores entregam tudo.
 
 ## Filosofia
 
@@ -117,20 +120,22 @@ arquitetura/
 │       ├── frontend-style.md                    ← regra universal — HTML/CSS/typography
 │       ├── negocio-style.md                     ← regra universal — domínio, regras, glossário
 │       ├── engenharia-style.md                  ← regra universal — debugging + implementação
+│       ├── controle-style.md                    ← regra universal — protocolo de controle de tarefas (2 turnos + cota)
 │       ├── project-context.md                   ← (gerado por-projeto — não versionar)
 │       └── business-context.md                  ← (gerado por-projeto — não versionar)
 ├── .github/                                     ← gerado por tools/sync-copilot.sh — não editar
 │   ├── copilot-instructions.md
-│   ├── instructions/                            ← 4 rules (.instructions.md); contexto por-projeto é gerado aqui pelos analisadores
-│   ├── prompts/                                 ← slash commands (18 arquivos .prompt.md)
-│   └── skills/                                  ← Agent Skills (18 subpastas com SKILL.md)
+│   ├── instructions/                            ← 5 rules (.instructions.md); contexto por-projeto é gerado aqui pelos analisadores
+│   ├── prompts/                                 ← slash commands (19 arquivos .prompt.md)
+│   └── skills/                                  ← Agent Skills (19 subpastas com SKILL.md)
 ├── prompts/
 │   ├── arquitetura/                             ← 7 prompts (analisador, arquiteto, ADR, runbook, fluxo, grill, brainstorm)
 │   ├── frontend/                                ← 4 prompts (ux-controlado, ui-pro-max, design-system, polidor)
 │   ├── negocio/                                 ← 5 prompts (analisador-dominio, catalogo, glossario, grill, mapeador)
-│   └── engenharia/                              ← 2 prompts (depurador-sistematico, planejador-de-implementacao)
+│   └── engenharia/                              ← 3 prompts (depurador-sistematico, planejador-de-implementacao, controle-de-tarefa)
 ├── tools/
-│   ├── manifest.tsv                             ← slug → trilha → descrição (gera os 36 wrappers)
+│   ├── manifest.tsv                             ← slug → trilha → descrição (gera os 38 wrappers)
+│   ├── pre-commit-controle.sh                   ← watchdog do protocolo de controle (copiado pros alvos pelos instaladores)
 │   └── sync-copilot.sh                          ← gera/valida a camada .github/
 └── docs/
     ├── arquitetura/                             ← espelha o layout do repo alvo

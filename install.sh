@@ -4,23 +4,27 @@
 # Uso:
 #   bash install.sh                         # instala no diretorio atual
 #   bash install.sh /caminho/do/servico     # instala no repo indicado
-#   bash install.sh --with-examples .       # inclui as paginas HTML de exemplo
+#   bash install.sh --no-examples .         # NAO inclui as paginas HTML de exemplo
 #   bash install.sh --help                  # mostra esta ajuda
 #
-# Copia: .amazonq/rules/ (4 rules) + .github/ (camada Copilot: instructions,
+# Copia: .amazonq/rules/ (5 rules) + .github/ (camada Copilot: instructions,
 #        prompts, skills) + prompts/ (4 trilhas) e
-#        docs/arquitetura/ (css do design system, js dos templates, COMO-USAR.html)
+#        docs/arquitetura/ (css do design system, js dos templates, COMO-USAR.html,
+#        paginas HTML de exemplo — referencia de FORMA pros prompts; nunca
+#        sobrescreve arquivo ja existente no alvo)
+#        + watchdog do protocolo de controle (.amazonq/hooks/ + .git/hooks/pre-commit)
 # NAO copia: arquivos de contexto por-servico (project/business-context nos
 #        dois lados) — sao gerados pelos analisadores e preservados em re-runs.
 set -euo pipefail
 
-usage() { sed -n '2,14p' "$0" | sed 's/^#$//; s/^# //'; }
+usage() { sed -n '2,17p' "$0" | sed 's/^#$//; s/^# //'; }
 
-WITH_EXAMPLES=0
+NO_EXAMPLES=0
 TARGET=""
 for arg in "$@"; do
   case "$arg" in
-    --with-examples) WITH_EXAMPLES=1 ;;
+    --no-examples) NO_EXAMPLES=1 ;;
+    --with-examples) ;; # aceito por compatibilidade — exemplos ja sao o padrao
     -h|--help) usage; exit 0 ;;
     -*) echo "❌ Opcao desconhecida: $arg" >&2; echo "" >&2; usage >&2; exit 1 ;;
     *)
@@ -51,7 +55,7 @@ echo ""
 mkdir -p "$TARGET/.amazonq/rules"
 [ -e "$TARGET/.amazonq/rules/architecture-style.md" ] && \
   echo "ℹ️  Instalacao existente — atualizo as rules do pack (arquivos de contexto ficam intactos)."
-for f in architecture-style.md frontend-style.md negocio-style.md engenharia-style.md; do
+for f in architecture-style.md frontend-style.md negocio-style.md engenharia-style.md controle-style.md; do
   cp "$PACK_DIR/.amazonq/rules/$f" "$TARGET/.amazonq/rules/$f"
   echo "  ✓ .amazonq/rules/$f"
 done
@@ -60,13 +64,13 @@ done
 mkdir -p "$TARGET/.github/instructions" "$TARGET/.github/prompts" "$TARGET/.github/skills"
 cp "$PACK_DIR/.github/copilot-instructions.md" "$TARGET/.github/copilot-instructions.md"
 echo "  ✓ .github/copilot-instructions.md"
-for f in architecture-style frontend-style negocio-style engenharia-style; do
+for f in architecture-style frontend-style negocio-style engenharia-style controle-style; do
   cp "$PACK_DIR/.github/instructions/$f.instructions.md" "$TARGET/.github/instructions/$f.instructions.md"
 done
-echo "  ✓ .github/instructions/ (4 instructions)"
+echo "  ✓ .github/instructions/ (5 instructions)"
 cp -R "$PACK_DIR/.github/prompts/." "$TARGET/.github/prompts/"
 cp -R "$PACK_DIR/.github/skills/."  "$TARGET/.github/skills/"
-echo "  ✓ .github/prompts/ + .github/skills/ (18 wrappers cada)"
+echo "  ✓ .github/prompts/ + .github/skills/ (19 wrappers cada)"
 
 # 3) Prompts (4 trilhas)
 mkdir -p "$TARGET/prompts"
@@ -86,12 +90,26 @@ cp "$PACK_DIR/docs/arquitetura/templates/diagram-viewer.js" "$TARGET/docs/arquit
 cp "$PACK_DIR/docs/arquitetura/templates/sidebar.js"        "$TARGET/docs/arquitetura/templates/"
 echo "  ✓ docs/arquitetura/templates/diagram-viewer.js + sidebar.js"
 
-# 5b) Paginas de exemplo (opcional — so com --with-examples)
-if [ "$WITH_EXAMPLES" = "1" ]; then
-  if cp "$PACK_DIR/docs/arquitetura/templates/"*.html "$TARGET/docs/arquitetura/templates/" 2>/dev/null; then
-    echo "  ✓ docs/arquitetura/templates/*.html (exemplos)"
-  else
+# 5b) Paginas de exemplo — referencia de FORMA pros prompts (padrao; pule com
+#     --no-examples). NUNCA sobrescreve: paginas ja geradas no alvo ficam intactas.
+if [ "$NO_EXAMPLES" = "1" ]; then
+  echo "  ↷ docs/arquitetura/templates/*.html (exemplos) pulados (--no-examples)"
+else
+  copied=0; kept=0
+  for f in "$PACK_DIR/docs/arquitetura/templates/"*.html; do
+    [ -e "$f" ] || continue
+    base="$(basename "$f")"
+    if [ -e "$TARGET/docs/arquitetura/templates/$base" ]; then
+      kept=$((kept + 1))
+    else
+      cp "$f" "$TARGET/docs/arquitetura/templates/$base"
+      copied=$((copied + 1))
+    fi
+  done
+  if [ "$((copied + kept))" -eq 0 ]; then
     echo "  ⚠ docs/arquitetura/templates/*.html nao copiados (nenhum .html no pack?)"
+  else
+    echo "  ✓ docs/arquitetura/templates/*.html (exemplos de forma: $copied copiados, $kept preservados)"
   fi
 fi
 
@@ -106,7 +124,24 @@ else
   echo "  ⚠ docs/arquitetura/COMO-USAR.html nao copiado (destino bloqueado?)"
 fi
 
-# 7) Limpeza de lixo do Finder
+# 7) Watchdog do protocolo de controle (pre-commit git)
+mkdir -p "$TARGET/.amazonq/hooks"
+cp "$PACK_DIR/tools/pre-commit-controle.sh" "$TARGET/.amazonq/hooks/pre-commit-controle.sh"
+chmod +x "$TARGET/.amazonq/hooks/pre-commit-controle.sh"
+echo "  ✓ .amazonq/hooks/pre-commit-controle.sh"
+HOOK="$TARGET/.git/hooks/pre-commit"
+if [ ! -d "$TARGET/.git" ]; then
+  echo "  ⚠ .git/hooks/pre-commit nao instalado (alvo nao e raiz de repo git)"
+elif [ -f "$HOOK" ] && ! grep -q 'pre-commit-controle' "$HOOK" 2>/dev/null; then
+  echo "  ⚠ pre-commit existente preservado — acrescente nele a linha:"
+  echo "      bash .amazonq/hooks/pre-commit-controle.sh || exit 1"
+else
+  printf '#!/usr/bin/env bash\n# gerado pelo pack arquitetura — chama o watchdog do protocolo de controle\nbash .amazonq/hooks/pre-commit-controle.sh || exit 1\n' > "$HOOK"
+  chmod +x "$HOOK"
+  echo "  ✓ .git/hooks/pre-commit (watchdog do controle; bypass: git commit --no-verify)"
+fi
+
+# 8) Limpeza de lixo do Finder
 find "$TARGET/prompts" "$TARGET/.github" "$TARGET/docs/arquitetura" \
   -name '.DS_Store' -delete 2>/dev/null || true
 
@@ -118,5 +153,6 @@ echo "   Tecnica:    \"documenta esse servico\"   (Copilot IDE: /analisador-de-p
 echo "   Negocio:    \"analisa o dominio\" → \"grilla o negocio\""
 echo "   Frontend:   \"polir essa pagina\""
 echo "   Engenharia: \"investiga esse bug\" · \"planeja a implementacao\""
+echo "   Controle:   \"nova tarefa: <slug> — <descricao>\"  (protocolo de 2 turnos)"
 echo ""
 echo "📖 Mensagens prontas por trilha: abra docs/arquitetura/COMO-USAR.html no navegador"

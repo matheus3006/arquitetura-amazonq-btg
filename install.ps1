@@ -5,15 +5,19 @@
   Uso (PowerShell / pwsh - Windows, macOS ou Linux):
     pwsh install.ps1                          # instala no diretorio atual
     pwsh install.ps1 -Target C:\repos\servico
-    pwsh install.ps1 -WithExamples            # inclui as paginas HTML de exemplo
+    pwsh install.ps1 -NoExamples              # NAO inclui as paginas HTML de exemplo
 
-  Copia: .amazonq/rules/ (4 rules) + .github/ (camada Copilot) + prompts/ (4 trilhas)
-         + docs/arquitetura/ (css do design system, js dos templates e COMO-USAR.html)
+  Copia: .amazonq/rules/ (5 rules) + .github/ (camada Copilot) + prompts/ (4 trilhas)
+         + docs/arquitetura/ (css do design system, js dos templates, COMO-USAR.html
+           e paginas HTML de exemplo — referencia de FORMA pros prompts; nunca
+           sobrescreve arquivo ja existente no alvo)
+         + watchdog do protocolo de controle (.amazonq/hooks/ + .git/hooks/pre-commit)
   NAO copia: arquivos de contexto por-servico (project/business-context nos dois lados).
 #>
 param(
   [string]$Target = (Get-Location).Path,
-  [switch]$WithExamples
+  [switch]$NoExamples,
+  [switch]$WithExamples  # aceito por compatibilidade - exemplos ja sao o padrao
 )
 $ErrorActionPreference = 'Stop'
 
@@ -47,7 +51,7 @@ New-Item -ItemType Directory -Force -Path $rulesDst | Out-Null
 if (Test-Path (Join-Path $rulesDst 'architecture-style.md')) {
   Write-Host "  i  Instalacao existente - atualizo as rules (arquivos de contexto ficam intactos)."
 }
-foreach ($f in 'architecture-style.md','frontend-style.md','negocio-style.md','engenharia-style.md') {
+foreach ($f in 'architecture-style.md','frontend-style.md','negocio-style.md','engenharia-style.md','controle-style.md') {
   Copy-Item (Join-Path $PackDir ".amazonq/rules/$f") (Join-Path $rulesDst $f) -Force
   Write-Host "  + .amazonq/rules/$f"
 }
@@ -59,13 +63,13 @@ foreach ($d in 'instructions','prompts','skills') {
 }
 Copy-Item (Join-Path $PackDir '.github/copilot-instructions.md') (Join-Path $ghDst 'copilot-instructions.md') -Force
 Write-Host "  + .github/copilot-instructions.md"
-foreach ($f in 'architecture-style','frontend-style','negocio-style','engenharia-style') {
+foreach ($f in 'architecture-style','frontend-style','negocio-style','engenharia-style','controle-style') {
   Copy-Item (Join-Path $PackDir ".github/instructions/$f.instructions.md") (Join-Path $ghDst "instructions/$f.instructions.md") -Force
 }
-Write-Host "  + .github/instructions/ (4 instructions)"
+Write-Host "  + .github/instructions/ (5 instructions)"
 Copy-Item (Join-Path $PackDir '.github/prompts/*') (Join-Path $ghDst 'prompts') -Recurse -Force
 Copy-Item (Join-Path $PackDir '.github/skills/*')  (Join-Path $ghDst 'skills')  -Recurse -Force
-Write-Host "  + .github/prompts/ + .github/skills/ (18 wrappers cada)"
+Write-Host "  + .github/prompts/ + .github/skills/ (19 wrappers cada)"
 
 # 3) Prompts (4 trilhas)
 $promptsDst = Join-Path $Target 'prompts'
@@ -88,17 +92,19 @@ Copy-Item (Join-Path $PackDir 'docs/arquitetura/templates/diagram-viewer.js') $t
 Copy-Item (Join-Path $PackDir 'docs/arquitetura/templates/sidebar.js')        $tplDst -Force
 Write-Host "  + docs/arquitetura/templates/diagram-viewer.js + sidebar.js"
 
-# 5b) Paginas de exemplo (opcional)
-if ($WithExamples) {
+# 5b) Paginas de exemplo - referencia de FORMA pros prompts (padrao; pule com
+#     -NoExamples). NUNCA sobrescreve: paginas ja geradas no alvo ficam intactas.
+if ($NoExamples) {
+  Write-Host "  > docs/arquitetura/templates/*.html (exemplos) pulados (-NoExamples)"
+} else {
   $html = Get-ChildItem (Join-Path $PackDir 'docs/arquitetura/templates') -Filter '*.html' -ErrorAction SilentlyContinue
   if ($html) {
-    $html | Copy-Item -Destination $tplDst -Force -ErrorAction SilentlyContinue
-    $copied = @(Get-ChildItem $tplDst -Filter '*.html' -ErrorAction SilentlyContinue)
-    if ($copied.Count -ge $html.Count) {
-      Write-Host "  + docs/arquitetura/templates/*.html (exemplos)"
-    } else {
-      Write-Host "  ! docs/arquitetura/templates/*.html copiados parcialmente ($($copied.Count) de $($html.Count))"
+    $copied = 0; $kept = 0
+    foreach ($f in $html) {
+      $dst = Join-Path $tplDst $f.Name
+      if (Test-Path $dst) { $kept++ } else { Copy-Item $f.FullName $dst; $copied++ }
     }
+    Write-Host "  + docs/arquitetura/templates/*.html (exemplos de forma: $copied copiados, $kept preservados)"
   } else {
     Write-Host "  ! docs/arquitetura/templates/*.html nao copiados (nenhum .html no pack?)"
   }
@@ -120,7 +126,26 @@ if (-not (Test-Path -PathType Leaf $comoSrc)) {
   }
 }
 
-# 7) Limpeza de lixo do Finder
+# 7) Watchdog do protocolo de controle (pre-commit git)
+$hooksDst = Join-Path $Target '.amazonq/hooks'
+New-Item -ItemType Directory -Force -Path $hooksDst | Out-Null
+Copy-Item (Join-Path $PackDir 'tools/pre-commit-controle.sh') (Join-Path $hooksDst 'pre-commit-controle.sh') -Force
+Write-Host "  + .amazonq/hooks/pre-commit-controle.sh"
+$gitDir = Join-Path $Target '.git'
+$hookFile = Join-Path $gitDir 'hooks/pre-commit'
+if (-not (Test-Path -PathType Container $gitDir)) {
+  Write-Host "  ! .git/hooks/pre-commit nao instalado (alvo nao e raiz de repo git)"
+} elseif ((Test-Path -PathType Leaf $hookFile) -and -not (Select-String -Path $hookFile -Pattern 'pre-commit-controle' -Quiet)) {
+  Write-Host "  ! pre-commit existente preservado - acrescente nele a linha:"
+  Write-Host "      bash .amazonq/hooks/pre-commit-controle.sh || exit 1"
+} else {
+  New-Item -ItemType Directory -Force -Path (Join-Path $gitDir 'hooks') | Out-Null
+  $hookBody = "#!/usr/bin/env bash`n# gerado pelo pack arquitetura - chama o watchdog do protocolo de controle`nbash .amazonq/hooks/pre-commit-controle.sh || exit 1`n"
+  [IO.File]::WriteAllText($hookFile, $hookBody)
+  Write-Host "  + .git/hooks/pre-commit (watchdog do controle; bypass: git commit --no-verify)"
+}
+
+# 8) Limpeza de lixo do Finder
 Get-ChildItem -Path $promptsDst, $ghDst, (Join-Path $Target 'docs/arquitetura') -Recurse -Force -Filter '.DS_Store' -ErrorAction SilentlyContinue |
   Remove-Item -Force -ErrorAction SilentlyContinue
 
@@ -130,4 +155,5 @@ Write-Host '   Tecnica:    "documenta esse servico"   (Copilot IDE: /analisador-
 Write-Host '   Negocio:    "analisa o dominio" -> "grilla o negocio"'
 Write-Host '   Frontend:   "polir essa pagina"'
 Write-Host '   Engenharia: "investiga esse bug" / "planeja a implementacao"'
+Write-Host '   Controle:   "nova tarefa: <slug> - <descricao>"  (protocolo de 2 turnos)'
 Write-Host "`nMensagens prontas por trilha: abra docs/arquitetura/COMO-USAR.html no navegador"

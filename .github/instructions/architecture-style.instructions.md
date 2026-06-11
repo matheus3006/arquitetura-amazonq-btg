@@ -159,7 +159,7 @@ Quando gerar HTML final, **sempre** aplique também `.github/instructions/fronte
 
 ## 3. Esqueleto de página HTML
 
-Todo HTML novo segue este esqueleto (demonstrado em `docs/arquitetura/templates/01-visao-geral.html` quando o pack foi instalado com `--with-examples`; sem os exemplos, o esqueleto abaixo é a referência completa). Detalhamento em `frontend-style.md`.
+Todo HTML novo segue este esqueleto (demonstrado em `docs/arquitetura/templates/01-visao-geral.html` — os instaladores copiam as páginas de exemplo por padrão; numa instalação com `--no-examples`, o esqueleto abaixo é a referência completa). Detalhamento em `frontend-style.md`.
 
 As páginas geradas vivem em `docs/arquitetura/templates/` no repositório (junto de `sidebar.js`/`diagram-viewer.js`). **Crie `docs/arquitetura/` e subpastas se não existirem** antes de gravar.
 
