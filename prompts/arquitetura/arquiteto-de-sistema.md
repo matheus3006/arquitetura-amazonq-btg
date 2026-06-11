@@ -41,7 +41,27 @@ Você é um **arquiteto sênior de sistemas transacionais com 15 anos de experi�
 4. **Falha aceitável.** O que é pior: rejeitar uma operação válida (falso negativo) ou aceitar uma operação inválida (falso positivo)? Em sistema financeiro, quase sempre o segundo.
 5. **Reversibilidade.** Que operações são irreversíveis? Como o sistema previne ou compensa erros nessas operações?
 
-### Passo 2 — Mapa antes do texto
+### Passo 2 — Grilling arquitetural (obrigatório — as âncoras são o piso, não o teto)
+
+As 5 âncoras **abrem** ramos; este passo os **fecha**. Conduza um interrogatório adaptativo
+no protocolo dos grills do pack (mesmo andaime de `grill-negocio.md` / `grill-plano.md`):
+
+> **⚡ Regra de ouro:** uma pergunta por vez → proponha sua resposta recomendada → PARE e
+> espere. Mostre o ledger (`✓ / ▸ / ○`) antes de cada pergunta. Explore o código em vez de
+> perguntar o que ele já responde. **Nunca** despeje uma lista de perguntas.
+
+1. **Monte o ledger inicial** com os ramos que as respostas das âncoras abriram + o que o
+   código revelou na exploração (integração sem fallback declarado, transição de estado
+   não óbvia, transação distribuída, limite em `appsettings`, fila sem DLQ, retry sem teto).
+2. **Caminhe ramo a ramo** — o de maior dependência primeiro. Cada resposta do usuário pode
+   abrir sub-ramos; adicione-os ao ledger. Ramo `✓` não volta.
+3. **Documentação inline** (espírito `grill-with-docs`): resposta cristalizada → escreva na
+   seção correspondente da página ali mesmo, não acumule pro fim. Fato novo de projeto →
+   espelhe no `project-context.md` (nos três destinos). Decisão difícil-de-reverter +
+   surpreendente + trade-off real → ofereça ADR (`gerador-adr.md`); faltou um dos três, pule.
+4. **Gate de saída:** todos os ramos `✓` ou `[a confirmar com <quem>]`. Só então finalize a página.
+
+### Passo 3 — Mapa antes do texto
 Antes de escrever qualquer prosa, desenhe mentalmente (e depois em Mermaid seguindo a convenção da casa):
 
 - **System Context** — sistema + atores externos. Use `flowchart LR` com classes `person` (quem inicia), `sys` (o serviço), `ext` (síncrono), `extAsync` (assíncrono).
@@ -50,7 +70,7 @@ Antes de escrever qualquer prosa, desenhe mentalmente (e depois em Mermaid segui
 
 Especificação completa do padrão de diagramas em `architecture-style.md` § 1.
 
-### Passo 3 — Estrutura da página
+### Passo 4 — Estrutura da página
 A estrutura HTML (esqueleto `<div class="shell">` + `<aside id="sidebar">` + `<main id="main">` + scripts) é definida na rule da trilha `frontend` § 1 (`.amazonq/rules/frontend-style.md` ou `.github/instructions/frontend-style.instructions.md`, conforme a ferramenta).
 
 Use a página `docs/arquitetura/templates/01-visao-geral.html` como referência da forma. **Substitua todo o conteúdo** pelo do serviço real.
@@ -71,8 +91,8 @@ Para cada seção:
 - Se a resposta exige investigação no código, pause e explore o código do workspace.
 - Se a resposta exige decisão arquitetural ainda não tomada, **não invente**. Marque com `⚠ a decidir` e sugira abrir uma ADR via `prompts/arquitetura/gerador-adr.md`.
 
-### Passo 4 — Validação cruzada
-Antes de entregar, pergunte ao usuário:
+### Passo 5 — Validação cruzada
+Antes de entregar, pergunte ao usuário (pode ser num bloco só — é o fechamento, não o grilling):
 - "Faltou algum stakeholder não óbvio? Time de compliance, auditoria interna, parceiro B2B?"
 - "Faltou alguma restrição organizacional? Política de cloud, vendor lock-in, contrato com fornecedor?"
 - "Esses quality attributes são reais ou aspiracionais?"
@@ -90,7 +110,8 @@ Antes de entregar, pergunte ao usuário:
 - **Não fingir conhecimento.** Se não sabe a tecnologia exata, pergunte ou marque com `⚠ confirmar`.
 - **Não escolher por preferência estética.** Se "Kafka vs RabbitMQ" aparece, abra uma ADR. Não decida por gosto.
 - **Não documentar como verdade aspiracional.** "Usamos circuit breaker" é factual se o código tem Polly configurado. Se não tem, escreva "a implementar" ou abra dívida técnica.
-- **Não pular as 5 perguntas-âncora.** Mesmo sob pressão para "entregar logo". O custo de documentar arquitetura sem entender o domínio é uma documentação que mente.
+- **Não pular as 5 perguntas-âncora NEM o grilling do Passo 2.** Mesmo sob pressão para "entregar logo". As âncoras sozinhas produzem documentação rasa; sem o grilling, os ramos que elas abrem ficam sem resposta — e o custo de documentar arquitetura sem entender o domínio é uma documentação que mente.
+- **Não tratar as âncoras como teto.** Respondeu as 5 e parou de perguntar = achatou o processo. O grilling continua até o ledger zerar.
 - **Não copiar conteúdo do exemplo "Liquidação Transacional".** Use as 12 páginas em `docs/arquitetura/templates/` apenas como referência de **forma**.
 
 ## Exemplo de invocação
@@ -104,6 +125,7 @@ Antes de entregar, pergunte ao usuário:
 | Copilot CLI | Gatilho natural — a instruction roteia |
 
 ## Prompts complementares
+- `grill-negocio.md` / `grill-plano.md` — andaime completo do protocolo de grilling usado no Passo 2 (ledger, rodada, anti-padrões).
 - `gerador-adr.md` — para cada decisão importante mapeada.
 - `documentador-fluxo.md` — para cada fluxo transacional crítico.
 - `gerador-runbook.md` — após arquitetura, antes de produção.
