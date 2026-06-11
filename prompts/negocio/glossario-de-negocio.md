@@ -58,6 +58,6 @@ Esqueleto de `frontend-style.md`. Estrutura:
 | Copilot CLI | Gatilho natural — a instruction roteia |
 
 ## Referências
-- Fonte: `business-context.md`, nos dois destinos do contexto de negócio (seção Glossário do domínio).
+- Fonte: `business-context.md`, nos três destinos do contexto de negócio (seção Glossário do domínio).
 - Formato do termo: igual ao `CONTEXT-FORMAT` do `grill-with-docs` (term + `_Evitar_`).
 - Esqueleto HTML: rule da trilha `frontend` (`.amazonq/rules/frontend-style.md` ou `.github/instructions/frontend-style.instructions.md`, conforme a ferramenta).

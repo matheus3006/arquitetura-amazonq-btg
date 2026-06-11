@@ -133,7 +133,7 @@ Esqueleto de `frontend-style.md`. Seções típicas (`<h2 class="section-eyebrow
 | Copilot CLI | Gatilho natural — a instruction roteia |
 
 ## Referências
-- Fonte de verdade: `business-context.md`, nos dois destinos do contexto de negócio.
+- Fonte de verdade: `business-context.md`, nos três destinos do contexto de negócio.
 - Convenção de diagrama: `negocio-style.md` § 3.
 - Esqueleto HTML: rule da trilha `frontend` (`.amazonq/rules/frontend-style.md` ou `.github/instructions/frontend-style.instructions.md`, conforme a ferramenta).
 - Regra/dono faltando: `prompts/negocio/grill-negocio.md`; regras viram página em `catalogo-de-regras.md`.

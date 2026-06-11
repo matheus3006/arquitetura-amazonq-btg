@@ -3,8 +3,9 @@
 > ## STATUS
 >
 > **PRIMEIRO prompt da trilha `negocio` a rodar** em um repositório. Produz o contexto de
-> negócio em DOIS destinos — `.amazonq/rules/business-context.md` e
-> `.github/instructions/business-context.instructions.md` — a **fonte de verdade de negócio**
+> negócio em TRÊS destinos — `.amazonq/rules/business-context.md`,
+> `.github/instructions/business-context.instructions.md` e
+> `.kiro/steering/business-context.md` — a **fonte de verdade de negócio**
 > que o GATE de `negocio-style.md` exige e que todos os outros prompts de negócio consomem.
 >
 > **Isento do GATE** (ele é quem cria o arquivo). Na **Fase 2** ele **delega ao protocolo do
@@ -54,12 +55,12 @@ Conduza seguindo **o protocolo do `grill-negocio.md`** — regra de ouro (uma pe
 
 Cubra, ramo a ramo: **propósito de negócio**, **atores + autoridade**, **regras** (origem + dono + consequência), **eventos de domínio**, **desfechos** (caminho feliz + caminhos tristes), **termos do glossário**. O que ninguém souber → `[a confirmar com <quem>]`. **Nunca invente.**
 
-### Fase 3 — Gerar `business-context.md` (destino duplo)
-Preencha o template abaixo com o detectado + confirmado. Após criar, mostre ao usuário um resumo (top 5 pontos) e avise: *"Isto agora é a fonte de verdade de negócio (dois arquivos, mesmo conteúdo). Edite se algo estiver errado. Depois posso gerar fluxo de negócio, catálogo de regras ou glossário."*
+### Fase 3 — Gerar `business-context.md` (destino triplo)
+Preencha o template abaixo com o detectado + confirmado. Após criar, mostre ao usuário um resumo (top 5 pontos) e avise: *"Isto agora é a fonte de verdade de negócio (três arquivos, mesmo conteúdo). Edite se algo estiver errado. Depois posso gerar fluxo de negócio, catálogo de regras ou glossário."*
 
-### Destino duplo do arquivo gerado
+### Destino triplo do arquivo gerado
 
-Gere o MESMO conteúdo em dois arquivos (um por ferramenta de assistente):
+Gere o MESMO conteúdo em três arquivos (um por ferramenta de assistente):
 
 1. `.amazonq/rules/business-context.md` — sem frontmatter (lido pelo Amazon Q).
 2. `.github/instructions/business-context.instructions.md` — começando com o frontmatter literal:
@@ -71,6 +72,15 @@ Gere o MESMO conteúdo em dois arquivos (um por ferramenta de assistente):
    ```
 
    seguido do MESMO conteúdo do arquivo 1.
+3. `.kiro/steering/business-context.md` — começando com o frontmatter literal:
+
+   ```
+   ---
+   inclusion: always
+   ---
+   ```
+
+   seguido do MESMO conteúdo do arquivo 1 (crie `.kiro/steering/` se não existir).
 
 ---
 
@@ -133,11 +143,11 @@ _Evitar_: <sinônimos a não usar>
 - [ ] **Atores** com autoridade descrita (não só o nome).
 - [ ] Pelo menos **1 caminho triste** documentado.
 - [ ] O que ninguém soube → `[a confirmar com <quem>]`, nunca inventado.
-- [ ] Os dois arquivos de contexto existem com o mesmo conteúdo (fora o frontmatter)?
-- [ ] O arquivo `.instructions.md` começa com `applyTo: "**"`?
+- [ ] Os três arquivos de contexto existem com o mesmo conteúdo (fora o frontmatter)?
+- [ ] O arquivo `.instructions.md` começa com `applyTo: "**"`? O de `.kiro/steering/` começa com `inclusion: always`?
 
 ## Saída esperada
-- **Dois arquivos, mesmo conteúdo**: `.amazonq/rules/business-context.md` e `.github/instructions/business-context.instructions.md` (gerados diretamente no repositório — ver "Destino duplo do arquivo gerado" na Fase 3).
+- **Três arquivos, mesmo conteúdo**: `.amazonq/rules/business-context.md`, `.github/instructions/business-context.instructions.md` e `.kiro/steering/business-context.md` (gerados diretamente no repositório — ver "Destino triplo do arquivo gerado" na Fase 3).
 - **Resumo ao usuário** após criar (nome · propósito · 3 regras-chave · 2 pontos abertos).
 - **Não gere mais nada nesta invocação.** O fluxo é: analisar → confirmar → (depois) gerar docs.
 

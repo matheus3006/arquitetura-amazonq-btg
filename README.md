@@ -1,7 +1,8 @@
-# arquitetura — pack de documentação para Amazon Q e GitHub Copilot
+# arquitetura — pack de documentação para Amazon Q, GitHub Copilot e Kiro
 
 Starter pack de documentação arquitetural para serviços **.NET transacionais**, usando
-**Amazon Q Developer** ou **GitHub Copilot** (VS Code, Visual Studio, JetBrains, CLI) como assistente.
+**Amazon Q Developer**, **GitHub Copilot** (VS Code, Visual Studio, JetBrains, CLI) ou
+**Kiro** (IDE/CLI) como assistente.
 
 Transforma o assistente em um especialista que entende seu projeto antes de gerar documentação,
 produz HTML semântico com pan/zoom em diagramas, e segue convenções verificáveis.
@@ -12,6 +13,7 @@ Um pacote pronto para clonar dentro de cada serviço .NET do seu time. Inclui:
 
 - **Rules** lidas automaticamente pelo Amazon Q (`.amazonq/rules/`)
 - **Camada Copilot gerada** (`.github/`): instructions auto-aplicadas, slash commands (`/gerador-adr`, ...) e Agent Skills — gerada de `.amazonq/rules/` por `tools/sync-copilot.sh`, nunca editada à mão
+- **Camada Kiro gerada** (`.kiro/`): steering auto-carregado (`inclusion: always`) + Agent Skills com ativação por descrição — gerada de `.amazonq/rules/` por `tools/sync-kiro.sh`, nunca editada à mão
 - **Prompts** que clonam comportamento de skills especializadas — 4 trilhas (arquitetura, frontend, negocio, engenharia)
 - **Trilha de engenharia**: debugging sistemático, planejamento de implementação e disciplina de verificação (portes do superpowers)
 - **Protocolo de controle de contexto** (`controle-style`): toda edição nasce de uma task em `controle/<task-id>/` — ciclo de 2 turnos otimizado para cota de requests, com watchdog determinístico via pre-commit git
@@ -21,7 +23,7 @@ Um pacote pronto para clonar dentro de cada serviço .NET do seu time. Inclui:
 
 ## Instalação rápida
 
-"Instalar" = colocar os arquivos do pack na **raiz** do repo do serviço. O Amazon Q lê `.amazonq/rules/` automaticamente; o Copilot lê `.github/instructions/` automaticamente. Escolha a via:
+"Instalar" = colocar os arquivos do pack na **raiz** do repo do serviço. O Amazon Q lê `.amazonq/rules/` automaticamente; o Copilot lê `.github/instructions/`; o Kiro lê `.kiro/steering/`. Escolha a via:
 
 **Via assistente de IA (qualquer plataforma):** aponte o seu assistente (Amazon Q, Copilot,
 Claude...) para o arquivo [`INSTALAR.md`](INSTALAR.md) do pack e diga:
@@ -43,14 +45,15 @@ pwsh arquitetura-amazonq-btg\install.ps1 -Target C:\repos\seu-servico
 **Manual (qualquer OS, sem script):** copie do pack pro repo do serviço, mantendo a estrutura:
 - `.amazonq/rules/` → as 5 rules (`architecture-style`, `frontend-style`, `negocio-style`, `engenharia-style`, `controle-style`)
 - `tools/pre-commit-controle.sh` → `.amazonq/hooks/pre-commit-controle.sh` no alvo (e, em repo git, um gancho `.git/hooks/pre-commit` que o chama)
-- `.github/` → `copilot-instructions.md`, `instructions/` (as 4), `prompts/` e `skills/` inteiras
+- `.github/` → `copilot-instructions.md`, `instructions/` (as 5), `prompts/` e `skills/` inteiras
+- `.kiro/` → `steering/` (as 5 rules) e `skills/` inteira
 - `prompts/` → as 4 trilhas inteiras (`arquitetura`, `frontend`, `negocio`, `engenharia`)
 - `docs/arquitetura/design-system/*.css`
 - `docs/arquitetura/templates/diagram-viewer.js` e `docs/arquitetura/templates/sidebar.js`
 - `docs/arquitetura/templates/*.html` — páginas de exemplo, usadas pelos prompts como referência de FORMA (copie só as que não existirem no alvo; não sobrescreva páginas já geradas)
 - `docs/arquitetura/COMO-USAR.html`
 
-**Não** copie os arquivos de contexto por-projeto: `project-context.md` e `business-context.md` (em `.amazonq/rules/`) nem `project-context.instructions.md` e `business-context.instructions.md` (em `.github/instructions/`) — são gerados por-serviço pelos analisadores.
+**Não** copie os arquivos de contexto por-projeto: `project-context.md` e `business-context.md` (em `.amazonq/rules/` e em `.kiro/steering/`) nem `project-context.instructions.md` e `business-context.instructions.md` (em `.github/instructions/`) — são gerados por-serviço pelos analisadores, nos três destinos. Também não toque nos foundation files do Kiro (`.kiro/steering/product.md`, `tech.md`, `structure.md`), gerados pelo próprio Kiro.
 
 Mensagens prontas para cada gatilho: [COMO-USAR.html](docs/arquitetura/COMO-USAR.html).
 
@@ -66,7 +69,9 @@ Tudo o mais — paleta, nomes, padrões, glossário — é **convenção adaptá
 
 > O fluxo abaixo descreve o Amazon Q. No Copilot é o mesmo desenho com outros nomes:
 > `.github/instructions/` no lugar de `.amazonq/rules/` (auto-aplicadas), `/analisador-de-projeto`
-> como atalho, e o contexto gerado nos DOIS lados (`project-context.md` + `project-context.instructions.md`).
+> como atalho. No Kiro, idem: `.kiro/steering/` (auto-carregado) e os prompts como Agent Skills
+> (`.kiro/skills/`, ativadas por descrição). O contexto é gerado nos TRÊS lados
+> (`project-context.md` + `project-context.instructions.md` + `.kiro/steering/project-context.md`).
 
 ```
 Dev clona esse repo para dentro do projeto .NET dele
@@ -126,17 +131,21 @@ arquitetura/
 ├── .github/                                     ← gerado por tools/sync-copilot.sh — não editar
 │   ├── copilot-instructions.md
 │   ├── instructions/                            ← 5 rules (.instructions.md); contexto por-projeto é gerado aqui pelos analisadores
-│   ├── prompts/                                 ← slash commands (19 arquivos .prompt.md)
-│   └── skills/                                  ← Agent Skills (19 subpastas com SKILL.md)
+│   ├── prompts/                                 ← slash commands (23 arquivos .prompt.md)
+│   └── skills/                                  ← Agent Skills (23 subpastas com SKILL.md)
+├── .kiro/                                       ← gerado por tools/sync-kiro.sh — não editar
+│   ├── steering/                                ← 5 rules (inclusion: always); contexto por-projeto e foundation files são gerados aqui por-serviço
+│   └── skills/                                  ← Agent Skills (23 subpastas com SKILL.md)
 ├── prompts/
 │   ├── arquitetura/                             ← 7 prompts (analisador, arquiteto, ADR, runbook, fluxo, grill, brainstorm)
 │   ├── frontend/                                ← 4 prompts (ux-controlado, ui-pro-max, design-system, polidor)
 │   ├── negocio/                                 ← 5 prompts (analisador-dominio, catalogo, glossario, grill, mapeador)
-│   └── engenharia/                              ← 3 prompts (depurador-sistematico, planejador-de-implementacao, controle-de-tarefa)
+│   └── engenharia/                              ← 7 prompts (especificador, planejador, grill-plano, executor, tdd, depurador, controle-de-tarefa)
 ├── tools/
-│   ├── manifest.tsv                             ← slug → trilha → descrição (gera os 38 wrappers)
+│   ├── manifest.tsv                             ← slug → trilha → descrição (gera os 69 wrappers)
 │   ├── pre-commit-controle.sh                   ← watchdog do protocolo de controle (copiado pros alvos pelos instaladores)
-│   └── sync-copilot.sh                          ← gera/valida a camada .github/
+│   ├── sync-copilot.sh                          ← gera/valida a camada .github/
+│   └── sync-kiro.sh                             ← gera/valida a camada .kiro/
 └── docs/
     ├── arquitetura/                             ← espelha o layout do repo alvo
     │   ├── COMO-USAR.html                       ← mensagens prontas para cada gatilho
@@ -179,7 +188,7 @@ Essa convenção **não muda** quando o resto do visual (paleta, tipografia, etc
 
 3. **Diga**: "Analisa esse projeto antes de começar a documentar."
 
-4. **O assistente vai detectar o código, perguntar o necessário, criar `project-context.md`** (sempre nos DOIS destinos: `.amazonq/rules/` e `.github/instructions/`). Revise.
+4. **O assistente vai detectar o código, perguntar o necessário, criar `project-context.md`** (sempre nos TRÊS destinos: `.amazonq/rules/`, `.github/instructions/` e `.kiro/steering/`). Revise.
 
 5. **Daí em diante**, todas as gerações de documentação respeitam o contexto do projeto. Exemplos:
    - "Gera a visão geral do serviço"
@@ -209,13 +218,13 @@ Para gerar PDF, `Cmd+P` → Salvar como PDF → marcar "Gráficos de fundo". Pri
 
 ## Para mantenedores do pack
 
-`.amazonq/rules/` é a fonte canônica. A camada `.github/` é GERADA — não edite à mão.
+`.amazonq/rules/` é a fonte canônica. As camadas `.github/` e `.kiro/` são GERADAS — não edite à mão.
 Depois de editar qualquer rule ou o `tools/manifest.tsv`:
 
-    bash tools/sync-copilot.sh           # regenera .github/
-    bash tools/sync-copilot.sh --check   # confirma que esta em sincronia (use antes de commitar)
+    bash tools/sync-copilot.sh && bash tools/sync-kiro.sh             # regenera .github/ e .kiro/
+    bash tools/sync-copilot.sh --check && bash tools/sync-kiro.sh --check   # confirma sincronia (use antes de commitar)
 
-Commite o `.github/` regenerado junto com a mudança canônica.
+Commite o `.github/` e o `.kiro/` regenerados junto com a mudança canônica.
 
 ## Contribuindo
 

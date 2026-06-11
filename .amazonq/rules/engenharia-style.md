@@ -25,10 +25,19 @@ com ou sem contexto de projeto. Quando o contexto existir, use-o.
 |---|---|
 | "debugga", "investiga esse bug", "não funciona", "causa raiz", "por que está quebrando", "teste falhando" | `prompts/engenharia/depurador-sistematico.md` |
 | "planeja a implementação", "plano de implementação", "quebra em etapas", "como implementar isso passo a passo" | `prompts/engenharia/planejador-de-implementacao.md` |
+| "escreve a spec", "especifica isso", pedido vago sem comportamento/critérios definidos | `prompts/engenharia/especificador.md` |
+| "grilla o plano", "estressa esse plano", "revisa o plano antes de executar", "pre-mortem do plano" | `prompts/engenharia/grill-plano.md` |
+| "executa o plano", "implementa o plano aprovado", "segue o plano" | `prompts/engenharia/executor-de-plano.md` |
+| "TDD", "test-first", "escreve o teste primeiro", etapa de código dentro de um plano | `prompts/engenharia/tdd-disciplinado.md` |
 
 Pedido ambíguo entre investigar e implementar ("conserta o X") → primeiro o depurador
 (causa raiz demonstrada), depois proponha o planejador se a correção for maior que um fix pontual.
 Dúvida ainda pré-decisão ("não sei qual abordagem") → `prompts/arquitetura/brainstorm-arquitetural.md` primeiro (ver architecture-style § 2).
+
+**Fluxo completo de uma feature** (cada elo é opcional, a ordem não):
+pedido vago → `especificador` → (abordagem em aberto? `brainstorm-arquitetural` → `gerador-adr`)
+→ `planejador-de-implementacao` → `grill-plano` → aprovação → `executor-de-plano`
+(com `tdd-disciplinado` em cada etapa de código).
 
 ---
 

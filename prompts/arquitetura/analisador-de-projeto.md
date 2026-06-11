@@ -3,8 +3,9 @@
 > ## STATUS
 >
 > Este é o **PRIMEIRO prompt** a rodar quando o assistente é invocado em um workspace novo.
-> Sua função é entender o projeto real e produzir o contexto do projeto em DOIS destinos —
-> `.amazonq/rules/project-context.md` e `.github/instructions/project-context.instructions.md` —
+> Sua função é entender o projeto real e produzir o contexto do projeto em TRÊS destinos —
+> `.amazonq/rules/project-context.md`, `.github/instructions/project-context.instructions.md`
+> e `.kiro/steering/project-context.md` —
 > que servem como **fonte de verdade** para todas as gerações de documentação subsequentes.
 >
 > Outros prompts (`arquiteto-de-sistema`, `gerador-adr`, etc.) **dependem** desse contexto.
@@ -16,7 +17,7 @@
 
 - **Primeira invocação** do assistente em um repositório (gate obrigatório).
 - Quando o usuário pede explicitamente: "analisa o projeto", "refresh project context", "atualiza o contexto".
-- Quando o par de contexto do projeto (`.amazonq/rules/project-context.md` + `.github/instructions/project-context.instructions.md`) **não existe** ou está obsoleto (> 6 meses).
+- Quando o trio de contexto do projeto (`.amazonq/rules/project-context.md` + `.github/instructions/project-context.instructions.md` + `.kiro/steering/project-context.md`) **não existe** ou está obsoleto (> 6 meses).
 
 Outros prompts devem verificar a existência de `project-context.md` antes de gerar e, se ausente, instruir o usuário a invocar este analisador primeiro.
 
@@ -86,9 +87,9 @@ Se o usuário responder "não sei" para alguma — **registre como `[a confirmar
 Crie os arquivos usando o template abaixo. Preencha com o que foi detectado + respondido.
 Onde não souber e o usuário também não, marque `[a confirmar]`.
 
-### Destino duplo do arquivo gerado
+### Destino triplo do arquivo gerado
 
-Gere o MESMO conteúdo em dois arquivos (um por ferramenta de assistente):
+Gere o MESMO conteúdo em três arquivos (um por ferramenta de assistente):
 
 1. `.amazonq/rules/project-context.md` — sem frontmatter (lido pelo Amazon Q).
 2. `.github/instructions/project-context.instructions.md` — começando com o frontmatter literal:
@@ -100,10 +101,19 @@ Gere o MESMO conteúdo em dois arquivos (um por ferramenta de assistente):
    ```
 
    seguido do MESMO conteúdo do arquivo 1.
+3. `.kiro/steering/project-context.md` — começando com o frontmatter literal:
+
+   ```
+   ---
+   inclusion: always
+   ---
+   ```
+
+   seguido do MESMO conteúdo do arquivo 1 (crie `.kiro/steering/` se não existir).
 
 **Após criar**, exiba ao usuário:
 - Resumo do que ficou no `project-context.md` (top 5 pontos).
-- Avise: "Esse contexto agora é a fonte de verdade (dois arquivos, mesmo conteúdo). Edite se algo estiver errado. Depois posso seguir gerando docs."
+- Avise: "Esse contexto agora é a fonte de verdade (três arquivos, mesmo conteúdo). Edite se algo estiver errado. Depois posso seguir gerando docs."
 
 ---
 
@@ -223,16 +233,17 @@ Antes de declarar o `project-context.md` pronto:
 - [ ] SLO está preenchido OU marcado `[a definir]` — nunca inventado
 - [ ] Squad e Tech Lead preenchidos
 - [ ] Tier de criticidade definido (1, 2 ou 3)
-- [ ] Os dois arquivos de contexto existem com o mesmo conteúdo (fora o frontmatter)?
-- [ ] O arquivo `.instructions.md` começa com `applyTo: "**"`?
+- [ ] Os três arquivos de contexto existem com o mesmo conteúdo (fora o frontmatter)?
+- [ ] O arquivo `.instructions.md` começa com `applyTo: "**"`? O de `.kiro/steering/` começa com `inclusion: always`?
 
 ## Saída esperada
 
-- **Dois arquivos, mesmo conteúdo**: `.amazonq/rules/project-context.md` e `.github/instructions/project-context.instructions.md` (gerados diretamente no repositório — ver "Destino duplo do arquivo gerado" na Fase 3).
+- **Três arquivos, mesmo conteúdo**: `.amazonq/rules/project-context.md`, `.github/instructions/project-context.instructions.md` e `.kiro/steering/project-context.md` (gerados diretamente no repositório — ver "Destino triplo do arquivo gerado" na Fase 3).
 - **Sumário ao usuário** após criação:
   ```
-  Criei .amazonq/rules/project-context.md e
-  .github/instructions/project-context.instructions.md (mesmo conteúdo, N linhas).
+  Criei .amazonq/rules/project-context.md,
+  .github/instructions/project-context.instructions.md e
+  .kiro/steering/project-context.md (mesmo conteúdo, N linhas).
   Resumo:
     - Nome: <X>
     - Tier: <Y>

@@ -3,8 +3,9 @@
 > ## STATUS
 >
 > Parte da **trilha de negócio** do pack. Referenciado pela rule da trilha `negocio` (tabela de hooks — `.amazonq/rules/negocio-style.md` ou `.github/instructions/negocio-style.instructions.md`, conforme a ferramenta).
-> Consome e atualiza o `business-context.md` (nos DOIS destinos: `.amazonq/rules/business-context.md` e
-> `.github/instructions/business-context.instructions.md` — mantenha-os idênticos fora o frontmatter) —
+> Consome e atualiza o `business-context.md` (nos TRÊS destinos: `.amazonq/rules/business-context.md`,
+> `.github/instructions/business-context.instructions.md` e `.kiro/steering/business-context.md` —
+> mantenha-os idênticos fora o frontmatter) —
 > a fonte de verdade de negócio gerada pelo `prompts/negocio/analisador-de-dominio.md`.
 >
 > **Este prompt NÃO gera um relatório.** Ele conduz uma **sessão interativa** de interrogatório.
@@ -46,7 +47,7 @@ Assistentes tendem a achatar interrogatórios numa pergunta-única ou num despej
 3. **Uma pergunta** sobre esse ramo + **sua resposta recomendada** + porquê (1 linha).
 4. **PARE. Espere a resposta.** Não faça a próxima pergunta na mesma mensagem.
 5. Na resposta do usuário: registre a decisão; se ela abriu sub-ramos, **adicione-os ao ledger**;
-   se cristalizou um termo ou regra, **atualize o `business-context.md` ali mesmo** (nos dois destinos do contexto de negócio); volte ao passo 1.
+   se cristalizou um termo ou regra, **atualize o `business-context.md` ali mesmo** (nos três destinos do contexto de negócio); volte ao passo 1.
 
 **Nunca:** listar várias perguntas de uma vez · repetir um ramo já `✓` · pular pra conclusão com ramo `○` aberto · perguntar o que o código do workspace revela.
 
@@ -111,7 +112,7 @@ Invente **cenários concretos de borda** que forcem precisão nos limites ("e se
 **Gate:** principais caminhos tristes cobertos.
 
 ### F4 — Cristalização
-- Atualize o `business-context.md` **inline**, nos dois destinos do contexto de negócio (glossário — formato abaixo).
+- Atualize o `business-context.md` **inline**, nos três destinos do contexto de negócio (glossário — formato abaixo).
 - Capture cada **regra resolvida** na tabela abaixo, que o `catalogo-de-regras.md` consome direto.
 - Ofereça um **registro de decisão de negócio** — com parcimônia (teste abaixo).
 
@@ -129,7 +130,7 @@ Formato da regra resolvida:
 2. **Linguagem vaga/sobrecarregada** → proponha o termo canônico. "Você disse 'conta' — é o Cliente ou o Usuário? São coisas diferentes."
 3. **Cenário concreto** → ao discutir relação de domínio, invente um caso que prove o limite.
 4. **Cruzar com o código** → "O código cancela o pedido inteiro, mas você disse que dá pra cancelar item — qual está certo?"
-5. **Atualizar doc inline** → termo/regra resolvido, atualize o `business-context.md` já (nos dois destinos), sem acumular.
+5. **Atualizar doc inline** → termo/regra resolvido, atualize o `business-context.md` já (nos três destinos), sem acumular.
 
 ## Onde a regra de negócio mora no código (guia da F0)
 
@@ -145,7 +146,7 @@ Cada achado é uma **regra candidata** — leve pro grilling como "encontrei ist
 
 ## Atualização do `business-context.md` (glossário inline)
 
-`business-context.md` é **glossário e fonte de verdade de negócio — não spec, não detalhe de implementação.** Toda atualização vale para os dois destinos do contexto de negócio (mantenha-os idênticos fora o frontmatter). Formato por termo:
+`business-context.md` é **glossário e fonte de verdade de negócio — não spec, não detalhe de implementação.** Toda atualização vale para os três destinos do contexto de negócio (mantenha-os idênticos fora o frontmatter). Formato por termo:
 
 ```md
 **Estorno**:
@@ -176,7 +177,7 @@ Faltou um? Pule.
 ## Saída esperada
 
 - **Sessão interativa**, fase a fase, uma pergunta por vez.
-- **`business-context.md` atualizado inline, nos dois destinos do contexto de negócio** — o entregável principal.
+- **`business-context.md` atualizado inline, nos três destinos do contexto de negócio** — o entregável principal.
 - **Tabela de regras resolvidas** (regra · origem no código · dono · se-violada) para o `catalogo-de-regras.md`.
 - *Opcional:* relatório HTML de fechamento seguindo a rule da trilha `frontend` (callouts `.finding--*`; `.amazonq/rules/frontend-style.md` ou `.github/instructions/frontend-style.instructions.md`, conforme a ferramenta), só se o usuário pedir um artefato revisável.
 
@@ -193,6 +194,6 @@ Faltou um? Pule.
 ## Referências
 - Núcleo clonado: `grill-me` + `grill-with-docs` (mattpocock).
 - Rule da trilha: `negocio-style.md` (hooks + gate).
-- Fonte de verdade: `business-context.md`, nos dois destinos do contexto de negócio (criado por `analisador-de-dominio.md`).
+- Fonte de verdade: `business-context.md`, nos três destinos do contexto de negócio (criado por `analisador-de-dominio.md`).
 - Consumidores da saída: `prompts/negocio/catalogo-de-regras.md`, `glossario-de-negocio.md`.
 - Esqueleto HTML do relatório opcional: `frontend-style.md`.

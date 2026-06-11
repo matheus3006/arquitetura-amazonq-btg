@@ -137,5 +137,7 @@ Esqueleto mínimo usando o design system do pack (ajuste o caminho relativo se n
 ## Referências
 - Protocolo resumido + disciplina de cota: `.amazonq/rules/controle-style.md` ou `.github/instructions/controle-style.instructions.md`, conforme a ferramenta
 - Planos grandes (3+ arquivos): `prompts/engenharia/planejador-de-implementacao.md`
+- Estressar o plano antes da aprovação (opcional, recomendado em task de risco): `prompts/engenharia/grill-plano.md`
+- Disciplina do turno 2: `prompts/engenharia/executor-de-plano.md` (+ `tdd-disciplinado.md` nas etapas de código)
 - Bug no meio da execução: `prompts/engenharia/depurador-sistematico.md`
 - Watchdog determinístico: pre-commit instalado pelo `install.sh` do pack (bypass: `git commit --no-verify`)

@@ -7,12 +7,14 @@
     pwsh install.ps1 -Target C:\repos\servico
     pwsh install.ps1 -NoExamples              # NAO inclui as paginas HTML de exemplo
 
-  Copia: .amazonq/rules/ (5 rules) + .github/ (camada Copilot) + prompts/ (4 trilhas)
+  Copia: .amazonq/rules/ (5 rules) + .github/ (camada Copilot) + .kiro/ (camada Kiro:
+           steering + Agent Skills) + prompts/ (4 trilhas)
          + docs/arquitetura/ (css do design system, js dos templates, COMO-USAR.html
            e paginas HTML de exemplo — referencia de FORMA pros prompts; nunca
            sobrescreve arquivo ja existente no alvo)
          + watchdog do protocolo de controle (.amazonq/hooks/ + .git/hooks/pre-commit)
-  NAO copia: arquivos de contexto por-servico (project/business-context nos dois lados).
+  NAO copia: arquivos de contexto por-servico (project/business-context nos tres lados)
+         nem os foundation files do Kiro (product/tech/structure.md).
 #>
 param(
   [string]$Target = (Get-Location).Path,
@@ -43,7 +45,7 @@ if ($Target -eq $PackDir) {
   exit 1
 }
 
-Write-Host "[pack] arquitetura (Amazon Q + Copilot) -> $Target`n"
+Write-Host "[pack] arquitetura (Amazon Q + Copilot + Kiro) -> $Target`n"
 
 # 1) Rules Amazon Q (nunca tocamos *-context.md)
 $rulesDst = Join-Path $Target '.amazonq/rules'
@@ -69,7 +71,21 @@ foreach ($f in 'architecture-style','frontend-style','negocio-style','engenharia
 Write-Host "  + .github/instructions/ (5 instructions)"
 Copy-Item (Join-Path $PackDir '.github/prompts/*') (Join-Path $ghDst 'prompts') -Recurse -Force
 Copy-Item (Join-Path $PackDir '.github/skills/*')  (Join-Path $ghDst 'skills')  -Recurse -Force
-Write-Host "  + .github/prompts/ + .github/skills/ (19 wrappers cada)"
+Write-Host "  + .github/prompts/ + .github/skills/ (23 wrappers cada)"
+
+# 2b) Camada Kiro (steering + Agent Skills). Copiamos SO as 5 rules de estilo:
+#     *-context.md e os foundation files do Kiro (product/tech/structure.md)
+#     sao por-servico e ficam intactos.
+$kiroDst = Join-Path $Target '.kiro'
+foreach ($d in 'steering','skills') {
+  New-Item -ItemType Directory -Force -Path (Join-Path $kiroDst $d) | Out-Null
+}
+foreach ($f in 'architecture-style','frontend-style','negocio-style','engenharia-style','controle-style') {
+  Copy-Item (Join-Path $PackDir ".kiro/steering/$f.md") (Join-Path $kiroDst "steering/$f.md") -Force
+}
+Write-Host "  + .kiro/steering/ (5 rules)"
+Copy-Item (Join-Path $PackDir '.kiro/skills/*') (Join-Path $kiroDst 'skills') -Recurse -Force
+Write-Host "  + .kiro/skills/ (23 Agent Skills)"
 
 # 3) Prompts (4 trilhas)
 $promptsDst = Join-Path $Target 'prompts'
@@ -146,10 +162,10 @@ if (-not (Test-Path -PathType Container $gitDir)) {
 }
 
 # 8) Limpeza de lixo do Finder
-Get-ChildItem -Path $promptsDst, $ghDst, (Join-Path $Target 'docs/arquitetura') -Recurse -Force -Filter '.DS_Store' -ErrorAction SilentlyContinue |
+Get-ChildItem -Path $promptsDst, $ghDst, $kiroDst, (Join-Path $Target 'docs/arquitetura') -Recurse -Force -Filter '.DS_Store' -ErrorAction SilentlyContinue |
   Remove-Item -Force -ErrorAction SilentlyContinue
 
-Write-Host "`n[ok] Instalado. O Amazon Q le .amazonq/rules/ e o Copilot le .github/ automaticamente.`n"
+Write-Host "`n[ok] Instalado. O Amazon Q le .amazonq/rules/, o Copilot le .github/ e o Kiro le .kiro/ automaticamente.`n"
 Write-Host 'Comece:'
 Write-Host '   Tecnica:    "documenta esse servico"   (Copilot IDE: /analisador-de-projeto na 1a vez)'
 Write-Host '   Negocio:    "analisa o dominio" -> "grilla o negocio"'

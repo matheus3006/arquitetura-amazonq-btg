@@ -6,8 +6,8 @@
 # Gerado (commitado, NUNCA editado a mao):
 #   .github/copilot-instructions.md
 #   .github/instructions/<rule>.instructions.md     (5 rules)
-#   .github/prompts/<slug>.prompt.md                (19 wrappers)
-#   .github/skills/<slug>/SKILL.md                  (19 wrappers)
+#   .github/prompts/<slug>.prompt.md                (23 wrappers)
+#   .github/skills/<slug>/SKILL.md                  (23 wrappers)
 #
 # Uso:
 #   bash tools/sync-copilot.sh           # (re)gera .github/
@@ -36,8 +36,9 @@ fi
 mkdir -p "$OUT/instructions" "$OUT/prompts" "$OUT/skills"
 
 # ── 1) Rules canonicas → instructions ───────────────────────────────────────
-# Reescreve apenas os paths das 4 rules de estilo. Paths de contexto
-# (project/business-context) NAO sao reescritos: o texto canonico cita os dois.
+# Reescreve apenas os paths das rules de estilo. Paths de contexto
+# (project/business-context) NAO sao reescritos: o texto canonico cita os tres
+# (Amazon Q, Copilot e Kiro).
 rewrite_for_copilot() {
   sed \
     -e 's|\.amazonq/rules/architecture-style\.md|.github/instructions/architecture-style.instructions.md|g' \
@@ -83,11 +84,12 @@ cat > "$OUT/copilot-instructions.md" <<'EOF'
 
 ## Gate de contexto (resumo)
 
-Antes de gerar documentacao, o contexto do projeto precisa existir em DOIS arquivos de
-mesmo conteudo: `.github/instructions/project-context.instructions.md` (Copilot) e
-`.amazonq/rules/project-context.md` (Amazon Q). Se nenhum existir, rode primeiro
-`prompts/arquitetura/analisador-de-projeto.md` (`/analisador-de-projeto`). Se so um
-existir, espelhe no outro. Doc de NEGOCIO exige tambem o par `business-context`
+Antes de gerar documentacao, o contexto do projeto precisa existir em TRES arquivos de
+mesmo conteudo: `.github/instructions/project-context.instructions.md` (Copilot),
+`.amazonq/rules/project-context.md` (Amazon Q) e `.kiro/steering/project-context.md`
+(Kiro, com frontmatter `inclusion: always`). Se nenhum existir, rode primeiro
+`prompts/arquitetura/analisador-de-projeto.md` (`/analisador-de-projeto`). Se algum
+faltar, espelhe nos que faltam. Doc de NEGOCIO exige tambem o trio `business-context`
 (criado por `prompts/negocio/analisador-de-dominio.md`).
 
 ## Regra inegociavel

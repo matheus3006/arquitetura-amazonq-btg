@@ -43,6 +43,7 @@
           <tr><td>Amazon Q (IDE / <code>q chat</code>)</td><td>Cole a mensagem do card</td></tr>
           <tr><td>Copilot IDE (VS Code / Visual Studio / JetBrains)</td><td>Cole a mensagem OU use o atalho <code>/slug</code> indicado no card</td></tr>
           <tr><td>Copilot CLI</td><td>Cole a mensagem (os prompts também existem como skills)</td></tr>
+          <tr><td>Kiro (IDE / CLI)</td><td>Cole a mensagem — a Agent Skill de mesmo slug ativa por descrição (<code>.kiro/skills/</code>); o steering carrega as regras automaticamente</td></tr>
         </tbody>
       </table>
       <p><strong>Primeira vez no repositório?</strong> Rode o card nº 1 antes de qualquer outro —
@@ -209,6 +210,34 @@ Siga todo o processo descrito em prompts/engenharia/depurador-sistematico.md: qu
 
 Siga o protocolo de prompts/engenharia/controle-de-tarefa.md: neste turno crie SOMENTE controle/&lt;task-id&gt;/ (TASK.md com escopo+ACs e o PLANO) e termine pedindo aprovação, com TODAS as perguntas num bloco único. Execução apenas depois do meu "aprovado".</pre>
           <div class="card-foot"><span class="slug">Copilot IDE: /controle-de-tarefa</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>20 · Spec antes do plano</h3>
+          <p class="quando">Pedido vago, sem comportamento nem critérios de aceite definidos.</p>
+          <pre class="msg">Quero <b>[PEDIDO_VAGO — ex: melhorar o fluxo de estorno]</b>. Antes de planejar, siga todo o processo de prompts/engenharia/especificador.md: explore o código e os contextos, me pergunte o que faltar num bloco único, confirme as costuras de teste e escreva a spec com critérios de aceite verificáveis em docs/specs/.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /especificador</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>21 · Grill do plano (pre-mortem)</h3>
+          <p class="quando">Plano pronto, ANTES de aprovar — ache os furos enquanto é barato.</p>
+          <pre class="msg">O plano <b>[PATH_DO_PLANO]</b> está pronto. Siga todo o processo de prompts/engenharia/grill-plano.md: me interrogue ramo a ramo — uma pergunta por vez, com o ledger visível e sua resposta recomendada — e corrija o plano inline conforme fecharmos cada furo. Explore o código antes de perguntar.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /grill-plano</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>22 · Executar o plano aprovado</h3>
+          <p class="quando">Plano aprovado vira código — etapa por etapa, com evidência.</p>
+          <pre class="msg">O plano <b>[PATH_DO_PLANO]</b> foi aprovado. Siga todo o processo de prompts/engenharia/executor-de-plano.md: revise o plano criticamente primeiro, execute etapa por etapa com verificação e output real por etapa, registre desvios, e PARE se algo divergir de decisão do plano — sem adivinhar.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /executor-de-plano</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>23 · TDD (test-first)</h3>
+          <p class="quando">Qualquer etapa que produz código de produção — feature, bugfix, refactor.</p>
+          <pre class="msg">Vou implementar <b>[ETAPA_OU_COMPORTAMENTO]</b>. Siga todo o processo de prompts/engenharia/tdd-disciplinado.md: teste falhando primeiro (me mostre o RED), código mínimo pra passar (me mostre o GREEN), refactor com a suíte verde. Nenhum código de produção sem teste falhando antes.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /tdd-disciplinado</span><button class="copy-btn" type="button">Copiar</button></div>
         </article>
 
       </div>

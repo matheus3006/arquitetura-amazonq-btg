@@ -8,16 +8,18 @@
 #   bash install.sh --help                  # mostra esta ajuda
 #
 # Copia: .amazonq/rules/ (5 rules) + .github/ (camada Copilot: instructions,
-#        prompts, skills) + prompts/ (4 trilhas) e
+#        prompts, skills) + .kiro/ (camada Kiro: steering, skills)
+#        + prompts/ (4 trilhas) e
 #        docs/arquitetura/ (css do design system, js dos templates, COMO-USAR.html,
 #        paginas HTML de exemplo — referencia de FORMA pros prompts; nunca
 #        sobrescreve arquivo ja existente no alvo)
 #        + watchdog do protocolo de controle (.amazonq/hooks/ + .git/hooks/pre-commit)
 # NAO copia: arquivos de contexto por-servico (project/business-context nos
-#        dois lados) — sao gerados pelos analisadores e preservados em re-runs.
+#        tres lados) nem os foundation files do Kiro (product/tech/structure.md)
+#        — sao gerados por-servico e preservados em re-runs.
 set -euo pipefail
 
-usage() { sed -n '2,17p' "$0" | sed 's/^#$//; s/^# //'; }
+usage() { sed -n '2,19p' "$0" | sed 's/^#$//; s/^# //'; }
 
 NO_EXAMPLES=0
 TARGET=""
@@ -48,7 +50,7 @@ if [ "$TARGET" -ef "$PACK_DIR" ]; then
   exit 1
 fi
 
-echo "📦 arquitetura (Amazon Q + Copilot)  →  $TARGET"
+echo "📦 arquitetura (Amazon Q + Copilot + Kiro)  →  $TARGET"
 echo ""
 
 # 1) Rules Amazon Q (nunca tocamos *-context.md, que sao por-servico)
@@ -70,7 +72,18 @@ done
 echo "  ✓ .github/instructions/ (5 instructions)"
 cp -R "$PACK_DIR/.github/prompts/." "$TARGET/.github/prompts/"
 cp -R "$PACK_DIR/.github/skills/."  "$TARGET/.github/skills/"
-echo "  ✓ .github/prompts/ + .github/skills/ (19 wrappers cada)"
+echo "  ✓ .github/prompts/ + .github/skills/ (23 wrappers cada)"
+
+# 2b) Camada Kiro (steering + Agent Skills). Copiamos SO as 5 rules de estilo:
+#     *-context.md e os foundation files do Kiro (product/tech/structure.md)
+#     sao por-servico e ficam intactos.
+mkdir -p "$TARGET/.kiro/steering" "$TARGET/.kiro/skills"
+for f in architecture-style frontend-style negocio-style engenharia-style controle-style; do
+  cp "$PACK_DIR/.kiro/steering/$f.md" "$TARGET/.kiro/steering/$f.md"
+done
+echo "  ✓ .kiro/steering/ (5 rules)"
+cp -R "$PACK_DIR/.kiro/skills/." "$TARGET/.kiro/skills/"
+echo "  ✓ .kiro/skills/ (23 Agent Skills)"
 
 # 3) Prompts (4 trilhas)
 mkdir -p "$TARGET/prompts"
@@ -142,11 +155,11 @@ else
 fi
 
 # 8) Limpeza de lixo do Finder
-find "$TARGET/prompts" "$TARGET/.github" "$TARGET/docs/arquitetura" \
+find "$TARGET/prompts" "$TARGET/.github" "$TARGET/.kiro" "$TARGET/docs/arquitetura" \
   -name '.DS_Store' -delete 2>/dev/null || true
 
 echo ""
-echo "✅ Instalado. O Amazon Q le .amazonq/rules/ e o Copilot le .github/ automaticamente."
+echo "✅ Instalado. O Amazon Q le .amazonq/rules/, o Copilot le .github/ e o Kiro le .kiro/ automaticamente."
 echo ""
 echo "Comece:"
 echo "   Tecnica:    \"documenta esse servico\"   (Copilot IDE: /analisador-de-projeto na 1a vez)"

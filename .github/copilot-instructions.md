@@ -18,11 +18,12 @@
 
 ## Gate de contexto (resumo)
 
-Antes de gerar documentacao, o contexto do projeto precisa existir em DOIS arquivos de
-mesmo conteudo: `.github/instructions/project-context.instructions.md` (Copilot) e
-`.amazonq/rules/project-context.md` (Amazon Q). Se nenhum existir, rode primeiro
-`prompts/arquitetura/analisador-de-projeto.md` (`/analisador-de-projeto`). Se so um
-existir, espelhe no outro. Doc de NEGOCIO exige tambem o par `business-context`
+Antes de gerar documentacao, o contexto do projeto precisa existir em TRES arquivos de
+mesmo conteudo: `.github/instructions/project-context.instructions.md` (Copilot),
+`.amazonq/rules/project-context.md` (Amazon Q) e `.kiro/steering/project-context.md`
+(Kiro, com frontmatter `inclusion: always`). Se nenhum existir, rode primeiro
+`prompts/arquitetura/analisador-de-projeto.md` (`/analisador-de-projeto`). Se algum
+faltar, espelhe nos que faltam. Doc de NEGOCIO exige tambem o trio `business-context`
 (criado por `prompts/negocio/analisador-de-dominio.md`).
 
 ## Regra inegociavel

@@ -55,6 +55,6 @@ Status por regra: `confirmada` ou `a confirmar`. Origem como `arquivo:símbolo` 
 | Copilot CLI | Gatilho natural — a instruction roteia |
 
 ## Referências
-- Fonte: `business-context.md`, nos dois destinos do contexto de negócio (seção Regras de negócio).
+- Fonte: `business-context.md`, nos três destinos do contexto de negócio (seção Regras de negócio).
 - Lacunas: `prompts/negocio/grill-negocio.md`.
 - Esqueleto HTML: rule da trilha `frontend` (`.amazonq/rules/frontend-style.md` ou `.github/instructions/frontend-style.instructions.md`, conforme a ferramenta).

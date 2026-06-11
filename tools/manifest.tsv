@@ -17,3 +17,7 @@ grill-negocio	negocio	Interrogatorio por fases com ledger para extrair regras na
 depurador-sistematico	engenharia	Depuracao sistematica em 4 fases: causa raiz com evidencia antes de qualquer correcao
 planejador-de-implementacao	engenharia	Transforma spec/decisao em plano de etapas pequenas e independentemente verificaveis
 controle-de-tarefa	engenharia	Protocolo de controle de tarefas em 2 turnos: escopo+plano aprovados viram checklist, execucao com ledger de evidencias
+grill-plano	engenharia	Interrogatorio socratico do plano de implementacao: anda a arvore de decisoes e acha furos, premissas e riscos antes da aprovacao
+executor-de-plano	engenharia	Executa o plano aprovado etapa por etapa com verificacao por etapa, regra de desvio e parada em bloqueio
+tdd-disciplinado	engenharia	Disciplina test-first por etapa: nenhum codigo de producao sem teste falhando antes (red-green-refactor)
+especificador	engenharia	Transforma pedido vago em spec minima com criterios de aceite verificaveis, antes do plano

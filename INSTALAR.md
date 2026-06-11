@@ -40,6 +40,8 @@ Copie do pack para a raiz do repo alvo, preservando a estrutura de pastas:
 | `.github/instructions/*.instructions.md` (as 5 de estilo) | `.github/instructions/` |
 | `.github/prompts/` (inteira) | `.github/prompts/` |
 | `.github/skills/` (inteira) | `.github/skills/` |
+| `.kiro/steering/*.md` (as 5 de estilo) | `.kiro/steering/` |
+| `.kiro/skills/` (inteira) | `.kiro/skills/` |
 | `prompts/arquitetura/`, `prompts/frontend/`, `prompts/negocio/`, `prompts/engenharia/` (inteiras) | `prompts/` |
 | `docs/arquitetura/design-system/*.css` | `docs/arquitetura/design-system/` |
 | `docs/arquitetura/templates/diagram-viewer.js`, `docs/arquitetura/templates/sidebar.js` | `docs/arquitetura/templates/` |
@@ -64,8 +66,11 @@ acrescentar a linha `bash .amazonq/hooks/pre-commit-controle.sh || exit 1` nele.
 
 - `.amazonq/rules/project-context.md` e `.amazonq/rules/business-context.md`
 - `.github/instructions/project-context.instructions.md` e `business-context.instructions.md`
+- `.kiro/steering/project-context.md` e `.kiro/steering/business-context.md`
+- `.kiro/steering/product.md`, `.kiro/steering/tech.md` e `.kiro/steering/structure.md`
+  (foundation files gerados pelo próprio Kiro)
 
-Esses arquivos NÃO existem no pack — a regra é sobre nunca sobrescrevê-los no repositório alvo quando já existirem lá. Esses 4 são por-serviço, gerados pelos analisadores DEPOIS da instalação. Se já existem
+Esses arquivos NÃO existem no pack — a regra é sobre nunca sobrescrevê-los no repositório alvo quando já existirem lá. São por-serviço: os contextos são gerados pelos analisadores DEPOIS da instalação, e os foundation files pelo próprio Kiro. Se já existem
 no alvo, é uma instalação anterior — preserve-os intactos.
 
 Também não copie: `tools/` (exceto `pre-commit-controle.sh`, que vai para
@@ -81,8 +86,9 @@ Confira que TODOS estes paths existem no repo alvo (via shell ou listagem de arq
 - `.amazonq/rules/` com as 5 rules de estilo (mais os arquivos de contexto, se já gerados)
 - `.amazonq/hooks/pre-commit-controle.sh` (e, em repo git, o gancho `.git/hooks/pre-commit` — ou o aviso de pre-commit pre-existente)
 - `.github/copilot-instructions.md` + `.github/instructions/` com 5 arquivos `*-style.instructions.md` (mais os de contexto, se os analisadores já rodaram neste repo)
-- `.github/prompts/` com 19 arquivos `.prompt.md` e `.github/skills/` com 19 subpastas
-- `prompts/` com as 4 trilhas (arquitetura 7, frontend 4, negocio 5, engenharia 3 — 19 arquivos `.md`)
+- `.github/prompts/` com 23 arquivos `.prompt.md` e `.github/skills/` com 23 subpastas
+- `.kiro/steering/` com as 5 rules de estilo e `.kiro/skills/` com 23 subpastas
+- `prompts/` com as 4 trilhas (arquitetura 7, frontend 4, negocio 5, engenharia 7 — 23 arquivos `.md`)
 - `docs/arquitetura/design-system/` com 2 `.css`; `docs/arquitetura/templates/` com os 2 `.js`; `docs/arquitetura/COMO-USAR.html`
 - `docs/arquitetura/templates/` com as páginas de exemplo (`01-visao-geral.html`, `index.html`, etc.) — exceto se a instalação usou `--no-examples`
 
@@ -91,8 +97,9 @@ esta verificação (evidência antes de afirmação).
 
 ## Passo 4 — Re-instalação / atualização
 
-Rodar de novo é seguro: os scripts (e a regra do Passo 2) preservam os 4 arquivos de
-contexto por-serviço. O resto é sobrescrito com a versão nova do pack — é o esperado.
+Rodar de novo é seguro: os scripts (e a regra do Passo 2) preservam os arquivos de
+contexto por-serviço (nos três lados) e os foundation files do Kiro. O resto é
+sobrescrito com a versão nova do pack — é o esperado.
 
 ## Passo 5 — Oriente o usuário (primeiro uso)
 
@@ -100,8 +107,9 @@ Ao terminar, diga ao usuário, nas suas palavras:
 
 1. A instalação está completa e verificada (mostre a lista do Passo 3).
 2. O primeiro passo de uso é gerar o contexto do projeto: mensagem "analisa o projeto"
-   (Amazon Q) ou `/analisador-de-projeto` (Copilot IDE). Sem isso, o pack bloqueia
-   gerações de documentação de propósito.
+   (Amazon Q e Kiro — no Kiro a skill `analisador-de-projeto` ativa por descrição) ou
+   `/analisador-de-projeto` (Copilot IDE). Sem isso, o pack bloqueia gerações de
+   documentação de propósito. O contexto é gravado em TRÊS destinos (Q, Copilot e Kiro).
 3. Para mudanças de código com controle de contexto: `nova tarefa: <slug> — <descrição>`
    abre o protocolo de 2 turnos (plano → aprovação → execução com ledger).
 4. As mensagens prontas para todos os fluxos estão em `docs/arquitetura/COMO-USAR.html` — abrir no navegador.
@@ -109,5 +117,5 @@ Ao terminar, diga ao usuário, nas suas palavras:
 ## Regras para você, assistente
 
 - Não modifique nenhum arquivo do pack ao copiar — cópia fiel.
-- Não rode `tools/sync-copilot.sh` no repo alvo: é ferramenta de manutenção do pack.
+- Não rode `tools/sync-copilot.sh` nem `tools/sync-kiro.sh` no repo alvo: são ferramentas de manutenção do pack.
 - Não commite nada sem o usuário pedir.
