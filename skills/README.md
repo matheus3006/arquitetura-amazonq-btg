@@ -12,7 +12,7 @@ atualização = recopiar da fonte. O conteúdo é em inglês (original preservad
 | Copilot CLI | Automático — espelhadas em `.github/skills/` |
 | Copilot IDE / Amazon Q | Mensagem citando o arquivo: "Siga TODO o processo descrito em `skills/<categoria>/<slug>/SKILL.md`" |
 
-Mensagens prontas para cada uma: `COMO-USAR.html` (raiz do repo, seção "Biblioteca de skills").
+Mensagens prontas para cada uma: `COMO-USAR.html` (raiz do repo — cards com rodapé `Skill:`, agrupados por propósito junto com os prompts do pack).
 
 `.github/skills/` e `.kiro/skills/` são GERADOS por `tools/sync-copilot.sh` /
 `tools/sync-kiro.sh` — que copiam esta pasta verbatim além dos 23 wrappers do pack.

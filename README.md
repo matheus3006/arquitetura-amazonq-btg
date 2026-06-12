@@ -51,7 +51,7 @@ Dois mecanismos garantem isso (ver [ADR-0001](docs/adr/0001-protocolo-de-control
 
 **Não se aplica a:** geração de documentação (trilhas técnica/negócio/frontend) e tarefas
 triviais que você declarar. O detalhe do protocolo e os templates estão em
-[`prompts/engenharia/controle-de-tarefa.md`](prompts/engenharia/controle-de-tarefa.md); as mensagens prontas, no card 19 do [`COMO-USAR.md`](COMO-USAR.md).
+[`prompts/engenharia/controle-de-tarefa.md`](prompts/engenharia/controle-de-tarefa.md); as mensagens prontas, no card "Abrir uma task" do [`COMO-USAR.md`](COMO-USAR.md).
 
 ## Instalação rápida
 
