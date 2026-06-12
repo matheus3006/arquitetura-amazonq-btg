@@ -3,13 +3,13 @@
 > GERADO de `COMO-USAR.html` por `tools/sync-como-usar.sh` — NAO edite a mao.
 > Prefere botao de copiar? Abra `COMO-USAR.html` (mesma raiz) no navegador.
 
-## ⚠ Regra deste repositório: toda mudança de código começa com uma task
+## ⚠ Regra deste repositório: toda task com entregável começa com uma task de controle
 
-> Assim que o pack está instalado, o protocolo de controle vale para todo pedido que mexa em código. Você não precisa de comando nem de escrever um slug: mande o pedido como uma mensagem normal (como esta frase) e o assistente deriva o slug do próprio pedido, cria a task em controle/<AAAA-MM-DD-slug>/, escreve o plano e pede sua aprovação antes de tocar no código.
+> Assim que o pack está instalado, o protocolo de controle vale para todo pedido que crie ou modifique um artefato — código, documento, spec, design, diagrama, plano, config, pesquisa escrita (não é só código). Você não precisa de comando nem de escrever um slug: mande o pedido como uma mensagem normal (como esta frase) e o assistente deriva o slug do próprio pedido, cria a task em controle/<AAAA-MM-DD-slug>/, escreve o plano e pede sua aprovação antes de tocar no artefato.
 >
-> Isso é forçado, não convenção: o pre-commit instalado bloqueia qualquer commit que altere código sem os arquivos da task no mesmo commit. Bypass consciente: git commit --no-verify.
+> Isso é forçado, não convenção: o pre-commit instalado bloqueia qualquer commit que altere arquivos fora de controle/ sem os arquivos da task no mesmo commit. Bypass consciente: git commit --no-verify.
 >
-> Exceções: geração de documentação (trilhas técnica/negócio/frontend abaixo) e tarefas triviais declaradas por você não exigem o ciclo completo — mas a edição de código de produção, sim. Detalhe do protocolo no card 19 e em prompts/engenharia/controle-de-tarefa.md.
+> Única exceção: pergunta puramente de leitura/conversa, que não gera nem altera artefato ("o que faz X?", "me explica Y"), responde direto. Tarefas triviais declaradas por você rodam em 1 turno (sem PLANO), mas ainda abrem task. Detalhe do protocolo no card 19 e em prompts/engenharia/controle-de-tarefa.md.
 
 ## Como invocar, por ferramenta
 
@@ -286,14 +286,14 @@ _Copilot IDE: /planejador-de-implementacao_
 
 ### 19 · Abrir uma task (controle de contexto)
 
-**Quando:** Qualquer mudança de código — descreva o pedido normalmente; o slug se cria sozinho.
+**Quando:** Qualquer task que produza um artefato (código, doc, spec, design, plano…) — descreva o pedido normalmente; o slug se cria sozinho.
 
 ```text
-[DESCREVA O QUE QUER MUDAR — uma mensagem normal, como esta]
+[DESCREVA O QUE QUER FAZER — uma mensagem normal, como esta]
 
-Objetivo: tratar este pedido sob o protocolo de controle — escopo e plano aprovados ANTES de qualquer código, evidências no fechamento, e o mínimo de turnos da minha cota.
+Objetivo: tratar este pedido sob o protocolo de controle — escopo e plano aprovados ANTES de tocar em qualquer artefato, evidências no fechamento, e o mínimo de turnos da minha cota.
 
-Siga o protocolo de prompts/engenharia/controle-de-tarefa.md: derive o slug do meu pedido (não me peça o nome), anuncie o task-id que escolheu, e neste turno crie SOMENTE controle/<task-id>/ (TASK.md com escopo+ACs e o PLANO — me pergunte o formato .md ou .html junto com as demais dúvidas, num bloco único) e termine pedindo aprovação. Execução só depois do meu "aprovado" — e aí tudo num turno: checklist, código, LEDGER com evidências e fechamento.
+Siga o protocolo de prompts/engenharia/controle-de-tarefa.md: derive o slug do meu pedido (não me peça o nome), anuncie o task-id que escolheu, e neste turno crie SOMENTE controle/<task-id>/ (TASK.md com escopo+ACs e o PLANO — me pergunte o formato .md ou .html junto com as demais dúvidas, num bloco único) e termine pedindo aprovação. Execução só depois do meu "aprovado" — e aí tudo num turno: checklist (marcado a cada passo concluído = status vivo), o trabalho, LEDGER com evidências e fechamento.
 
 Pronto quando (turno 1): task-id anunciado, TASK.md + PLANO criados, aprovação pedida, e NADA fora de controle/ foi tocado.
 

@@ -3,7 +3,8 @@
 #
 # Regra que ele garante (ver .amazonq/rules/controle-style.md § 3):
 #   todo commit que toca arquivos fora de controle/ deve incluir TAMBEM arquivos
-#   da task em controle/<task-id>/ — TASK.md/LEDGER.md viajam junto com o codigo.
+#   da task em controle/<task-id>/ — TASK.md/LEDGER.md viajam junto com o artefato
+#   (qualquer artefato: codigo, doc, spec, design, plano... nao so codigo).
 #
 # Instalado pelo install.sh/install.ps1 do pack:
 #   copia versionada:  .amazonq/hooks/pre-commit-controle.sh  (este arquivo)
@@ -29,7 +30,7 @@ if [ "$outside" -eq 1 ] && [ "$inside" -eq 0 ]; then
   {
     echo "pre-commit (controle): mudancas fora de controle/ sem arquivos de task no commit."
     echo "  Protocolo: .amazonq/rules/controle-style.md - crie/atualize controle/<task-id>/"
-    echo "  (TASK.md + LEDGER.md) e commite junto com o codigo."
+    echo "  (TASK.md + LEDGER.md) e commite junto com o artefato."
     echo "  Bypass consciente: git commit --no-verify"
   } >&2
   exit 1

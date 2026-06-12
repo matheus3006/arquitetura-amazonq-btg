@@ -22,19 +22,22 @@ Um pacote pronto para clonar dentro de cada serviço .NET do seu time. Inclui:
 - **Template viewer** para diagramas Mermaid com pan/zoom estilo Figma, fundo claro com traços escuros
 - **12 páginas HTML de exemplo** documentando um serviço fictício ("Liquidação Transacional") como referência de forma e qualidade
 
-## Protocolo de controle — toda mudança de código nasce de uma task
+## Protocolo de controle — toda task com entregável nasce de uma task de controle
 
 Depois de instalado num serviço, este pack muda o **fluxo de trabalho diário**: todo pedido
-que mexa em código de produção começa com uma task, antes de qualquer edição. Você **não
-escreve comando nem slug** — manda o pedido como mensagem normal e o assistente deriva o
-slug do próprio pedido.
+que **crie ou modifique um artefato** — código, documento, spec, design, diagrama, plano,
+config, pesquisa escrita (**não é só código**) — começa com uma task, antes de qualquer
+edição. Você **não escreve comando nem slug** — manda o pedido como mensagem normal e o
+assistente deriva o slug do próprio pedido. Só pergunta de leitura pura (que não gera nem
+altera artefato) fica de fora.
 
 ```
-você:        <descreve o que quer mudar — uma mensagem normal, como esta>
+você:        <descreve o que quer fazer — uma mensagem normal, como esta>
 assistente:  deriva um slug do pedido, anuncia o task-id (AAAA-MM-DD-<slug>),
              cria controle/<task-id>/ (TASK.md com escopo + ACs + PLANO) e PEDE sua aprovação
 você:        "aprovado"
-assistente:  executa o checklist, registra evidências no LEDGER.md e fecha — tudo num turno
+assistente:  executa o checklist marcando cada passo [x] na hora (status vivo),
+             registra evidências no LEDGER.md e fecha — tudo num turno
 ```
 
 (Quer nomear a task na mão? Comece a mensagem com `nova tarefa: <slug> — …` — override opcional.)

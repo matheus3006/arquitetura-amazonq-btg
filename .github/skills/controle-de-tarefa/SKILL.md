@@ -1,6 +1,6 @@
 ---
 name: controle-de-tarefa
-description: "Protocolo de controle de tarefas em 2 turnos: escopo+plano aprovados viram checklist, execucao com ledger de evidencias"
+description: "Protocolo de controle para QUALQUER task que crie ou modifique um artefato (codigo, doc, spec, design, diagrama, plano) — nao so codigo. 2 turnos: escopo+plano aprovados viram checklist (status vivo, marcado a cada passo), execucao com ledger de evidencias"
 ---
 
 Siga TODO o processo descrito em `prompts/engenharia/controle-de-tarefa.md` (na raiz deste repositorio), fase por

@@ -13,8 +13,13 @@ uma task cabe em **2 turnos** (trivial: 1), e qualquer retomada custa no máximo
 de leitura (TASK.md + LEDGER.md).
 
 ## Quando usar
-- O usuário pediu qualquer edição de código (mensagem normal) e não há task ativa em `controle/`.
+- O usuário pediu **qualquer entrega/artefato** — código, documento, spec, design, diagrama,
+  plano, configuração, pesquisa escrita, qualquer coisa que fique no repositório (mensagem
+  normal) — e não há task ativa em `controle/`. **Não é só para código.**
 - O usuário escreveu `nova tarefa: <slug> — <descrição>` (override explícito do nome).
+
+Não dispara: pergunta puramente de leitura/conversa que não gera nem altera artefato
+("o que faz X?", "me explica Y"). Na dúvida, se vai deixar algo escrito no repo, abra task.
 
 ## Slug automático (regra, não opção)
 
@@ -57,11 +62,14 @@ Proibido no turno 1: editar qualquer arquivo fora de `controle/<task-id>/`.
 
 1. Condense o plano aprovado em checklist numerado dentro do TASK.md; mude para `fase: execucao`.
    A partir daqui o PLANO **não é relido** — execute pelo checklist.
-2. Execute o checklist inteiro. Decisão tomada no meio do caminho → 1 linha no LEDGER.md, na hora.
+2. Execute o checklist inteiro, **marcando cada item `[x]` em TASK.md assim que o conclui**
+   (status vivo — nunca em lote no fim; é o que impede a sessão de se perder e é exatamente o
+   que a retomada lê para saber onde parou). Decisão tomada no meio do caminho → 1 linha no
+   LEDGER.md, na hora.
 3. Verifique cada AC com comando real e registre o output (resumido) em LEDGER.md § Verificação
    — disciplina da `engenharia-style.md` § 2: evidência antes de afirmação.
 4. Feche: `fase: concluida` no TASK.md, ACs marcados, pendências (se houver) na última seção
-   do LEDGER.md. Commit inclui código + arquivos da task juntos.
+   do LEDGER.md. Commit inclui o artefato + arquivos da task juntos.
 
 Bloqueou no meio (falta decisão do usuário)? Registre o bloqueio no LEDGER, pare e pergunte
 TUDO que falta num bloco só — não pingue uma pergunta por turno.
@@ -92,7 +100,7 @@ task_id: AAAA-MM-DD-slug
 ## Acceptance Criteria
 - [ ] AC1: <observável e verificável por comando ou inspeção>
 
-## Checklist (preenchido na aprovação, a partir do PLANO)
+## Checklist (preenchido na aprovação, a partir do PLANO — STATUS VIVO: marque `[x]` a cada passo concluído, na hora)
 - [ ] 1. <passo concreto>
 ```
 
@@ -153,7 +161,7 @@ Override do nome, quando você quiser controlá-lo:
 |---|---|
 | Amazon Q (IDE ou `q chat`) | Descreva o pedido normalmente — a rule roteia e deriva o slug |
 | Copilot (VS Code / Visual Studio / JetBrains) | Descreva o pedido, ou `/controle-de-tarefa` |
-| Copilot CLI | Gatilho natural (qualquer pedido de código) — a instruction roteia |
+| Copilot CLI | Gatilho natural (qualquer pedido que gere/altere artefato) — a instruction roteia |
 | Kiro (IDE / CLI) | Descreva o pedido — a Agent Skill ativa por descrição |
 
 ## Referências
