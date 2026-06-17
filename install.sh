@@ -9,11 +9,12 @@
 #
 # Copia: .amazonq/rules/ (5 rules) + .github/ (camada Copilot: instructions,
 #        prompts, skills) + .kiro/ (camada Kiro: steering, skills)
-#        + prompts/ (4 trilhas) + skills/ (biblioteca de 25 skills importadas) e
+#        + prompts/ (4 trilhas) + skills/ (biblioteca de 30 skills importadas) e
 #        COMO-USAR.html (raiz) + docs/arquitetura/ (css do design system, js dos
 #        templates, paginas HTML de exemplo — referencia de FORMA pros prompts;
 #        nunca sobrescreve arquivo ja existente no alvo)
-#        + watchdog do protocolo de controle (.amazonq/hooks/ + .git/hooks/pre-commit)
+#        + hooks de inicio de interacao do protocolo de controle (.amazonq/cli-agents/
+#        + .amazonq/hooks/ + .kiro/hooks/) — orientam o agente a abrir a task; NAO bloqueiam commit
 # NAO copia: arquivos de contexto por-servico (project/business-context nos
 #        tres lados) nem os foundation files do Kiro (product/tech/structure.md)
 #        — sao gerados por-servico e preservados em re-runs.
@@ -72,7 +73,7 @@ done
 echo "  ✓ .github/instructions/ (5 instructions)"
 cp -R "$PACK_DIR/.github/prompts/." "$TARGET/.github/prompts/"
 cp -R "$PACK_DIR/.github/skills/."  "$TARGET/.github/skills/"
-echo "  ✓ .github/prompts/ (23 wrappers) + .github/skills/ (48: 23 wrappers + 25 importadas)"
+echo "  ✓ .github/prompts/ (26 wrappers) + .github/skills/ (56: 26 wrappers + 30 importadas)"
 
 # 2b) Camada Kiro (steering + Agent Skills). Copiamos SO as 5 rules de estilo:
 #     *-context.md e os foundation files do Kiro (product/tech/structure.md)
@@ -83,7 +84,7 @@ for f in architecture-style frontend-style negocio-style engenharia-style contro
 done
 echo "  ✓ .kiro/steering/ (5 rules)"
 cp -R "$PACK_DIR/.kiro/skills/." "$TARGET/.kiro/skills/"
-echo "  ✓ .kiro/skills/ (48 Agent Skills: 23 wrappers + 25 importadas)"
+echo "  ✓ .kiro/skills/ (56 Agent Skills: 26 wrappers + 30 importadas)"
 
 # 3) Prompts (4 trilhas)
 mkdir -p "$TARGET/prompts"
@@ -95,7 +96,7 @@ echo "  ✓ prompts/{arquitetura,frontend,negocio,engenharia}"
 # 3b) Biblioteca de skills importadas (fonte canonica das copias verbatim)
 mkdir -p "$TARGET/skills"
 cp -R "$PACK_DIR/skills/." "$TARGET/skills/"
-echo "  ✓ skills/ (biblioteca: 25 skills importadas em 11 categorias)"
+echo "  ✓ skills/ (biblioteca: 30 skills importadas em 13 categorias)"
 
 # 4) Design system (CSS reutilizavel)
 mkdir -p "$TARGET/docs/arquitetura/design-system"
@@ -151,21 +152,56 @@ else
   echo "  ⚠ COMO-USAR.html nao copiado (destino bloqueado?)"
 fi
 
-# 7) Watchdog do protocolo de controle (pre-commit git)
-mkdir -p "$TARGET/.amazonq/hooks"
-cp "$PACK_DIR/tools/pre-commit-controle.sh" "$TARGET/.amazonq/hooks/pre-commit-controle.sh"
-chmod +x "$TARGET/.amazonq/hooks/pre-commit-controle.sh"
-echo "  ✓ .amazonq/hooks/pre-commit-controle.sh"
-HOOK="$TARGET/.git/hooks/pre-commit"
-if [ ! -d "$TARGET/.git" ]; then
-  echo "  ⚠ .git/hooks/pre-commit nao instalado (alvo nao e raiz de repo git)"
-elif [ -f "$HOOK" ] && ! grep -q 'pre-commit-controle' "$HOOK" 2>/dev/null; then
-  echo "  ⚠ pre-commit existente preservado — acrescente nele a linha:"
-  echo "      bash .amazonq/hooks/pre-commit-controle.sh || exit 1"
-else
-  printf '#!/usr/bin/env bash\n# gerado pelo pack arquitetura — chama o watchdog do protocolo de controle\nbash .amazonq/hooks/pre-commit-controle.sh || exit 1\n' > "$HOOK"
-  chmod +x "$HOOK"
-  echo "  ✓ .git/hooks/pre-commit (watchdog do controle; bypass: git commit --no-verify)"
+# 7) Hooks de inicio de interacao do protocolo de controle. Substituem o antigo
+#    pre-commit punitivo: a cada interacao orientam o agente a abrir/atualizar a task
+#    em docs/controle/ ANTES de editar — NUNCA bloqueiam o commit do humano.
+mkdir -p "$TARGET/.amazonq/cli-agents" "$TARGET/.amazonq/hooks" "$TARGET/.kiro/hooks"
+cp "$PACK_DIR/.amazonq/cli-agents/arquitetura.json" "$TARGET/.amazonq/cli-agents/arquitetura.json"
+echo "  ✓ .amazonq/cli-agents/arquitetura.json (ative com: q chat --agent arquitetura)"
+cp "$PACK_DIR/.amazonq/hooks/controle-hook.sh" "$TARGET/.amazonq/hooks/controle-hook.sh"
+chmod +x "$TARGET/.amazonq/hooks/controle-hook.sh"
+echo "  ✓ .amazonq/hooks/controle-hook.sh (userPromptSubmit)"
+cp "$PACK_DIR/.kiro/hooks/controle-prompt.kiro.hook" "$TARGET/.kiro/hooks/controle-prompt.kiro.hook"
+echo "  ✓ .kiro/hooks/controle-prompt.kiro.hook (promptSubmit)"
+
+# 7b) Migracao: instalacoes antigas tinham o pre-commit punitivo do controle. Remove-o
+#     para destravar o commit do humano (so se for exatamente o gerado pelo pack).
+OLD_HOOK="$TARGET/.git/hooks/pre-commit"
+if [ -f "$OLD_HOOK" ] && grep -q 'pre-commit-controle' "$OLD_HOOK" 2>/dev/null; then
+  body="$(grep -v -e '^[[:space:]]*$' -e '^[[:space:]]*#' "$OLD_HOOK" || true)"
+  if [ "$body" = "bash .amazonq/hooks/pre-commit-controle.sh || exit 1" ]; then
+    rm "$OLD_HOOK"
+    echo "  ✓ .git/hooks/pre-commit (punitivo antigo do pack) removido — commit destravado"
+  else
+    echo "  ⚠ .git/hooks/pre-commit tem outras linhas — apague a mao a chamada de pre-commit-controle"
+  fi
+fi
+if [ -f "$TARGET/.amazonq/hooks/pre-commit-controle.sh" ]; then
+  rm "$TARGET/.amazonq/hooks/pre-commit-controle.sh"
+  echo "  ✓ .amazonq/hooks/pre-commit-controle.sh (script antigo) removido"
+fi
+
+# 7c) Migracao de caminho: a versao antiga guardava as tasks em controle/ na raiz.
+#     Move pra docs/controle/, preservando cada task (nunca sobrescreve task ja existente).
+if [ -d "$TARGET/controle" ] && [ ! -L "$TARGET/controle" ]; then
+  mkdir -p "$TARGET/docs/controle"
+  moved=0
+  for d in "$TARGET/controle"/*/; do
+    [ -e "$d" ] || continue
+    base="$(basename "$d")"
+    if [ -e "$TARGET/docs/controle/$base" ]; then
+      echo "  ⚠ docs/controle/$base ja existe — task '$base' deixada em controle/ (resolva a mao)"
+    else
+      mv "$d" "$TARGET/docs/controle/$base"
+      moved=$((moved + 1))
+    fi
+  done
+  if [ -z "$(ls -A "$TARGET/controle" 2>/dev/null)" ]; then
+    rmdir "$TARGET/controle"
+    echo "  ✓ controle/ (raiz, versao antiga) migrado pra docs/controle/ ($moved task(s))"
+  elif [ "$moved" -gt 0 ]; then
+    echo "  ⚠ controle/ migrado em parte ($moved task(s)); restou conteudo — verifique a mao"
+  fi
 fi
 
 # 8) Limpeza de lixo do Finder

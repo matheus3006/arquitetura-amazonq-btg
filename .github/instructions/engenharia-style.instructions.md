@@ -33,6 +33,9 @@ com ou sem contexto de projeto. Quando o contexto existir, use-o.
 | "grilla o plano", "estressa esse plano", "revisa o plano antes de executar", "pre-mortem do plano" | `prompts/engenharia/grill-plano.md` |
 | "executa o plano", "implementa o plano aprovado", "segue o plano" | `prompts/engenharia/executor-de-plano.md` |
 | "TDD", "test-first", "escreve o teste primeiro", etapa de código dentro de um plano | `prompts/engenharia/tdd-disciplinado.md` |
+| "refatora", "limpa esse código", "reduz a duplicação", "extrai isso", "renomeia sem mudar comportamento" | `prompts/engenharia/refatorador-incremental.md` |
+| "estratégia de testes", "que testes escrever", "falta cobertura", "testes de regressão", "que nível de teste" | `prompts/engenharia/estrategista-de-testes.md` |
+| "revisa esse código", "code review", "revisa o PR/diff", "o que tem de errado aqui" | `prompts/engenharia/revisor-de-codigo.md` |
 
 Pedido ambíguo entre investigar e implementar ("conserta o X") → primeiro o depurador
 (causa raiz demonstrada), depois proponha o planejador se a correção for maior que um fix pontual.
@@ -63,4 +66,8 @@ que afirme progresso ou conclusão, em qualquer trilha deste pack:
 ## 3. O que esta trilha NÃO cobre
 
 - Convenções de documentação (trilhas `arquitetura`/`negocio`) e visual (`frontend`).
-- Orquestração de subagentes/worktrees — específica de outros harnesses; não tente emular.
+- Orquestração de subagentes/worktrees tem agora skills próprias importadas
+  (`skills/orquestracao/` — subagent-driven-development, dispatching-parallel-agents; e
+  `skills/fluxo-dev/` — using-git-worktrees, finishing-a-development-branch): use-as nos
+  harnesses que suportam (Claude Code, Copilot CLI, Kiro). Onde o harness não suporta, não
+  tente emular à mão.

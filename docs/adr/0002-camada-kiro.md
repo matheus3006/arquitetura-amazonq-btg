@@ -37,7 +37,9 @@ lido sempre, sem modos de inclusão.
 ## Consequências
 
 - (+) Um canônico, três ferramentas; manutenção = editar rule e rodar os dois syncs.
-- (+) Watchdog pre-commit do protocolo de controle já funciona no Kiro (é git puro).
+- (+) O hook de início de interação do protocolo de controle roda nativo no Kiro
+  (`promptSubmit` em `.kiro/hooks/`), espelhando o `userPromptSubmit` do Amazon Q —
+  ver [ADR-0004](0004-hook-de-assistente-substitui-pre-commit.md).
 - (−) Dois geradores para manter em paralelo (`sync-copilot.sh` + `sync-kiro.sh`).
 - (−) Steering sempre-on triplica em repos que usam as três ferramentas — sem custo
   cruzado (cada ferramenta lê só a própria pasta).

@@ -16,8 +16,8 @@ Um pacote pronto para clonar dentro de cada serviço .NET do seu time. Inclui:
 - **Camada Kiro gerada** (`.kiro/`): steering auto-carregado (`inclusion: always`) + Agent Skills com ativação por descrição — gerada de `.amazonq/rules/` por `tools/sync-kiro.sh`, nunca editada à mão
 - **Prompts** que clonam comportamento de skills especializadas — 4 trilhas (arquitetura, frontend, negocio, engenharia)
 - **Trilha de engenharia**: debugging sistemático, planejamento de implementação e disciplina de verificação (portes do superpowers)
-- **Protocolo de controle de contexto** (`controle-style`): toda edição nasce de uma task em `controle/<task-id>/` — ciclo de 2 turnos otimizado para cota de requests, com watchdog determinístico via pre-commit git
-- **Biblioteca de skills importadas** (`skills/`): 25 Agent Skills copiadas verbatim das melhores fontes (superpowers, product/pm/c-level skills, mattpocock, bencium) em 11 categorias — espelhadas pelas camadas Copilot e Kiro; catálogo em `skills/README.md`
+- **Protocolo de controle de contexto** (`controle-style`): toda edição nasce de uma task em `docs/controle/<task-id>/` — ciclo de 2 turnos otimizado para cota de requests, com hook de início de interação (Amazon Q + Kiro) que abre a task sozinho — sem trava no commit
+- **Biblioteca de skills importadas** (`skills/`): 30 Agent Skills copiadas verbatim das melhores fontes (superpowers, product/pm/c-level skills, mattpocock, bencium) em 13 categorias — espelhadas pelas camadas Copilot e Kiro; catálogo em `skills/README.md`
 - **Design system** dark com paleta institucional + animações sutis
 - **Template viewer** para diagramas Mermaid com pan/zoom estilo Figma, fundo claro com traços escuros
 - **12 páginas HTML de exemplo** documentando um serviço fictício ("Liquidação Transacional") como referência de forma e qualidade
@@ -34,7 +34,7 @@ altera artefato) fica de fora.
 ```
 você:        <descreve o que quer fazer — uma mensagem normal, como esta>
 assistente:  deriva um slug do pedido, anuncia o task-id (AAAA-MM-DD-<slug>),
-             cria controle/<task-id>/ (TASK.md com escopo + ACs + PLANO) e PEDE sua aprovação
+             cria docs/controle/<task-id>/ (TASK.md com escopo + ACs + PLANO) e PEDE sua aprovação
 você:        "aprovado"
 assistente:  executa o checklist marcando cada passo [x] na hora (status vivo),
              registra evidências no LEDGER.md e fecha — tudo num turno
@@ -42,12 +42,13 @@ assistente:  executa o checklist marcando cada passo [x] na hora (status vivo),
 
 (Quer nomear a task na mão? Comece a mensagem com `nova tarefa: <slug> — …` — override opcional.)
 
-Dois mecanismos garantem isso (ver [ADR-0001](docs/adr/0001-protocolo-de-controle-de-contexto.md) e a rule `controle-style`):
+Dois mecanismos garantem isso (ver [ADR-0001](docs/adr/0001-protocolo-de-controle-de-contexto.md) + [ADR-0004](docs/adr/0004-hook-de-assistente-substitui-pre-commit.md) e a rule `controle-style`):
 
-1. **A rule sempre-on** instrui o assistente: *edição fora de `controle/` exige task ativa*.
+1. **A rule sempre-on** instrui o assistente: *edição fora de `docs/controle/` exige task ativa*.
    O ciclo é de **2 turnos** (trivial: 1), desenhado para gastar o mínimo da sua cota de requests.
-2. **O watchdog `pre-commit`** (instalado pelos installers em `.git/hooks/`) **bloqueia** qualquer
-   commit que altere código sem os arquivos da task no mesmo commit. Bypass consciente: `git commit --no-verify`.
+2. **O hook de início de interação** (Amazon Q `userPromptSubmit` + Kiro `promptSubmit`) lembra o
+   assistente, a cada mensagem, de abrir/atualizar a task ANTES de editar. **Não bloqueia o commit** —
+   você commita livre; é orientação no começo do trabalho, não trava no fim.
 
 **Não se aplica a:** geração de documentação (trilhas técnica/negócio/frontend) e tarefas
 triviais que você declarar. O detalhe do protocolo e os templates estão em
@@ -76,7 +77,7 @@ pwsh arquitetura-amazonq-btg\install.ps1 -Target C:\repos\seu-servico
 
 **Manual (qualquer OS, sem script):** copie do pack pro repo do serviço, mantendo a estrutura:
 - `.amazonq/rules/` → as 5 rules (`architecture-style`, `frontend-style`, `negocio-style`, `engenharia-style`, `controle-style`)
-- `tools/pre-commit-controle.sh` → `.amazonq/hooks/pre-commit-controle.sh` no alvo (e, em repo git, um gancho `.git/hooks/pre-commit` que o chama)
+- `.amazonq/cli-agents/arquitetura.json` + `.amazonq/hooks/controle-hook.sh` + `.kiro/hooks/controle-prompt.kiro.hook` → hooks de início de interação do controle (Amazon Q `userPromptSubmit` + Kiro `promptSubmit`)
 - `.github/` → `copilot-instructions.md`, `instructions/` (as 5), `prompts/` e `skills/` inteiras
 - `.kiro/` → `steering/` (as 5 rules) e `skills/` inteira
 - `skills/` → inteira (biblioteca de skills importadas)
@@ -90,7 +91,7 @@ pwsh arquitetura-amazonq-btg\install.ps1 -Target C:\repos\seu-servico
 
 Mensagens prontas para cada gatilho: [COMO-USAR.html](COMO-USAR.html) (raiz do repo).
 
-> O pack tem **quatro trilhas: técnica, negócio, frontend e engenharia** — mais o **protocolo de controle de contexto** (rule `controle-style` + prompt `controle-de-tarefa` + pre-commit). Os instaladores entregam tudo.
+> O pack tem **quatro trilhas: técnica, negócio, frontend e engenharia** — mais o **protocolo de controle de contexto** (rule `controle-style` + prompt `controle-de-tarefa` + hooks de início de interação). Os instaladores entregam tudo.
 
 ## Filosofia
 
@@ -153,31 +154,35 @@ arquitetura/
 ├── install.sh                                   ← instalador macOS/Linux
 ├── install.ps1                                  ← instalador Windows PowerShell
 ├── .amazonq/
-│   └── rules/                                   ← FONTE CANÔNICA — edite aqui
-│       ├── architecture-style.md                ← regra universal — princípios + hooks + diagrama
-│       ├── frontend-style.md                    ← regra universal — HTML/CSS/typography
-│       ├── negocio-style.md                     ← regra universal — domínio, regras, glossário
-│       ├── engenharia-style.md                  ← regra universal — debugging + implementação
-│       ├── controle-style.md                    ← regra universal — protocolo de controle de tarefas (2 turnos + cota)
-│       ├── project-context.md                   ← (gerado por-projeto — não versionar)
-│       └── business-context.md                  ← (gerado por-projeto — não versionar)
+│   ├── rules/                                   ← FONTE CANÔNICA — edite aqui
+│   │   ├── architecture-style.md                ← regra universal — princípios + hooks + diagrama
+│   │   ├── frontend-style.md                    ← regra universal — HTML/CSS/typography
+│   │   ├── negocio-style.md                     ← regra universal — domínio, regras, glossário
+│   │   ├── engenharia-style.md                  ← regra universal — debugging + implementação
+│   │   ├── controle-style.md                    ← regra universal — protocolo de controle de tarefas (2 turnos + cota)
+│   │   ├── project-context.md                   ← (gerado por-projeto — não versionar)
+│   │   └── business-context.md                  ← (gerado por-projeto — não versionar)
+│   ├── cli-agents/
+│   │   └── arquitetura.json                     ← agente Amazon Q com hook userPromptSubmit do controle
+│   └── hooks/
+│       └── controle-hook.sh                     ← injeta o lembrete do protocolo a cada interação
 ├── .github/                                     ← gerado por tools/sync-copilot.sh — não editar
 │   ├── copilot-instructions.md
 │   ├── instructions/                            ← 5 rules (.instructions.md); contexto por-projeto é gerado aqui pelos analisadores
-│   ├── prompts/                                 ← slash commands (23 arquivos .prompt.md)
-│   └── skills/                                  ← Agent Skills (48: 23 wrappers + 25 importadas)
-├── .kiro/                                       ← gerado por tools/sync-kiro.sh — não editar
-│   ├── steering/                                ← 5 rules (inclusion: always); contexto por-projeto e foundation files são gerados aqui por-serviço
-│   └── skills/                                  ← Agent Skills (48: 23 wrappers + 25 importadas)
-├── skills/                                      ← biblioteca importada (FONTE das cópias verbatim — 11 categorias, 25 skills; ver skills/README.md)
+│   ├── prompts/                                 ← slash commands (26 arquivos .prompt.md)
+│   └── skills/                                  ← Agent Skills (56: 26 wrappers + 30 importadas)
+├── .kiro/
+│   ├── steering/                                ← gerado por sync-kiro.sh — 5 rules (inclusion: always); contexto por-projeto e foundation files são gerados aqui por-serviço
+│   ├── skills/                                  ← gerado por sync-kiro.sh — Agent Skills (56: 26 wrappers + 30 importadas)
+│   └── hooks/                                   ← canônico (não gerado): controle-prompt.kiro.hook (promptSubmit do controle)
+├── skills/                                      ← biblioteca importada (FONTE das cópias verbatim — 13 categorias, 30 skills; ver skills/README.md)
 ├── prompts/
 │   ├── arquitetura/                             ← 7 prompts (analisador, arquiteto, ADR, runbook, fluxo, grill, brainstorm)
 │   ├── frontend/                                ← 4 prompts (ux-controlado, ui-pro-max, design-system, polidor)
 │   ├── negocio/                                 ← 5 prompts (analisador-dominio, catalogo, glossario, grill, mapeador)
-│   └── engenharia/                              ← 7 prompts (especificador, planejador, grill-plano, executor, tdd, depurador, controle-de-tarefa)
+│   └── engenharia/                              ← 10 prompts (especificador, planejador, grill-plano, executor, tdd, depurador, controle-de-tarefa, refatorador-incremental, estrategista-de-testes, revisor-de-codigo)
 ├── tools/
-│   ├── manifest.tsv                             ← slug → trilha → descrição (gera os 69 wrappers)
-│   ├── pre-commit-controle.sh                   ← watchdog do protocolo de controle (copiado pros alvos pelos instaladores)
+│   ├── manifest.tsv                             ← slug → trilha → descrição (gera os 78 wrappers)
 │   ├── sync-copilot.sh                          ← gera/valida a camada .github/
 │   ├── sync-kiro.sh                             ← gera/valida a camada .kiro/
 │   └── sync-como-usar.sh                        ← gera/valida o COMO-USAR.md a partir do .html

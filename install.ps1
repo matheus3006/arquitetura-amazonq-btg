@@ -9,11 +9,12 @@
 
   Copia: .amazonq/rules/ (5 rules) + .github/ (camada Copilot) + .kiro/ (camada Kiro:
            steering + Agent Skills) + prompts/ (4 trilhas) + skills/ (biblioteca de
-           25 skills importadas)
+           30 skills importadas)
          + COMO-USAR.html (raiz) + docs/arquitetura/ (css do design system, js dos
            templates e paginas HTML de exemplo — referencia de FORMA pros prompts;
            nunca sobrescreve arquivo ja existente no alvo)
-         + watchdog do protocolo de controle (.amazonq/hooks/ + .git/hooks/pre-commit)
+         + hooks de inicio de interacao do protocolo de controle (.amazonq/cli-agents/
+           + .amazonq/hooks/ + .kiro/hooks/) — orientam o agente a abrir a task; NAO bloqueiam commit
   NAO copia: arquivos de contexto por-servico (project/business-context nos tres lados)
          nem os foundation files do Kiro (product/tech/structure.md).
 #>
@@ -72,7 +73,7 @@ foreach ($f in 'architecture-style','frontend-style','negocio-style','engenharia
 Write-Host "  + .github/instructions/ (5 instructions)"
 Copy-Item (Join-Path $PackDir '.github/prompts/*') (Join-Path $ghDst 'prompts') -Recurse -Force
 Copy-Item (Join-Path $PackDir '.github/skills/*')  (Join-Path $ghDst 'skills')  -Recurse -Force
-Write-Host "  + .github/prompts/ (23 wrappers) + .github/skills/ (48: 23 wrappers + 25 importadas)"
+Write-Host "  + .github/prompts/ (26 wrappers) + .github/skills/ (56: 26 wrappers + 30 importadas)"
 
 # 2b) Camada Kiro (steering + Agent Skills). Copiamos SO as 5 rules de estilo:
 #     *-context.md e os foundation files do Kiro (product/tech/structure.md)
@@ -86,7 +87,7 @@ foreach ($f in 'architecture-style','frontend-style','negocio-style','engenharia
 }
 Write-Host "  + .kiro/steering/ (5 rules)"
 Copy-Item (Join-Path $PackDir '.kiro/skills/*') (Join-Path $kiroDst 'skills') -Recurse -Force
-Write-Host "  + .kiro/skills/ (48 Agent Skills: 23 wrappers + 25 importadas)"
+Write-Host "  + .kiro/skills/ (56 Agent Skills: 26 wrappers + 30 importadas)"
 
 # 3) Prompts (4 trilhas)
 $promptsDst = Join-Path $Target 'prompts'
@@ -100,7 +101,7 @@ Write-Host "  + prompts/{arquitetura,frontend,negocio,engenharia}"
 $skillsDst = Join-Path $Target 'skills'
 New-Item -ItemType Directory -Force -Path $skillsDst | Out-Null
 Copy-Item (Join-Path $PackDir 'skills/*') $skillsDst -Recurse -Force
-Write-Host "  + skills/ (biblioteca: 25 skills importadas em 11 categorias)"
+Write-Host "  + skills/ (biblioteca: 30 skills importadas em 13 categorias)"
 
 # 4) Design system
 $dsDst = Join-Path $Target 'docs/arquitetura/design-system'
@@ -160,23 +161,60 @@ if (-not (Test-Path -PathType Leaf $comoSrc)) {
   }
 }
 
-# 7) Watchdog do protocolo de controle (pre-commit git)
-$hooksDst = Join-Path $Target '.amazonq/hooks'
-New-Item -ItemType Directory -Force -Path $hooksDst | Out-Null
-Copy-Item (Join-Path $PackDir 'tools/pre-commit-controle.sh') (Join-Path $hooksDst 'pre-commit-controle.sh') -Force
-Write-Host "  + .amazonq/hooks/pre-commit-controle.sh"
-$gitDir = Join-Path $Target '.git'
-$hookFile = Join-Path $gitDir 'hooks/pre-commit'
-if (-not (Test-Path -PathType Container $gitDir)) {
-  Write-Host "  ! .git/hooks/pre-commit nao instalado (alvo nao e raiz de repo git)"
-} elseif ((Test-Path -PathType Leaf $hookFile) -and -not (Select-String -Path $hookFile -Pattern 'pre-commit-controle' -Quiet)) {
-  Write-Host "  ! pre-commit existente preservado - acrescente nele a linha:"
-  Write-Host "      bash .amazonq/hooks/pre-commit-controle.sh || exit 1"
-} else {
-  New-Item -ItemType Directory -Force -Path (Join-Path $gitDir 'hooks') | Out-Null
-  $hookBody = "#!/usr/bin/env bash`n# gerado pelo pack arquitetura - chama o watchdog do protocolo de controle`nbash .amazonq/hooks/pre-commit-controle.sh || exit 1`n"
-  [IO.File]::WriteAllText($hookFile, $hookBody)
-  Write-Host "  + .git/hooks/pre-commit (watchdog do controle; bypass: git commit --no-verify)"
+# 7) Hooks de inicio de interacao do protocolo de controle. Substituem o antigo
+#    pre-commit punitivo: orientam o agente a abrir/atualizar a task em docs/controle/
+#    ANTES de editar - NUNCA bloqueiam o commit do humano.
+$cliAgentsDst = Join-Path $Target '.amazonq/cli-agents'
+$hooksDst     = Join-Path $Target '.amazonq/hooks'
+$kiroHooksDst = Join-Path $Target '.kiro/hooks'
+foreach ($d in $cliAgentsDst, $hooksDst, $kiroHooksDst) { New-Item -ItemType Directory -Force -Path $d | Out-Null }
+Copy-Item (Join-Path $PackDir '.amazonq/cli-agents/arquitetura.json') (Join-Path $cliAgentsDst 'arquitetura.json') -Force
+Write-Host "  + .amazonq/cli-agents/arquitetura.json (ative com: q chat --agent arquitetura)"
+Copy-Item (Join-Path $PackDir '.amazonq/hooks/controle-hook.sh') (Join-Path $hooksDst 'controle-hook.sh') -Force
+Write-Host "  + .amazonq/hooks/controle-hook.sh (userPromptSubmit)"
+Copy-Item (Join-Path $PackDir '.kiro/hooks/controle-prompt.kiro.hook') (Join-Path $kiroHooksDst 'controle-prompt.kiro.hook') -Force
+Write-Host "  + .kiro/hooks/controle-prompt.kiro.hook (promptSubmit)"
+
+# 7b) Migracao: remove o pre-commit punitivo antigo (so se for o gerado pelo pack) para
+#     destravar o commit do humano.
+$oldHook = Join-Path $Target '.git/hooks/pre-commit'
+if ((Test-Path -PathType Leaf $oldHook) -and (Select-String -Path $oldHook -Pattern 'pre-commit-controle' -Quiet)) {
+  $body = ((Get-Content $oldHook | Where-Object { $_ -notmatch '^\s*$' -and $_ -notmatch '^\s*#' }) -join "`n").Trim()
+  if ($body -eq 'bash .amazonq/hooks/pre-commit-controle.sh || exit 1') {
+    Remove-Item $oldHook -Force
+    Write-Host "  + .git/hooks/pre-commit (punitivo antigo do pack) removido - commit destravado"
+  } else {
+    Write-Host "  ! .git/hooks/pre-commit tem outras linhas - apague a mao a chamada de pre-commit-controle"
+  }
+}
+$oldScript = Join-Path $Target '.amazonq/hooks/pre-commit-controle.sh'
+if (Test-Path -PathType Leaf $oldScript) {
+  Remove-Item $oldScript -Force
+  Write-Host "  + .amazonq/hooks/pre-commit-controle.sh (script antigo) removido"
+}
+
+# 7c) Migracao de caminho: a versao antiga guardava as tasks em controle/ na raiz.
+#     Move pra docs/controle/, preservando cada task (nunca sobrescreve task ja existente).
+$oldCtl = Join-Path $Target 'controle'
+$newCtl = Join-Path $Target 'docs/controle'
+if ((Test-Path -PathType Container $oldCtl)) {
+  New-Item -ItemType Directory -Force -Path $newCtl | Out-Null
+  $moved = 0
+  foreach ($d in Get-ChildItem -LiteralPath $oldCtl -Directory -ErrorAction SilentlyContinue) {
+    $dst = Join-Path $newCtl $d.Name
+    if (Test-Path $dst) {
+      Write-Host "  ! docs/controle/$($d.Name) ja existe - task deixada em controle/ (resolva a mao)"
+    } else {
+      Move-Item -LiteralPath $d.FullName -Destination $dst
+      $moved++
+    }
+  }
+  if (-not (Get-ChildItem -LiteralPath $oldCtl -Force -ErrorAction SilentlyContinue)) {
+    Remove-Item -LiteralPath $oldCtl -Force
+    Write-Host "  + controle/ (raiz, versao antiga) migrado pra docs/controle/ ($moved task(s))"
+  } elseif ($moved -gt 0) {
+    Write-Host "  ! controle/ migrado em parte ($moved task(s)); restou conteudo - verifique a mao"
+  }
 }
 
 # 8) Limpeza de lixo do Finder

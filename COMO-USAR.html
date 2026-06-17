@@ -50,11 +50,13 @@
          plano, config, pesquisa escrita (<strong>não é só código</strong>). Você <strong>não precisa de
          comando nem de escrever um slug</strong>: mande o pedido como uma mensagem normal (como esta
          frase) e o assistente <strong>deriva o slug do próprio pedido</strong>, cria a task em
-         <code>controle/&lt;AAAA-MM-DD-slug&gt;/</code>, escreve o plano e pede sua aprovação <em>antes</em>
+         <code>docs/controle/&lt;AAAA-MM-DD-slug&gt;/</code>, escreve o plano e pede sua aprovação <em>antes</em>
          de tocar no artefato.</p>
-      <p>Isso é <strong>forçado</strong>, não convenção: o <code>pre-commit</code> instalado bloqueia
-         qualquer commit que altere arquivos fora de <code>controle/</code> sem os arquivos da task no
-         mesmo commit. Bypass consciente: <code>git commit --no-verify</code>.</p>
+      <p>Quem garante isso é um <strong>hook de início de interação</strong> (Amazon Q
+         <code>userPromptSubmit</code> + Kiro <code>promptSubmit</code>): a cada mensagem ele lembra o
+         assistente de abrir/atualizar a task <em>antes</em> de editar. <strong>Não há trava no
+         <code>git commit</code></strong> — você commita livre; é orientação no começo do trabalho, não
+         bloqueio no fim.</p>
       <p class="muted">Única exceção: pergunta puramente de leitura/conversa, que não gera nem altera
          artefato ("o que faz X?", "me explica Y"), responde direto. Tarefas triviais declaradas por você
          rodam em 1 turno (sem PLANO), mas ainda abrem task. Detalhe do protocolo no card
@@ -283,9 +285,9 @@ Pronto quando: modos de falha ranqueados por probabilidade × impacto, com mitig
 
 Objetivo: tratar este pedido sob o protocolo de controle — escopo e plano aprovados ANTES de tocar em qualquer artefato, evidências no fechamento, e o mínimo de turnos da minha cota.
 
-Siga o protocolo de prompts/engenharia/controle-de-tarefa.md: derive o slug do meu pedido (não me peça o nome), anuncie o task-id que escolheu, e neste turno crie SOMENTE controle/&lt;task-id&gt;/ (TASK.md com escopo+ACs e o PLANO — me pergunte o formato .md ou .html junto com as demais dúvidas, num bloco único) e termine pedindo aprovação. Execução só depois do meu "aprovado" — e aí tudo num turno: checklist (marcado a cada passo concluído = status vivo), o trabalho, LEDGER com evidências e fechamento.
+Siga o protocolo de prompts/engenharia/controle-de-tarefa.md: derive o slug do meu pedido (não me peça o nome), anuncie o task-id que escolheu, e neste turno crie SOMENTE docs/controle/&lt;task-id&gt;/ (TASK.md com escopo+ACs e o PLANO — me pergunte o formato .md ou .html junto com as demais dúvidas, num bloco único) e termine pedindo aprovação. Execução só depois do meu "aprovado" — e aí tudo num turno: checklist (marcado a cada passo concluído = status vivo), o trabalho, LEDGER com evidências e fechamento.
 
-Pronto quando (turno 1): task-id anunciado, TASK.md + PLANO criados, aprovação pedida, e NADA fora de controle/ foi tocado.
+Pronto quando (turno 1): task-id anunciado, TASK.md + PLANO criados, aprovação pedida, e NADA fora de docs/controle/ foi tocado.
 
 (Quer nomear na mão? Comece a mensagem com "nova tarefa: &lt;slug&gt; — ".)</pre>
           <div class="card-foot"><span class="slug">Copilot IDE: /controle-de-tarefa</span><button class="copy-btn" type="button">Copiar</button></div>

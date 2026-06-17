@@ -35,7 +35,9 @@ Copie do pack para a raiz do repo alvo, preservando a estrutura de pastas:
 | Origem (pack) | Destino (repo alvo) |
 |---|---|
 | `.amazonq/rules/architecture-style.md`, `frontend-style.md`, `negocio-style.md`, `engenharia-style.md`, `controle-style.md` | `.amazonq/rules/` |
-| `tools/pre-commit-controle.sh` | `.amazonq/hooks/pre-commit-controle.sh` |
+| `.amazonq/cli-agents/arquitetura.json` | `.amazonq/cli-agents/` |
+| `.amazonq/hooks/controle-hook.sh` | `.amazonq/hooks/` (dê permissão de execução) |
+| `.kiro/hooks/controle-prompt.kiro.hook` | `.kiro/hooks/` |
 | `.github/copilot-instructions.md` | `.github/` |
 | `.github/instructions/*.instructions.md` (as 5 de estilo) | `.github/instructions/` |
 | `.github/prompts/` (inteira) | `.github/prompts/` |
@@ -43,7 +45,7 @@ Copie do pack para a raiz do repo alvo, preservando a estrutura de pastas:
 | `.kiro/steering/*.md` (as 5 de estilo) | `.kiro/steering/` |
 | `.kiro/skills/` (inteira) | `.kiro/skills/` |
 | `prompts/arquitetura/`, `prompts/frontend/`, `prompts/negocio/`, `prompts/engenharia/` (inteiras) | `prompts/` |
-| `skills/` (inteira — biblioteca de 25 skills importadas) | `skills/` |
+| `skills/` (inteira — biblioteca de 30 skills importadas) | `skills/` |
 | `docs/arquitetura/design-system/*.css` | `docs/arquitetura/design-system/` |
 | `docs/arquitetura/templates/diagram-viewer.js`, `docs/arquitetura/templates/sidebar.js` | `docs/arquitetura/templates/` |
 | `docs/arquitetura/templates/*.html` (exemplos de FORMA — copie **só os que não existem** no alvo; nunca sobrescreva) | `docs/arquitetura/templates/` |
@@ -52,17 +54,18 @@ Copie do pack para a raiz do repo alvo, preservando a estrutura de pastas:
 
 Crie `docs/arquitetura/` (e subpastas) no alvo se não existirem.
 
-**Gancho do git (watchdog do controle):** se o alvo é raiz de repo git e NÃO existe
-`.git/hooks/pre-commit`, crie-o com este conteúdo (e dê permissão de execução):
+**Hooks de início de interação (substituem o antigo pre-commit — não há mais trava no
+`git commit`):**
 
-```bash
-#!/usr/bin/env bash
-# gerado pelo pack arquitetura — chama o watchdog do protocolo de controle
-bash .amazonq/hooks/pre-commit-controle.sh || exit 1
-```
-
-Se já existe um pre-commit de outro tooling, NÃO sobrescreva — diga ao usuário para
-acrescentar a linha `bash .amazonq/hooks/pre-commit-controle.sh || exit 1` nele.
+- **Amazon Q:** rode com o agente do pack — `q chat --agent arquitetura` — para o hook
+  `userPromptSubmit` (`.amazonq/hooks/controle-hook.sh`) disparar a cada mensagem e
+  lembrar de abrir/atualizar a task em `docs/controle/`.
+- **Kiro:** `.kiro/hooks/controle-prompt.kiro.hook` aparece no painel de hooks; o trigger
+  `promptSubmit` dispara sozinho. (A ação `askAgent` consome crédito — desligável no painel.)
+- **Copilot:** sem hook de início de interação — segue só na instruction sempre-on.
+- **Migração de instalação antiga:** se o alvo tem `.git/hooks/pre-commit` contendo
+  `pre-commit-controle`, **apague-o** para destravar o commit; remova também
+  `.amazonq/hooks/pre-commit-controle.sh` se existir. (Os instaladores fazem isso sozinhos.)
 
 **NUNCA copie (nem sobrescreva se existirem no alvo):**
 
@@ -75,8 +78,8 @@ acrescentar a linha `bash .amazonq/hooks/pre-commit-controle.sh || exit 1` nele.
 Esses arquivos NÃO existem no pack — a regra é sobre nunca sobrescrevê-los no repositório alvo quando já existirem lá. São por-serviço: os contextos são gerados pelos analisadores DEPOIS da instalação, e os foundation files pelo próprio Kiro. Se já existem
 no alvo, é uma instalação anterior — preserve-os intactos.
 
-Também não copie: `tools/` (exceto `pre-commit-controle.sh`, que vai para
-`.amazonq/hooks/` conforme a tabela), `INSTALAR.md`, `README.md`, `LICENSE`,
+Também não copie: `tools/` inteira (são scripts de manutenção do pack de origem),
+`INSTALAR.md`, `README.md`, `LICENSE`,
 `docs/superpowers/` — são do pack, não do serviço. Atenção: o resto de
 `docs/arquitetura/` (css, os 2 `.js` e as páginas de exemplo) **é** copiado, assim como
 o `COMO-USAR.html` da raiz, conforme a tabela acima.
@@ -86,23 +89,48 @@ o `COMO-USAR.html` da raiz, conforme a tabela acima.
 Confira que TODOS estes paths existem no repo alvo (via shell ou listagem de arquivos):
 
 - `.amazonq/rules/` com as 5 rules de estilo (mais os arquivos de contexto, se já gerados)
-- `.amazonq/hooks/pre-commit-controle.sh` (e, em repo git, o gancho `.git/hooks/pre-commit` — ou o aviso de pre-commit pre-existente)
+- `.amazonq/cli-agents/arquitetura.json` + `.amazonq/hooks/controle-hook.sh` + `.kiro/hooks/controle-prompt.kiro.hook` (hooks de início de interação do controle; **sem** git hook — o commit não é mais bloqueado)
 - `.github/copilot-instructions.md` + `.github/instructions/` com 5 arquivos `*-style.instructions.md` (mais os de contexto, se os analisadores já rodaram neste repo)
-- `.github/prompts/` com 23 arquivos `.prompt.md` e `.github/skills/` com 48 subpastas (23 wrappers + 25 importadas)
-- `.kiro/steering/` com as 5 rules de estilo e `.kiro/skills/` com 48 subpastas
-- `prompts/` com as 4 trilhas (arquitetura 7, frontend 4, negocio 5, engenharia 7 — 23 arquivos `.md`)
-- `skills/` com 11 categorias e 25 subpastas com `SKILL.md` (biblioteca importada)
+- `.github/prompts/` com 26 arquivos `.prompt.md` e `.github/skills/` com 56 subpastas (26 wrappers + 30 importadas)
+- `.kiro/steering/` com as 5 rules de estilo e `.kiro/skills/` com 56 subpastas
+- `prompts/` com as 4 trilhas (arquitetura 7, frontend 4, negocio 5, engenharia 10 — 26 arquivos `.md`)
+- `skills/` com 13 categorias e 30 subpastas com `SKILL.md` (biblioteca importada)
 - `docs/arquitetura/design-system/` com 2 `.css`; `docs/arquitetura/templates/` com os 2 `.js`; `COMO-USAR.html` e `COMO-USAR.md` na raiz do repo
 - `docs/arquitetura/templates/` com as páginas de exemplo (`01-visao-geral.html`, `index.html`, etc.) — exceto se a instalação usou `--no-examples`
 
 Se algo faltar, volte ao passo que o copia. Não declare a instalação concluída sem
 esta verificação (evidência antes de afirmação).
 
-## Passo 4 — Re-instalação / atualização
+## Passo 4 — Re-instalação / atualização (inclui MIGRAÇÃO de versão antiga)
 
 Rodar de novo é seguro: os scripts (e a regra do Passo 2) preservam os arquivos de
 contexto por-serviço (nos três lados) e os foundation files do Kiro. O resto é
 sobrescrito com a versão nova do pack — é o esperado.
+
+**Se o alvo já tem uma instalação ANTIGA do pack, você DEVE detectá-la e corrigi-la** até
+ficar idêntica ao estado novo. A versão antiga usava um **pre-commit que bloqueava o
+`git commit`** e guardava as tasks em **`controle/` na raiz**; a versão nova usa **hooks de
+início de interação** e guarda as tasks em **`docs/controle/`**. Verifique cada sinal abaixo
+e aplique a correção:
+
+| Sinal de versão antiga | Correção (deixar igual ao estado novo) |
+|---|---|
+| `.git/hooks/pre-commit` contém `pre-commit-controle` | Se o arquivo **só** chama o pre-commit-controle, **apague-o**. Se tiver outras linhas, remova **apenas** a linha `bash .amazonq/hooks/pre-commit-controle.sh \|\| exit 1`. Isso destrava o `git commit`. |
+| Existe `.amazonq/hooks/pre-commit-controle.sh` | **Apague** — foi substituído pelos hooks de início de interação. |
+| Faltam `.amazonq/cli-agents/arquitetura.json`, `.amazonq/hooks/controle-hook.sh` ou `.kiro/hooks/controle-prompt.kiro.hook` | **Copie-os** do pack (tabela do Passo 2) e dê `+x` no `controle-hook.sh`. |
+| Existe `controle/` na **raiz** do repo (com tasks dentro) | **Mova** cada pasta de task para `docs/controle/` (crie se não existir). Preserve tudo — são dados do usuário; **não apague**. Se uma task de mesmo nome já existir em `docs/controle/`, faça merge sem sobrescrever. Remova o `controle/` só depois de vazio. |
+| `skills/` sem as categorias `fluxo-dev` e `orquestracao` (ou com menos de 30 skills) | **Recopie** `skills/`, `.github/` e `.kiro/` inteiras do pack — trazem as 5 skills novas e os 3 prompts novos (refatorador-incremental, estrategista-de-testes, revisor-de-codigo). |
+| Rules/prompts ainda citam `controle/` (raiz) ou o "pre-commit" como trava | São sobrescritos ao recopiar `.amazonq/rules/`, `prompts/`, `.github/` e `.kiro/` do pack — refaça a cópia (Passo 1 ou 2). |
+
+Depois de corrigir, **rode o Passo 3 de novo** e confirme também que a versão antiga sumiu:
+
+- NÃO existe mais `.git/hooks/pre-commit` do pack nem `.amazonq/hooks/pre-commit-controle.sh`;
+- NÃO existe mais `controle/` na raiz — só `docs/controle/`;
+- os 3 arquivos de hook novos existem (`.amazonq/cli-agents/arquitetura.json`, `.amazonq/hooks/controle-hook.sh`, `.kiro/hooks/controle-prompt.kiro.hook`).
+
+Os scripts `install.sh` / `install.ps1` já fazem TODAS essas correções sozinhos (removem o
+pre-commit, instalam os hooks novos e movem `controle/` → `docs/controle/`); esta tabela é
+para quando você instala/migra na mão.
 
 ## Passo 5 — Oriente o usuário (primeiro uso)
 

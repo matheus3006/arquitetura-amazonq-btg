@@ -1,11 +1,19 @@
 # ADR-0001 — Protocolo de controle de contexto otimizado para cota de requests
 
-- **Status:** aceita
+- **Status:** aceita — decisões **2 (caminho)** e **5 (enforcement)** superadas pelo
+  [ADR-0004](0004-hook-de-assistente-substitui-pre-commit.md) em 2026-06-17.
 - **Data:** 2026-06-11
 - **Autor:** Matheus (sessão de grilling com Claude Code)
 - **Contexto de origem:** porte do controle de contexto dos projetos pessoais
   (delivery_cadillac, AlMaFlow, AlMaNutri) para o ambiente BTG, onde o Amazon Q tem
   cota de ~1000 requests/mês por dev.
+
+> **Atualização (2026-06-17):** a premissa de que "Amazon Q/Copilot não têm hooks de
+> assistente" caiu — o Amazon Q CLI (custom agents, GA jul/2025) tem `userPromptSubmit`
+> e o Kiro tem `promptSubmit`. O enforcement deixou de ser o pre-commit punitivo (que
+> bloqueava o commit do humano) e passou a ser um hook de início de interação que faz o
+> agente abrir a task sozinho; o caminho mudou de `controle/` para `docs/controle/`. Ver
+> [ADR-0004](0004-hook-de-assistente-substitui-pre-commit.md). O texto abaixo é histórico.
 
 ## Contexto e problema
 

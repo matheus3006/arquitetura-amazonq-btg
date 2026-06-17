@@ -57,7 +57,7 @@ Os ramos **derivam do plano real** (lido na F0), nunca de checklist genérico.
 ## Fases (cada uma tem gate de saída)
 
 ### F0 — Reconhecimento (NÃO pergunta ainda)
-Leia o plano (`docs/planos/…` ou `controle/<task-id>/PLANO.*`), o `project-context.md`
+Leia o plano (`docs/planos/…` ou `docs/controle/<task-id>/PLANO.*`), o `project-context.md`
 (no destino da sua ferramenta) e os arquivos que o plano diz tocar. Monte **3 a 7 ramos**
 no ledger a partir de onde planos quebram (guia abaixo).
 **Gate:** árvore inicial montada com evidência do código, não de suposição.

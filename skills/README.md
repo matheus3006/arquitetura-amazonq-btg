@@ -15,10 +15,10 @@ atualização = recopiar da fonte. O conteúdo é em inglês (original preservad
 Mensagens prontas para cada uma: `COMO-USAR.html` (raiz do repo — cards com rodapé `Skill:`, agrupados por propósito junto com os prompts do pack).
 
 `.github/skills/` e `.kiro/skills/` são GERADOS por `tools/sync-copilot.sh` /
-`tools/sync-kiro.sh` — que copiam esta pasta verbatim além dos 23 wrappers do pack.
+`tools/sync-kiro.sh` — que copiam esta pasta verbatim além dos 26 wrappers do pack.
 Editar aqui + rodar os dois syncs = camadas atualizadas.
 
-## Catálogo (25)
+## Catálogo (30)
 
 | Categoria | Skill | Fonte | O que entrega |
 |---|---|---|---|
@@ -34,6 +34,10 @@ Editar aqui + rodar os dois syncs = camadas atualizadas.
 | planejamento | `executing-plans` | superpowers | execução disciplinada de plano escrito, com checkpoints |
 | planejamento | `scrum-master` | pm-skills | cerimônias e fluxo ágil: sprint, retro, impedimentos |
 | planejamento | `to-issues` | local (mattpocock) | quebra plano/PRD em issues rastreáveis |
+| orquestracao | `subagent-driven-development` | superpowers | implementa via subagentes (spec → implementador → revisor) com prompts prontos |
+| orquestracao | `dispatching-parallel-agents` | superpowers | despacha agentes em paralelo para trabalho independente, com isolamento |
+| fluxo-dev | `using-git-worktrees` | superpowers | worktrees git para trabalho paralelo isolado, sem trocar de branch |
+| fluxo-dev | `finishing-a-development-branch` | superpowers | fecha a branch com disciplina: merge/PR/cleanup, sem deixar pontas |
 | backend | `test-driven-development` | superpowers | TDD integral: lei de ferro, red-green-refactor |
 | backend | `systematic-debugging` | superpowers | debugging em 4 fases: causa raiz com evidência antes do fix |
 | backend | `verification-before-completion` | superpowers | evidência antes de afirmar "pronto" — sempre |
@@ -44,6 +48,7 @@ Editar aqui + rodar os dois syncs = camadas atualizadas.
 | ui-ux | `design-audit` | local (.agents) | auditoria visual sistemática + plano de refinamento em fases |
 | ui-ux | `bencium-controlled-ux-designer` | local (.agents) | decisões de UX propostas uma a uma, com aprovação |
 | code-review | `requesting-code-review` | superpowers | revisão de código rigorosa via template de revisor cético |
+| code-review | `receiving-code-review` | superpowers | incorporar feedback de review com critério, sem defensividade nem aceitar tudo |
 | arquitetura-review | `improve-codebase-architecture` | local (mattpocock) | review da ARQUITETURA do código: acoplamento, costuras, módulos |
 | julgar-planos | `challenge` | executive-mentor | pre-mortem de plano: ataca o plano antes de executar |
 | criar-planos | `writing-plans` | superpowers | escrita de planos executáveis por quem não conhece o código |
@@ -52,4 +57,4 @@ Editar aqui + rodar os dois syncs = camadas atualizadas.
 
 Superpowers (obra/Jesse Vincent, MIT) · claude-code-skills marketplace (pm/product/c-level/executive-mentor) ·
 skills locais (mattpocock, bencium, comunidade). Uso interno. Versões congeladas na data da cópia
-(2026-06-11); ver histórico git para atualizações.
+(2026-06-11; lote dev/debug — code-review, fluxo-dev, orquestracao — em 2026-06-17); ver histórico git para atualizações.
