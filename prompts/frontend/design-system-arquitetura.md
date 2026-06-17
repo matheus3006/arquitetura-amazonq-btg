@@ -52,6 +52,11 @@ docs/arquitetura/design-system/
 | **Z-index** | `--z-base`, `--z-sticky`, `--z-overlay`, `--z-modal`, `--z-toast` | 0, 10, 100, 1000, 10000 |
 | **Duration** | `--dur-fast`, `--dur-normal`, `--dur-slow` | 150ms, 250ms, 400ms |
 | **Easing** | `--ease-out`, `--ease-in-out`, `--ease-bounce` | bezier |
+| **Highlight** | `--color-mark-bg`, `--color-mark-text` | realce de palavra (`<mark>`/`.destaque`) |
+
+### Temas — escuro (padrão) + claro
+
+O design system tem dois temas no `tokens.css`: escuro em `:root` (padrão) e claro em `[data-theme="light"]` (paleta feita à mão, todo texto ≥ AA). O `prefs.js` (incluído no `<head>` antes do CSS) aplica o tema antes do paint — segue `prefers-color-scheme` e persiste a escolha do usuário — e expõe o controle de tamanho de fonte (5 níveis, ~85%→130%). Os controles aparecem no rodapé da `sidebar.js`. **Ao criar componente, use só `var(--*)`** — é isso que faz o tema claro funcionar sem CSS extra.
 
 ### Catálogo mínimo de componentes (para docs técnicas)
 
@@ -72,6 +77,8 @@ docs/arquitetura/design-system/
 | Definition list | `.def-list` | — |
 | Side nav | `.sidebar` (renderizada por `sidebar.js`) | — |
 | Skip link | `.skip-link` (gerada pelo `sidebar.js`) | — |
+| Controles de leitura | `.sidebar__tools` + `.sidebar__tool-btn` + `.sidebar__scale-label` | tema (claro/escuro) + tamanho de fonte; render por `sidebar.js`, lógica em `prefs.js` |
+| Realce de texto | `<mark>` / `.destaque` | realce de palavra-chave, AA nos dois temas |
 
 ## Metodologia
 

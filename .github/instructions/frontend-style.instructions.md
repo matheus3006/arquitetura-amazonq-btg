@@ -18,7 +18,8 @@ excludeAgent: "code-review"
 | Tokens de cor, espaço, tipografia em `docs/arquitetura/design-system/tokens.css` | **REGRA de uso** (via `var(--*)`) |
 | Componentes em `docs/arquitetura/design-system/components.css` | **CATÁLOGO disponível** — use o existente, evite reinventar |
 | Conteúdo das páginas em `docs/arquitetura/templates/` | **EXEMPLO** — substitua substância pelo serviço real |
-| Visual final (paleta navy/azul, dark-only) | **CONVENÇÃO da casa** — discutível com o time real, hoje é o padrão |
+| Visual final (paleta navy/azul; tema escuro padrão + tema claro opcional) | **CONVENÇÃO da casa** — discutível com o time real, hoje é o padrão |
+| Controles de leitura (alternar tema, tamanho de fonte) via `prefs.js` + rodapé da `sidebar.js` | **REGRA** — incluir `prefs.js` no `<head>` |
 
 ---
 
@@ -34,6 +35,7 @@ Todo documento gerado começa com este esqueleto. Os pontos marcados com **REGRA
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><Título> · <Nome Real do Serviço></title>
   <meta name="description" content="<Descrição em uma frase>">
+  <script src="prefs.js"></script>                               <!-- REGRA: tema+fonte ANTES do CSS (sem flash) -->
   <link rel="stylesheet" href="../design-system/tokens.css">     <!-- REGRA: estes 2 arquivos -->
   <link rel="stylesheet" href="../design-system/components.css">
 </head>
@@ -153,6 +155,7 @@ Use estes. Reinventar é dívida. Se faltar componente, abra discussão com o ti
 ### Layout
 - `.shell` — wrapper grid (sidebar + main)
 - `.sidebar`, `.sidebar__brand`, `.sidebar__section`, `.sidebar__link` — navegação lateral (renderizada por `sidebar.js`)
+- `.sidebar__tools`, `.sidebar__tool-btn`, `.sidebar__scale-label` — controles de leitura no rodapé da sidebar (tema + tamanho de fonte; renderizados por `sidebar.js`, ligados ao `prefs.js`)
 - `.main`, `.breadcrumb`, `.prose` — área de conteúdo
 
 ### Hero
@@ -175,6 +178,9 @@ Use estes. Reinventar é dívida. Se faltar componente, abra discussão com o ti
 - `.code-inline` — código em linha
 - `.code-block`, `.code-block__header` — bloco com header de linguagem
 - `pre/code` dentro do `.code-block` herdam estilo correto
+
+### Realce de texto
+- `<mark>` ou `.destaque` — realça palavra-chave dentro da frase (fundo accent-suave via `--color-mark-*`, contraste AA nos dois temas). Aplicado manualmente pelo autor.
 
 ### Diagramas
 - `.diagram-figure`, `.diagram-viewer`, `.diagram-viewer__canvas`, `.diagram-viewer__controls`, `.diagram-viewer__btn`, `.diagram-viewer__hint`, `.diagram-viewer__error`, `.diagram-viewer__loading`
@@ -241,7 +247,7 @@ Aplicadas silenciosamente em todo HTML gerado.
 
 ## 8. Cor — uso
 
-A paleta vive em `tokens.css`. **Dark-only no estado atual** (não há light mode definido). Regras:
+A paleta vive em `tokens.css`, em **dois temas**: escuro (`:root`, padrão) e claro (`[data-theme="light"]`). O `prefs.js` aplica o tema antes do paint (segue `prefers-color-scheme`; a escolha do usuário persiste) e o rodapé da `sidebar.js` alterna. Ambos os temas têm texto ≥ AA. Regras:
 
 - Texto primário: `var(--color-text-primary)` (off-white).
 - Texto secundário/metadado: `var(--color-text-secondary)`.
@@ -252,6 +258,8 @@ A paleta vive em `tokens.css`. **Dark-only no estado atual** (não há light mod
   - `Deprecated` / `Superseded` → cinza muted.
   - `Critical` / `P1` → `--color-danger` (vermelho contido).
 - Diagramas: cores fixas da convenção § 1 architecture-style.md.
+- Realce de palavra-chave: `<mark>`/`.destaque` (usa `--color-mark-*`).
+- **Sempre via `var(--*)`** — nunca hardcode hex no HTML; é o que faz o tema claro funcionar.
 
 **Banido na documentação principal**: gradientes coloridos vibrantes, sombras coloridas grandes, glow excessivo, neon. Sutileza vence.
 
@@ -301,6 +309,7 @@ Antes de entregar, mentalmente cheque:
 - [ ] Um único `<h1>` (no `.hero__title`).
 - [ ] Heading levels sem pulos.
 - [ ] Scripts carregados como **classic**, não `type="module"`.
+- [ ] `<script src="prefs.js">` no `<head>`, antes dos CSS (tema/fonte sem flash).
 - [ ] Sidebar via `<aside id="sidebar">` + `<script src="sidebar.js">`.
 - [ ] Cada diagrama: `<div class="diagram-viewer" data-diagram>` + `<script type="text/mermaid" data-id>`.
 - [ ] Diagramas usam os 4 classDefs da convenção.

@@ -76,7 +76,46 @@ const NAV = {
         </ul>
       </nav>
     `).join("")}
+    <div class="sidebar__tools">
+      <button class="sidebar__tool-btn" id="arch-theme-toggle" type="button"></button>
+      <div class="sidebar__tools-group" role="group" aria-label="Tamanho do texto">
+        <button class="sidebar__tool-btn" id="arch-font-dec" type="button" aria-label="Diminuir tamanho do texto">A&minus;</button>
+        <span class="sidebar__scale-label" id="arch-font-level" aria-live="polite"></span>
+        <button class="sidebar__tool-btn" id="arch-font-inc" type="button" aria-label="Aumentar tamanho do texto">A+</button>
+      </div>
+    </div>
   `;
 
   root.innerHTML = html;
+
+  // ── Controles de leitura: tema + tamanho de fonte (consome window.ArchPrefs) ──
+  const prefs = window.ArchPrefs;
+  const themeBtn = root.querySelector("#arch-theme-toggle");
+  if (!prefs || !themeBtn) return; // prefs.js ausente: degrada sem quebrar a nav
+
+  const SUN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+  const MOON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>';
+
+  const dec = root.querySelector("#arch-font-dec");
+  const inc = root.querySelector("#arch-font-inc");
+  const level = root.querySelector("#arch-font-level");
+
+  function syncTheme() {
+    const isLight = prefs.getTheme() === "light";
+    themeBtn.innerHTML = isLight ? MOON : SUN;
+    themeBtn.setAttribute("aria-label", isLight ? "Mudar para tema escuro" : "Mudar para tema claro");
+  }
+  function syncScale() {
+    const idx = prefs.getScaleIdx();
+    level.textContent = prefs.getScalePct() + "%";
+    dec.disabled = idx <= 0;
+    inc.disabled = idx >= prefs.SCALES.length - 1;
+  }
+
+  themeBtn.addEventListener("click", () => { prefs.toggleTheme(); syncTheme(); });
+  dec.addEventListener("click", () => { prefs.scaleDown(); syncScale(); });
+  inc.addEventListener("click", () => { prefs.scaleUp(); syncScale(); });
+
+  syncTheme();
+  syncScale();
 })();
