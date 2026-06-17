@@ -24,3 +24,6 @@ especificador	engenharia	Transforma pedido vago em spec minima com criterios de 
 refatorador-incremental	engenharia	Refatoracao sob rede de testes: caracteriza o comportamento, anda em passos pequenos (Mikado) e verifica a cada passo — comportamento identico no fim
 estrategista-de-testes	engenharia	Desenha a estrategia de testes alem do TDD unitario: niveis (unit/integracao/contrato/e2e), regressao dos bugs ja vistos e prioridade por risco x custo
 revisor-de-codigo	engenharia	Conduz a revisao de codigo por dimensoes (correcao, seguranca, simplicidade/reuso, testes) com achados por severidade e evidencia arquivo:linha
+documentar-servico	arquitetura	Etapa 1 de 3 do fluxo de doc do zero: orquestra contexto (analisador-de-projeto) + dominio (analisador-de-dominio) + arquitetura (arquiteto-de-sistema) num fluxo so, com checkpoint entre fases
+completar-documentacao	arquitetura	Etapa 2 de 3: completa a doc tecnica com os fluxos criticos (documentador-fluxo) e o runbook (gerador-runbook), confirmados no codigo
+grill-arquitetura	arquitetura	Etapa 3 de 3: grill intenso codigo-primeiro sobre a doc gerada — cada incerteza resolvida pelo codigo (com nivel de certeza) ou perguntada ao humano, atualizada inline

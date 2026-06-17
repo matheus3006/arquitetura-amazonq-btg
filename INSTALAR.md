@@ -45,7 +45,7 @@ Copie do pack para a raiz do repo alvo, preservando a estrutura de pastas:
 | `.kiro/steering/*.md` (as 5 de estilo) | `.kiro/steering/` |
 | `.kiro/skills/` (inteira) | `.kiro/skills/` |
 | `prompts/arquitetura/`, `prompts/frontend/`, `prompts/negocio/`, `prompts/engenharia/` (inteiras) | `prompts/` |
-| `skills/` (inteira — biblioteca de 30 skills importadas) | `skills/` |
+| `skills/` (inteira — biblioteca de 31 skills importadas) | `skills/` |
 | `docs/arquitetura/design-system/*.css` | `docs/arquitetura/design-system/` |
 | `docs/arquitetura/templates/diagram-viewer.js`, `docs/arquitetura/templates/sidebar.js` | `docs/arquitetura/templates/` |
 | `docs/arquitetura/templates/*.html` (exemplos de FORMA — copie **só os que não existem** no alvo; nunca sobrescreva) | `docs/arquitetura/templates/` |
@@ -91,10 +91,10 @@ Confira que TODOS estes paths existem no repo alvo (via shell ou listagem de arq
 - `.amazonq/rules/` com as 5 rules de estilo (mais os arquivos de contexto, se já gerados)
 - `.amazonq/cli-agents/arquitetura.json` + `.amazonq/hooks/controle-hook.sh` + `.kiro/hooks/controle-prompt.kiro.hook` (hooks de início de interação do controle; **sem** git hook — o commit não é mais bloqueado)
 - `.github/copilot-instructions.md` + `.github/instructions/` com 5 arquivos `*-style.instructions.md` (mais os de contexto, se os analisadores já rodaram neste repo)
-- `.github/prompts/` com 26 arquivos `.prompt.md` e `.github/skills/` com 56 subpastas (26 wrappers + 30 importadas)
-- `.kiro/steering/` com as 5 rules de estilo e `.kiro/skills/` com 56 subpastas
-- `prompts/` com as 4 trilhas (arquitetura 7, frontend 4, negocio 5, engenharia 10 — 26 arquivos `.md`)
-- `skills/` com 13 categorias e 30 subpastas com `SKILL.md` (biblioteca importada)
+- `.github/prompts/` com 29 arquivos `.prompt.md` e `.github/skills/` com 60 subpastas (29 wrappers + 31 importadas)
+- `.kiro/steering/` com as 5 rules de estilo e `.kiro/skills/` com 60 subpastas
+- `prompts/` com as 4 trilhas (arquitetura 10, frontend 4, negocio 5, engenharia 10 — 29 arquivos `.md`)
+- `skills/` com 14 categorias e 31 subpastas com `SKILL.md` (biblioteca importada)
 - `docs/arquitetura/design-system/` com 2 `.css`; `docs/arquitetura/templates/` com os 2 `.js`; `COMO-USAR.html` e `COMO-USAR.md` na raiz do repo
 - `docs/arquitetura/templates/` com as páginas de exemplo (`01-visao-geral.html`, `index.html`, etc.) — exceto se a instalação usou `--no-examples`
 
@@ -119,7 +119,7 @@ e aplique a correção:
 | Existe `.amazonq/hooks/pre-commit-controle.sh` | **Apague** — foi substituído pelos hooks de início de interação. |
 | Faltam `.amazonq/cli-agents/arquitetura.json`, `.amazonq/hooks/controle-hook.sh` ou `.kiro/hooks/controle-prompt.kiro.hook` | **Copie-os** do pack (tabela do Passo 2) e dê `+x` no `controle-hook.sh`. |
 | Existe `controle/` na **raiz** do repo (com tasks dentro) | **Mova** cada pasta de task para `docs/controle/` (crie se não existir). Preserve tudo — são dados do usuário; **não apague**. Se uma task de mesmo nome já existir em `docs/controle/`, faça merge sem sobrescrever. Remova o `controle/` só depois de vazio. |
-| `skills/` sem as categorias `fluxo-dev` e `orquestracao` (ou com menos de 30 skills) | **Recopie** `skills/`, `.github/` e `.kiro/` inteiras do pack — trazem as 5 skills novas e os 3 prompts novos (refatorador-incremental, estrategista-de-testes, revisor-de-codigo). |
+| `skills/` sem as categorias `fluxo-dev`, `orquestracao` ou `documentacao` (ou com menos de 31 skills) | **Recopie** `skills/`, `.github/` e `.kiro/` inteiras do pack — trazem as skills novas (5 do lote dev/debug + `doc-coauthoring`) e os 3 prompts novos. |
 | Rules/prompts ainda citam `controle/` (raiz) ou o "pre-commit" como trava | São sobrescritos ao recopiar `.amazonq/rules/`, `prompts/`, `.github/` e `.kiro/` do pack — refaça a cópia (Passo 1 ou 2). |
 
 Depois de corrigir, **rode o Passo 3 de novo** e confirme também que a versão antiga sumiu:

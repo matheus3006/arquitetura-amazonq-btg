@@ -9,7 +9,7 @@
 #
 # Copia: .amazonq/rules/ (5 rules) + .github/ (camada Copilot: instructions,
 #        prompts, skills) + .kiro/ (camada Kiro: steering, skills)
-#        + prompts/ (4 trilhas) + skills/ (biblioteca de 30 skills importadas) e
+#        + prompts/ (4 trilhas) + skills/ (biblioteca de 31 skills importadas) e
 #        COMO-USAR.html (raiz) + docs/arquitetura/ (css do design system, js dos
 #        templates, paginas HTML de exemplo — referencia de FORMA pros prompts;
 #        nunca sobrescreve arquivo ja existente no alvo)
@@ -73,7 +73,7 @@ done
 echo "  ✓ .github/instructions/ (5 instructions)"
 cp -R "$PACK_DIR/.github/prompts/." "$TARGET/.github/prompts/"
 cp -R "$PACK_DIR/.github/skills/."  "$TARGET/.github/skills/"
-echo "  ✓ .github/prompts/ (26 wrappers) + .github/skills/ (56: 26 wrappers + 30 importadas)"
+echo "  ✓ .github/prompts/ (29 wrappers) + .github/skills/ (60: 29 wrappers + 31 importadas)"
 
 # 2b) Camada Kiro (steering + Agent Skills). Copiamos SO as 5 rules de estilo:
 #     *-context.md e os foundation files do Kiro (product/tech/structure.md)
@@ -84,7 +84,7 @@ for f in architecture-style frontend-style negocio-style engenharia-style contro
 done
 echo "  ✓ .kiro/steering/ (5 rules)"
 cp -R "$PACK_DIR/.kiro/skills/." "$TARGET/.kiro/skills/"
-echo "  ✓ .kiro/skills/ (56 Agent Skills: 26 wrappers + 30 importadas)"
+echo "  ✓ .kiro/skills/ (60 Agent Skills: 29 wrappers + 31 importadas)"
 
 # 3) Prompts (4 trilhas)
 mkdir -p "$TARGET/prompts"
@@ -96,7 +96,7 @@ echo "  ✓ prompts/{arquitetura,frontend,negocio,engenharia}"
 # 3b) Biblioteca de skills importadas (fonte canonica das copias verbatim)
 mkdir -p "$TARGET/skills"
 cp -R "$PACK_DIR/skills/." "$TARGET/skills/"
-echo "  ✓ skills/ (biblioteca: 30 skills importadas em 13 categorias)"
+echo "  ✓ skills/ (biblioteca: 31 skills importadas em 14 categorias)"
 
 # 4) Design system (CSS reutilizavel)
 mkdir -p "$TARGET/docs/arquitetura/design-system"

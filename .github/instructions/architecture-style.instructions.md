@@ -143,7 +143,10 @@ Antes de responder, identifique se a intenção do usuário casa com algum gatil
 | Quando o usuário pedir / mencionar | Carregue este prompt |
 |---|---|
 | **Primeira invocação em um repositório** OU "analisa o projeto", "refresh project context", "atualiza contexto" OU par de contexto do projeto ausente/incompleto (ver gate) | `prompts/arquitetura/analisador-de-projeto.md` (sempre antes de qualquer outro prompt) |
-| "documentar serviço", "começar arquitetura", "system context", "container diagram", "visão geral" | `prompts/arquitetura/arquiteto-de-sistema.md` |
+| "documentar o serviço do zero", "documentação técnica completa", "começar a documentação do repo" | `prompts/arquitetura/documentar-servico.md` (**Etapa 1/3** — orquestra contexto + domínio + arquitetura) |
+| "completar a documentação", "documentar os fluxos e o runbook" (após a Etapa 1) | `prompts/arquitetura/completar-documentacao.md` (**Etapa 2/3** — fluxos + runbook) |
+| "grill intenso de arquitetura", "questionar as incertezas da doc", "aprofundar a doc gerada" | `prompts/arquitetura/grill-arquitetura.md` (**Etapa 3/3** — código-primeiro, sessão nova) |
+| "atualizar a visão geral", "só a página de arquitetura", "system context"/"container diagram" avulso | `prompts/arquitetura/arquiteto-de-sistema.md` (página única; o fluxo completo do zero é `documentar-servico`) |
 | "criar ADR", "registrar decisão", "decisão arquitetural", "MADR", "trade-off" | `prompts/arquitetura/gerador-adr.md` |
 | "runbook", "documentação operacional", "failure mode", "on-call", "SLO" | `prompts/arquitetura/gerador-runbook.md` |
 | "documentar fluxo", "sequência transacional", "fluxograma de processo", "saga", "fluxo de autorização" | `prompts/arquitetura/documentador-fluxo.md` |
@@ -153,6 +156,13 @@ Antes de responder, identifique se a intenção do usuário casa com algum gatil
 | "estilo", "paleta", "componente UI", "padrão visual catálogo" | `prompts/frontend/designer-ui-pro-max.md` |
 | "design system", "tokens", "padronizar componentes" | `prompts/frontend/design-system-arquitetura.md` |
 | "polir", "animação", "micro-interação", "detalhe", "acabamento" | `prompts/frontend/polidor-ui.md` |
+
+**Fluxo canônico de documentação do zero — 3 etapas obrigatórias:**
+`documentar-servico` (Etapa 1: contexto + domínio + arquitetura) → `completar-documentacao`
+(Etapa 2: fluxos + runbook) → `grill-arquitetura` (Etapa 3: grill intenso código-primeiro, em
+sessão nova). Cada etapa termina apontando a próxima. Os prompts-base (`analisador-de-projeto`,
+`analisador-de-dominio`, `arquiteto-de-sistema`, `documentador-fluxo`, `gerador-runbook`,
+`grill-doc`) seguem disponíveis para refresh pontual de um artefato só.
 
 Quando gerar HTML final, **sempre** aplique também `.github/instructions/frontend-style.instructions.md`.
 

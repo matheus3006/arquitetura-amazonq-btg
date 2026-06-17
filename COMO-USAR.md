@@ -54,9 +54,121 @@ Pronto quando: os três arquivos de contexto de negócio existem, idênticos, e 
 
 _Copilot IDE: /analisador-de-dominio_
 
-## Explorar e decidir
+## Arquitetura
 
-Você ainda não decidiu — ou nem fechou o problema direito. Explore antes de construir, pense como arquiteto, estresse as premissas, e registre a decisão quando ela amadurecer.
+A prioridade nº 1 do pack: documentar o serviço fiel ao código (visão geral, fluxos, runbook), explorar e registrar decisões (brainstorm, ADR, stress-test) e pensar como arquiteto — modelo de domínio antes de tecnologia.
+
+### Documentar serviço do zero (Etapa 1/3)
+
+**Quando:** Repo sem doc — gera contexto + domínio + a arquitetura (espinha) num fluxo só.
+
+```text
+Objetivo: documentar do zero a aplicação [NOME_DA_APLICACAO] — contexto, domínio e a arquitetura (espinha), num fluxo só com checkpoint meu entre as fases.
+
+Siga todo o processo de prompts/arquitetura/documentar-servico.md (Etapa 1 de 3): Fase A contexto (analisador-de-projeto, três destinos), Fase B domínio (analisador-de-dominio, três destinos), Fase C arquitetura (arquiteto-de-sistema: 5 âncoras + grill de 1ª passada) — gate e meu OK entre cada fase.
+
+Pronto quando: contexto + domínio + páginas de arquitetura geradas, e o handoff pra Etapa 2.
+```
+
+_Copilot IDE: /documentar-servico_
+
+### Completar a documentação (Etapa 2/3)
+
+**Quando:** Depois da Etapa 1 — os fluxos críticos e o runbook operacional.
+
+```text
+Objetivo: completar a doc técnica de [NOME_DA_APLICACAO] — os fluxos críticos e o runbook operacional, confirmados no código.
+
+Siga todo o processo de prompts/arquitetura/completar-documentacao.md (Etapa 2 de 3): Fase A fluxo(s) crítico(s) (documentador-fluxo, com os caminhos de falha), Fase B runbook (gerador-runbook, 4 campos por failure mode, nada inventado) — meu OK entre as fases.
+
+Pronto quando: fluxos + runbook gerados, e o handoff pra Etapa 3 (sessão nova).
+```
+
+_Copilot IDE: /completar-documentacao_
+
+### Grill intenso de arquitetura (Etapa 3/3)
+
+**Quando:** Sessão NOVA sobre a doc gerada — atacar as incertezas, código-primeiro.
+
+```text
+Objetivo: atacar as incertezas da documentação gerada de [NOME_DA_APLICACAO] — cada ponto vago resolvido pelo código (com nível de certeza) ou perguntado a mim.
+
+Siga todo o processo de prompts/arquitetura/grill-arquitetura.md (Etapa 3 de 3, em sessão nova): monte o inventário das incertezas (ledger) e, pra cada uma, RE-ANALISE o código primeiro — achou: corrige inline + nível de certeza (alta/média/baixa + arquivo:linha); não achou: me pergunta (uma por vez). Atualize a doc inline.
+
+Pronto quando: ledger zerado e a tabela de certezas (incerteza → resolução → nível + evidência), com as pendências [a confirmar] explícitas.
+```
+
+_Copilot IDE: /grill-arquitetura_
+
+### Visão geral de arquitetura
+
+**Quando:** Documentar o serviço do zero ou atualizar a visão geral.
+
+```text
+Objetivo: a página de visão geral de arquitetura da aplicação [NOME_DA_APLICACAO] — propósito, contexto, integrações, fluxo principal, stack e quality goals — fiel ao código real, não aspiracional.
+
+Siga todo o processo de prompts/arquitetura/arquiteto-de-sistema.md: faça as 5 perguntas-âncora e depois me grile ramo a ramo no estilo grill-with-docs — uma pergunta por vez, ledger visível, sua resposta recomendada, documentando inline conforme fecharmos — até o ledger zerar. As âncoras são o piso, não o teto.
+
+Pronto quando: HTML no padrão da casa com os diagramas na convenção rígida, e nenhum ⚠ aberto que eu não tenha aceitado explicitamente.
+```
+
+_Copilot IDE: /arquiteto-de-sistema_
+
+### Fluxo transacional (técnico)
+
+**Quando:** Sequência de chamadas, payloads, estados — visão de runtime.
+
+```text
+Objetivo: a documentação de runtime do fluxo [FLUXO] na aplicação [NOME_DA_APLICACAO] — quem chama quem, em que ordem, com que payload, e o que acontece quando falha.
+
+Siga todo o processo de prompts/arquitetura/documentador-fluxo.md: sequence diagram com autonumber (e BEGIN/COMMIT onde houver transação), payloads relevantes, e os estados de erro, retry e timeout. Confirme cada chamada no código antes de desenhar — nada de fluxo aspiracional.
+
+Pronto quando: caminho feliz + caminhos de falha desenhados, batendo com o código real.
+```
+
+_Copilot IDE: /documentador-fluxo_
+
+### Runbook operacional
+
+**Quando:** Documentação de operação: failure modes, on-call, SLO.
+
+```text
+Objetivo: o runbook operacional de [SERVICO_OU_FLUXO] — o documento que alguém de on-call usa às 3h da manhã sem conhecer o serviço.
+
+Siga todo o processo de prompts/arquitetura/gerador-runbook.md: cada failure mode com sintoma observável, query de log/métrica para confirmar, ação imediata e mitigação permanente. Não invente SLO, threshold nem nome de dashboard — me pergunte num bloco único o que o código e a config não revelam.
+
+Pronto quando: todo failure mode tem os 4 campos preenchidos e nenhum valor foi inventado.
+```
+
+_Copilot IDE: /gerador-runbook_
+
+### Revisar documentação (grill técnico)
+
+**Quando:** Auditar uma página/ADR existente procurando furos.
+
+```text
+Objetivo: auditar [PAGINA_OU_ADR] como revisor cético — achar furos, garantias não implementadas e decisões disfarçadas de premissa ANTES que alguém confie nessa doc.
+
+Siga todo o processo de prompts/arquitetura/grill-doc.md: aplique as 7 lentes na ordem (terminologia, decisões disfarçadas de premissa, garantias vs implementação, janelas sem número...), e para cada achado traga a evidência — trecho citado + o que o código realmente mostra — com severidade e correção proposta.
+
+Pronto quando: relatório estruturado com achados acionáveis, ou a declaração explícita de que a doc sobreviveu às 7 lentes.
+```
+
+_Copilot IDE: /grill-doc_
+
+### Registrar uma decisão (ADR)
+
+**Quando:** Decisão tomada (ou madura o suficiente) que precisa virar registro.
+
+```text
+Objetivo: registrar a decisão [DECISAO] como ADR auditável — por que escolhemos, o que perdemos com isso, e como saberemos que deu certo.
+
+Siga todo o processo de prompts/arquitetura/gerador-adr.md: formato MADR, mínimo 3 decision drivers e 2 opções consideradas, trade-offs explícitos (toda decisão tem ônus — liste o que perdemos) e métrica de validação. Não invente contexto que você não tem — pergunte o que faltar num bloco único.
+
+Pronto quando: ADR numerada salva no padrão da casa, linkando as docs e ADRs relacionadas.
+```
+
+_Copilot IDE: /gerador-adr_
 
 ### Brainstorm (antes de decidir)
 
@@ -128,23 +240,73 @@ Pronto quando: premissas ranqueadas por fragilidade × impacto, com teste barato
 
 _Skill: stress-test_
 
-### Registrar uma decisão (ADR)
+### Review de arquitetura do código
 
-**Quando:** Decisão tomada (ou madura o suficiente) que precisa virar registro.
+**Quando:** O código funciona, mas a estrutura precisa de revisão: acoplamento, costuras, módulos.
 
 ```text
-Objetivo: registrar a decisão [DECISAO] como ADR auditável — por que escolhemos, o que perdemos com isso, e como saberemos que deu certo.
+Objetivo: revisar a ARQUITETURA do código em [AREA_OU_MODULO] — oportunidades de aprofundamento guiadas pelo domínio (CONTEXT/contextos) e pelas ADRs existentes.
 
-Siga todo o processo de prompts/arquitetura/gerador-adr.md: formato MADR, mínimo 3 decision drivers e 2 opções consideradas, trade-offs explícitos (toda decisão tem ônus — liste o que perdemos) e métrica de validação. Não invente contexto que você não tem — pergunte o que faltar num bloco único.
+Siga TODO o processo descrito em skills/arquitetura-review/improve-codebase-architecture/SKILL.md (em inglês; responda em PT-BR).
 
-Pronto quando: ADR numerada salva no padrão da casa, linkando as docs e ADRs relacionadas.
+Pronto quando: oportunidades ranqueadas com custo/benefício e a primeira mudança segura proposta.
 ```
 
-_Copilot IDE: /gerador-adr_
+_Skill: improve-codebase-architecture_
 
-## Especificar e planejar
+### Co-autoria de documentação
 
-Decisão tomada vira spec com critérios de aceite verificáveis, e a spec vira um plano que alguém que não conhece o código consegue executar.
+**Quando:** Escrever doc estruturada (proposta, spec, decisão) com refino iterativo e teste com o leitor.
+
+```text
+Objetivo: co-criar [DOCUMENTO — ex: a proposta de migração X] num fluxo estruturado, sem despejar texto de uma vez.
+
+Siga TODO o processo descrito em skills/documentacao/doc-coauthoring/SKILL.md (em inglês; responda em PT-BR): os 3 estágios — juntar contexto, refinar/estruturar e testar com o leitor.
+
+Pronto quando: documento que transfere o contexto certo e funciona pro leitor-alvo, validado nos 3 estágios.
+```
+
+_Skill: doc-coauthoring_
+
+## Debugging
+
+Causa raiz com evidência ANTES de qualquer fix — nunca silenciar o sintoma no primeiro palpite.
+
+### Investigar bug (causa raiz)
+
+**Quando:** Comportamento inesperado — antes de qualquer tentativa de correção.
+
+```text
+[SINTOMA — cole o erro/stack trace real]
+
+Objetivo: achar a CAUSA RAIZ disso — não silenciar o sintoma com o primeiro palpite.
+
+Siga todo o processo de prompts/engenharia/depurador-sistematico.md: as 4 fases na ordem, causa raiz demonstrada com evidência (arquivo:linha) ANTES de qualquer proposta de correção, fix mínimo, e a verificação rodada ao final com o output mostrado.
+
+Pronto quando: causa demonstrada + fix mínimo aplicado + teste/comando de verificação passando, com o output real na resposta.
+```
+
+_Copilot IDE: /depurador-sistematico_
+
+### Debugging sistemático
+
+**Quando:** Bug, teste falhando, comportamento inesperado — antes de propor fix.
+
+```text
+[SINTOMA — cole o erro real]
+
+Objetivo: causa raiz com evidência, não palpite.
+
+Siga TODO o processo descrito em skills/backend/systematic-debugging/SKILL.md (em inglês; responda em PT-BR): as 4 fases na ordem, sem pular pra solução.
+
+Pronto quando: causa demonstrada + fix mínimo + verificação passando com output.
+```
+
+_Skill: systematic-debugging_
+
+## Escrita de código
+
+Do pedido ao código sob controle: especificar e planejar, atacar o plano antes de executar, abrir a task, executar com TDD, refatorar sob testes, revisar (e receber review), e fechar a branch.
 
 ### Spec antes do plano
 
@@ -202,10 +364,6 @@ Pronto quando: lista de issues com escopo, dependências e ordem de ataque.
 
 _Skill: to-issues_
 
-## Atacar o plano antes de executar
-
-Plano pronto não é plano aprovado: ache os furos enquanto é barato — antes da execução, não em produção.
-
 ### Grill do plano (pre-mortem)
 
 **Quando:** Plano pronto, ANTES de aprovar — ache os furos enquanto é barato.
@@ -233,10 +391,6 @@ Pronto quando: modos de falha ranqueados por probabilidade × impacto, com mitig
 ```
 
 _Skill: challenge_
-
-## Executar com disciplina
-
-Do pedido à entrega sob controle: task aberta com escopo e plano aprovados, execução etapa por etapa com evidência, e TDD em todo código de produção.
 
 ### Abrir uma task (controle de contexto)
 
@@ -312,43 +466,49 @@ Pronto quando: checklist de verificação da skill completo e suíte verde.
 
 _Skill: test-driven-development_
 
-## Depurar, revisar e verificar
+### Refatorar sob testes (incremental)
 
-Qualidade com evidência: causa raiz demonstrada antes de qualquer fix, revisão cética de código e de estrutura, e nenhum "pronto" sem output real.
-
-### Investigar bug (causa raiz)
-
-**Quando:** Comportamento inesperado — antes de qualquer tentativa de correção.
+**Quando:** Limpar/reestruturar código sem mudar comportamento — sob rede de testes verde.
 
 ```text
-[SINTOMA — cole o erro/stack trace real]
+Objetivo: refatorar [ALVO — ex: a função de cálculo de juros] sem mudar comportamento — passos pequenos, comportamento idêntico no fim.
 
-Objetivo: achar a CAUSA RAIZ disso — não silenciar o sintoma com o primeiro palpite.
+Siga todo o processo de prompts/engenharia/refatorador-incremental.md: garanta a rede de testes (caracterização se faltar), ande em passos pequenos (Mikado) e verifique a cada passo — refactor e feature nunca no mesmo commit.
 
-Siga todo o processo de prompts/engenharia/depurador-sistematico.md: as 4 fases na ordem, causa raiz demonstrada com evidência (arquivo:linha) ANTES de qualquer proposta de correção, fix mínimo, e a verificação rodada ao final com o output mostrado.
-
-Pronto quando: causa demonstrada + fix mínimo aplicado + teste/comando de verificação passando, com o output real na resposta.
+Pronto quando: suíte verde igual ao início, diff só estrutural, com o output dos testes na resposta.
 ```
 
-_Copilot IDE: /depurador-sistematico_
+_Copilot IDE: /refatorador-incremental_
 
-### Debugging sistemático
+### Estratégia de testes
 
-**Quando:** Bug, teste falhando, comportamento inesperado — antes de propor fix.
+**Quando:** Decidir o que testar e em que nível — além do TDD unitário, com regressão dos bugs vistos.
 
 ```text
-[SINTOMA — cole o erro real]
+Objetivo: desenhar a estratégia de testes de [AREA_OU_SERVICO] — confiança × custo, não cobertura por cobertura.
 
-Objetivo: causa raiz com evidência, não palpite.
+Siga todo o processo de prompts/engenharia/estrategista-de-testes.md: mapeie riscos e cobertura atual, escolha o nível certo pra cada risco (unit/integração/contrato/e2e), priorize por risco × custo e inclua a regressão dos bugs já vistos.
 
-Siga TODO o processo descrito em skills/backend/systematic-debugging/SKILL.md (em inglês; responda em PT-BR): as 4 fases na ordem, sem pular pra solução.
-
-Pronto quando: causa demonstrada + fix mínimo + verificação passando com output.
+Pronto quando: plano de testes priorizado e acionável (nome · nível · o que verifica), com o que NÃO testar explícito.
 ```
 
-_Skill: systematic-debugging_
+_Copilot IDE: /estrategista-de-testes_
 
-### Code review
+### Revisar código (conduzir a review)
+
+**Quando:** Conduzir a revisão de um diff/PR — achados por severidade com evidência e veredito.
+
+```text
+Objetivo: revisar [BRANCH_DIFF_OU_PR] conduzindo a review — não reescrever; apontar com severidade e evidência.
+
+Siga todo o processo de prompts/engenharia/revisor-de-codigo.md: escopo do diff, as 4 dimensões (correção/bugs, segurança, simplicidade/reuso, testes), cada achado com severidade + arquivo:linha + sugestão, e um veredito ao final.
+
+Pronto quando: achados priorizados por severidade e veredito explícito (aprovar / com ajustes / bloquear).
+```
+
+_Copilot IDE: /revisor-de-codigo_
+
+### Code review (template cético)
 
 **Quando:** Antes de merge, ao fechar feature grande, ou pra revisar trabalho pronto.
 
@@ -362,19 +522,19 @@ Pronto quando: achados classificados por severidade, cada um com arquivo:linha e
 
 _Skill: requesting-code-review_
 
-### Review de arquitetura do código
+### Receber code review
 
-**Quando:** O código funciona, mas a estrutura precisa de revisão: acoplamento, costuras, módulos.
+**Quando:** Incorporar feedback de review com critério — sem defensividade nem aceitar tudo cegamente.
 
 ```text
-Objetivo: revisar a ARQUITETURA do código em [AREA_OU_MODULO] — oportunidades de aprofundamento guiadas pelo domínio (CONTEXT/contextos) e pelas ADRs existentes.
+Objetivo: incorporar o feedback do review de [PR_OU_MUDANCA] com critério — avaliar cada ponto, não obedecer nem rejeitar por reflexo.
 
-Siga TODO o processo descrito em skills/arquitetura-review/improve-codebase-architecture/SKILL.md (em inglês; responda em PT-BR).
+Siga TODO o processo descrito em skills/code-review/receiving-code-review/SKILL.md (em inglês; responda em PT-BR).
 
-Pronto quando: oportunidades ranqueadas com custo/benefício e a primeira mudança segura proposta.
+Pronto quando: cada comentário tratado (aplicado com razão, ou recusado com justificativa) e a suíte verde.
 ```
 
-_Skill: improve-codebase-architecture_
+_Skill: receiving-code-review_
 
 ### Verificação antes de concluir
 
@@ -390,127 +550,63 @@ Pronto quando: evidência real na resposta — ou a lista honesta do que ainda f
 
 _Skill: verification-before-completion_
 
-## Documentar arquitetura e operação
+### Worktrees git (trabalho paralelo)
 
-As docs técnicas da casa: visão geral fiel ao código, fluxos de runtime, operação de on-call — e a auditoria cética que as mantém honestas.
-
-### Visão geral de arquitetura
-
-**Quando:** Documentar o serviço do zero ou atualizar a visão geral.
+**Quando:** Tocar duas frentes sem trocar de branch nem embaralhar o working tree.
 
 ```text
-Objetivo: a página de visão geral de arquitetura da aplicação [NOME_DA_APLICACAO] — propósito, contexto, integrações, fluxo principal, stack e quality goals — fiel ao código real, não aspiracional.
+Objetivo: usar git worktrees pra trabalhar em [FRENTES — ex: o fix e a feature] em paralelo, isolados, sem stash nem troca de branch.
 
-Siga todo o processo de prompts/arquitetura/arquiteto-de-sistema.md: faça as 5 perguntas-âncora e depois me grile ramo a ramo no estilo grill-with-docs — uma pergunta por vez, ledger visível, sua resposta recomendada, documentando inline conforme fecharmos — até o ledger zerar. As âncoras são o piso, não o teto.
+Siga TODO o processo descrito em skills/fluxo-dev/using-git-worktrees/SKILL.md (em inglês; responda em PT-BR).
 
-Pronto quando: HTML no padrão da casa com os diagramas na convenção rígida, e nenhum ⚠ aberto que eu não tenha aceitado explicitamente.
+Pronto quando: worktrees criados e a rotina de uso clara — cada frente no seu diretório isolado.
 ```
 
-_Copilot IDE: /arquiteto-de-sistema_
+_Skill: using-git-worktrees_
 
-### Fluxo transacional (técnico)
+### Fechar a branch
 
-**Quando:** Sequência de chamadas, payloads, estados — visão de runtime.
+**Quando:** Implementação pronta — decidir merge/PR/cleanup sem deixar pontas.
 
 ```text
-Objetivo: a documentação de runtime do fluxo [FLUXO] na aplicação [NOME_DA_APLICACAO] — quem chama quem, em que ordem, com que payload, e o que acontece quando falha.
+Objetivo: fechar a branch [BRANCH] com disciplina — integrar (merge/PR), verificar e limpar, sem deixar trabalho órfão.
 
-Siga todo o processo de prompts/arquitetura/documentador-fluxo.md: sequence diagram com autonumber (e BEGIN/COMMIT onde houver transação), payloads relevantes, e os estados de erro, retry e timeout. Confirme cada chamada no código antes de desenhar — nada de fluxo aspiracional.
+Siga TODO o processo descrito em skills/fluxo-dev/finishing-a-development-branch/SKILL.md (em inglês; responda em PT-BR).
 
-Pronto quando: caminho feliz + caminhos de falha desenhados, batendo com o código real.
+Pronto quando: branch integrada (ou PR aberto) com verificação, e o cleanup feito.
 ```
 
-_Copilot IDE: /documentador-fluxo_
+_Skill: finishing-a-development-branch_
 
-### Runbook operacional
+### Dev orientada a subagentes
 
-**Quando:** Documentação de operação: failure modes, on-call, SLO.
+**Quando:** Executar um plano com tarefas independentes despachando subagentes (spec → implementador → revisor).
 
 ```text
-Objetivo: o runbook operacional de [SERVICO_OU_FLUXO] — o documento que alguém de on-call usa às 3h da manhã sem conhecer o serviço.
+Objetivo: implementar [PLANO_OU_TAREFAS] via subagentes — cada tarefa independente executada e revisada por um subagente dedicado.
 
-Siga todo o processo de prompts/arquitetura/gerador-runbook.md: cada failure mode com sintoma observável, query de log/métrica para confirmar, ação imediata e mitigação permanente. Não invente SLO, threshold nem nome de dashboard — me pergunte num bloco único o que o código e a config não revelam.
+Siga TODO o processo descrito em skills/orquestracao/subagent-driven-development/SKILL.md (em inglês; responda em PT-BR), usando os prompts auxiliares da pasta (spec/implementador/revisor).
 
-Pronto quando: todo failure mode tem os 4 campos preenchidos e nenhum valor foi inventado.
+Pronto quando: tarefas executadas pelos subagentes e integradas, cada uma verificada.
 ```
 
-_Copilot IDE: /gerador-runbook_
+_Skill: subagent-driven-development_
 
-### Revisar documentação (grill técnico)
+### Agentes em paralelo
 
-**Quando:** Auditar uma página/ADR existente procurando furos.
+**Quando:** Trabalho independente que dá pra paralelizar entre vários agentes ao mesmo tempo.
 
 ```text
-Objetivo: auditar [PAGINA_OU_ADR] como revisor cético — achar furos, garantias não implementadas e decisões disfarçadas de premissa ANTES que alguém confie nessa doc.
+Objetivo: despachar agentes em paralelo pra [TRABALHO_INDEPENDENTE — ex: varrer N módulos] sem que um atrapalhe o outro.
 
-Siga todo o processo de prompts/arquitetura/grill-doc.md: aplique as 7 lentes na ordem (terminologia, decisões disfarçadas de premissa, garantias vs implementação, janelas sem número...), e para cada achado traga a evidência — trecho citado + o que o código realmente mostra — com severidade e correção proposta.
+Siga TODO o processo descrito em skills/orquestracao/dispatching-parallel-agents/SKILL.md (em inglês; responda em PT-BR).
 
-Pronto quando: relatório estruturado com achados acionáveis, ou a declaração explícita de que a doc sobreviveu às 7 lentes.
+Pronto quando: tarefas distribuídas e resultados consolidados, com o isolamento entre agentes respeitado.
 ```
 
-_Copilot IDE: /grill-doc_
+_Skill: dispatching-parallel-agents_
 
-## Documentar o negócio
-
-O que o código não conta: regras não-escritas, processos com seus desfechos, inventário de regras e a linguagem ubíqua — tudo na língua do negócio, sem jargão técnico.
-
-### Grill do negócio (interrogatório)
-
-**Quando:** Tirar do código o que ele não conta: regra não-escrita, dono, exceções.
-
-```text
-Objetivo: extrair de [PROCESSO_OU_AREA] na aplicação [NOME_DA_APLICACAO] as regras que NÃO estão escritas — quem decide, exceções, invariantes — e cristalizá-las no contexto de negócio.
-
-Siga todo o processo de prompts/negocio/grill-negocio.md: me interrogue por fases, uma pergunta por vez com sua resposta recomendada, mostrando o ledger ✓/▸/○ a cada rodada, explorando o código antes de perguntar, e atualize o contexto de negócio (nos TRÊS destinos) conforme fechamos cada ramo.
-
-Pronto quando: ledger zerado (todo ramo ✓ ou [a confirmar com quem]) e a tabela de regras resolvidas pronta pro catálogo (card "Catálogo de regras").
-```
-
-_Copilot IDE: /grill-negocio_
-
-### Fluxo de negócio (feliz/triste)
-
-**Quando:** Desenho visual do processo com desfechos positivos e de exceção.
-
-```text
-Objetivo: o desenho do processo [PROCESSO] da aplicação [NOME_DA_APLICACAO] que uma pessoa de NEGÓCIO entende — quem faz o quê, onde se decide, como termina bem e como termina mal.
-
-Siga todo o processo de prompts/negocio/mapeador-de-fluxo-de-negocio.md: caminho feliz e pelo menos um caminho triste, diagrama no padrão da casa (classes papel/atividade/decisao/desfecho), linguagem do glossário do domínio — zero jargão técnico (nada de HTTP, fila, retry).
-
-Pronto quando: página com o diagrama validado por mim e todos os desfechos nomeados em termos de negócio.
-```
-
-_Copilot IDE: /mapeador-de-fluxo-de-negocio_
-
-### Catálogo de regras
-
-**Quando:** Inventário das regras de negócio com origem, dono e consequência.
-
-```text
-Objetivo: o inventário auditável das regras de negócio da aplicação [NOME_DA_APLICACAO] — pra responder "por que o sistema recusou isso?" sem precisar ler código.
-
-Siga todo o processo de prompts/negocio/catalogo-de-regras.md: regras agrupadas por capacidade, toda regra com origem no código (arquivo:símbolo) ou marcada como regra de processo, dono e consequência de negócio. Regra sem dono identificável → marque [a confirmar com quem] em vez de inventar.
-
-Pronto quando: nenhuma regra sem origem rastreável e o catálogo batendo com o contexto de negócio.
-```
-
-_Copilot IDE: /catalogo-de-regras_
-
-### Glossário do domínio
-
-**Quando:** Linguagem ubíqua: os termos do negócio, sem detalhe de implementação.
-
-```text
-Objetivo: a página de linguagem ubíqua da aplicação [NOME_DA_APLICACAO] — negócio e dev chamando as coisas pelo mesmo nome, com os sinônimos proibidos explícitos.
-
-Siga todo o processo de prompts/negocio/glossario-de-negocio.md: termos vindos do contexto de negócio, definição operacional curta (o que o termo É, não como funciona por dentro), sinônimos a evitar listados por termo, zero detalhe de implementação.
-
-Pronto quando: página gerada com os termos batendo 1:1 com o contexto de negócio — divergência encontrada é apontada, não silenciada.
-```
-
-_Copilot IDE: /glossario-de-negocio_
-
-## Design e frontend
+## UI/UX
 
 Da direção visual ao acabamento fino: escolher estilo antes de produzir tela, evoluir com aprovação a cada decisão, manter o design system sem drift e polir o que já funciona.
 
@@ -653,6 +749,66 @@ Pronto quando: implementação entregue com as decisões visuais justificadas.
 ```
 
 _Skill: bencium-impact-designer_
+
+## Documentar o negócio
+
+O que o código não conta: regras não-escritas, processos com seus desfechos, inventário de regras e a linguagem ubíqua — tudo na língua do negócio, sem jargão técnico.
+
+### Grill do negócio (interrogatório)
+
+**Quando:** Tirar do código o que ele não conta: regra não-escrita, dono, exceções.
+
+```text
+Objetivo: extrair de [PROCESSO_OU_AREA] na aplicação [NOME_DA_APLICACAO] as regras que NÃO estão escritas — quem decide, exceções, invariantes — e cristalizá-las no contexto de negócio.
+
+Siga todo o processo de prompts/negocio/grill-negocio.md: me interrogue por fases, uma pergunta por vez com sua resposta recomendada, mostrando o ledger ✓/▸/○ a cada rodada, explorando o código antes de perguntar, e atualize o contexto de negócio (nos TRÊS destinos) conforme fechamos cada ramo.
+
+Pronto quando: ledger zerado (todo ramo ✓ ou [a confirmar com quem]) e a tabela de regras resolvidas pronta pro catálogo (card "Catálogo de regras").
+```
+
+_Copilot IDE: /grill-negocio_
+
+### Fluxo de negócio (feliz/triste)
+
+**Quando:** Desenho visual do processo com desfechos positivos e de exceção.
+
+```text
+Objetivo: o desenho do processo [PROCESSO] da aplicação [NOME_DA_APLICACAO] que uma pessoa de NEGÓCIO entende — quem faz o quê, onde se decide, como termina bem e como termina mal.
+
+Siga todo o processo de prompts/negocio/mapeador-de-fluxo-de-negocio.md: caminho feliz e pelo menos um caminho triste, diagrama no padrão da casa (classes papel/atividade/decisao/desfecho), linguagem do glossário do domínio — zero jargão técnico (nada de HTTP, fila, retry).
+
+Pronto quando: página com o diagrama validado por mim e todos os desfechos nomeados em termos de negócio.
+```
+
+_Copilot IDE: /mapeador-de-fluxo-de-negocio_
+
+### Catálogo de regras
+
+**Quando:** Inventário das regras de negócio com origem, dono e consequência.
+
+```text
+Objetivo: o inventário auditável das regras de negócio da aplicação [NOME_DA_APLICACAO] — pra responder "por que o sistema recusou isso?" sem precisar ler código.
+
+Siga todo o processo de prompts/negocio/catalogo-de-regras.md: regras agrupadas por capacidade, toda regra com origem no código (arquivo:símbolo) ou marcada como regra de processo, dono e consequência de negócio. Regra sem dono identificável → marque [a confirmar com quem] em vez de inventar.
+
+Pronto quando: nenhuma regra sem origem rastreável e o catálogo batendo com o contexto de negócio.
+```
+
+_Copilot IDE: /catalogo-de-regras_
+
+### Glossário do domínio
+
+**Quando:** Linguagem ubíqua: os termos do negócio, sem detalhe de implementação.
+
+```text
+Objetivo: a página de linguagem ubíqua da aplicação [NOME_DA_APLICACAO] — negócio e dev chamando as coisas pelo mesmo nome, com os sinônimos proibidos explícitos.
+
+Siga todo o processo de prompts/negocio/glossario-de-negocio.md: termos vindos do contexto de negócio, definição operacional curta (o que o termo É, não como funciona por dentro), sinônimos a evitar listados por termo, zero detalhe de implementação.
+
+Pronto quando: página gerada com os termos batendo 1:1 com o contexto de negócio — divergência encontrada é apontada, não silenciada.
+```
+
+_Copilot IDE: /glossario-de-negocio_
 
 ## Produto e gestão
 
@@ -856,24 +1012,22 @@ Pronto quando: ADR numerada salva, que sobreviveu ao stress-test e ao grill, com
 
 _Combo: brainstorm → stress-test de premissas → ADR → grill da doc_
 
-### Combo: documentar um serviço do zero (contexto + visão geral + fluxo + runbook)
+### Combo: documentar um serviço do zero (fluxo de 3 etapas)
 
-**Quando:** Repo sem doc nenhuma — da fonte de verdade ao runbook de on-call, tudo auditado no final.
+**Quando:** Repo sem doc nenhuma — o fluxo canônico de 3 etapas, da fonte de verdade ao grill intenso.
 
 ```text
-Objetivo: gerar a documentação técnica completa da aplicação [NOME_DA_APLICACAO] — contexto, visão geral, fluxo crítico e operação — fiel ao código real e auditada antes de alguém confiar nela.
+Objetivo: gerar a documentação técnica completa da aplicação [NOME_DA_APLICACAO] — do zero ao grill intenso — pelo fluxo canônico de 3 etapas obrigatórias, fiel ao código real.
 
-Encadeie NESTA ordem, com checkpoint meu entre as fases:
-1. CONTEXTO — siga todo o processo de prompts/arquitetura/analisador-de-projeto.md: project-context gravado nos TRÊS destinos (Amazon Q, Copilot e Kiro).
-2. VISÃO GERAL — siga prompts/arquitetura/arquiteto-de-sistema.md: a página de arquitetura, com as 5 perguntas-âncora e o grill ramo a ramo até o ledger zerar.
-3. FLUXO CRÍTICO — siga prompts/arquitetura/documentador-fluxo.md no fluxo [FLUXO_MAIS_IMPORTANTE]: sequence diagram com os caminhos de falha, confirmado no código.
-4. OPERAÇÃO — siga prompts/arquitetura/gerador-runbook.md: failure modes com os 4 campos preenchidos, nenhum valor inventado.
-5. AUDITORIA — siga prompts/arquitetura/grill-doc.md sobre cada página gerada: relatório de achados ou declaração de sobrevivência às 7 lentes.
+Encadeie NESTA ordem (cada etapa termina apontando a próxima; a Etapa 3 roda em sessão NOVA):
+1. FUNDAÇÃO + ARQUITETURA — siga prompts/arquitetura/documentar-servico.md (Etapa 1): contexto (3 destinos) + domínio (3 destinos) + visão geral e páginas-núcleo, com checkpoint meu entre as fases.
+2. FLUXOS + OPERAÇÃO — siga prompts/arquitetura/completar-documentacao.md (Etapa 2): fluxo(s) crítico(s) + runbook, confirmados no código.
+3. GRILL INTENSO — em sessão NOVA, siga prompts/arquitetura/grill-arquitetura.md (Etapa 3): ataque as incertezas código-primeiro, com níveis de certeza, atualizando a doc inline.
 
-Pronto quando: contexto + visão geral + fluxo + runbook publicados no padrão da casa, todos auditados.
+Pronto quando: contexto + domínio + arquitetura + fluxos + runbook publicados, e toda incerteza resolvida (pelo código com nível de certeza, ou por mim) — sem ⚠ aberto que eu não tenha aceitado.
 ```
 
-_Combo: preparar repo → visão geral → fluxo técnico → runbook → grill da doc_
+_Combo: documentar serviço (Etapa 1) → completar (Etapa 2) → grill intenso (Etapa 3)_
 
 ### Combo: mapear o negócio do zero (domínio + regras + glossário + fluxo)
 

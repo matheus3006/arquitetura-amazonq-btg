@@ -40,7 +40,8 @@
       <p>Mensagens prontas para copiar e mandar pro assistente (Amazon Q, GitHub Copilot ou Kiro).
          Troque os <b>[CAMPOS]</b> e envie. Nomear o prompt e mandar "seguir todo o processo"
          é o que faz o assistente executar o fluxo inteiro em vez de responder por cima.
-         Os cards estão agrupados pelo que cada um faz — siga as seções na ordem do trabalho.</p>
+         Os cards estão agrupados por trilha, em ordem de prioridade: Arquitetura, Debugging,
+         Escrita de código, UI/UX — e então os demais.</p>
     </header>
 
     <section class="regra-banner">
@@ -114,10 +115,99 @@ Pronto quando: os três arquivos de contexto de negócio existem, idênticos, e 
     </section>
 
     <section class="trilha">
-      <h2 class="section-eyebrow">Explorar e decidir</h2>
-      <p>Você ainda não decidiu — ou nem fechou o problema direito. Explore antes de construir,
-         pense como arquiteto, estresse as premissas, e registre a decisão quando ela amadurecer.</p>
+      <h2 class="section-eyebrow">Arquitetura</h2>
+      <p>A prioridade nº 1 do pack: documentar o serviço fiel ao código (visão geral, fluxos, runbook),
+         explorar e registrar decisões (brainstorm, ADR, stress-test) e pensar como arquiteto — modelo de
+         domínio antes de tecnologia.</p>
       <div class="cards">
+
+        <article class="msg-card">
+          <h3>Documentar serviço do zero (Etapa 1/3)</h3>
+          <p class="quando">Repo sem doc — gera contexto + domínio + a arquitetura (espinha) num fluxo só.</p>
+          <pre class="msg">Objetivo: documentar do zero a aplicação <b>[NOME_DA_APLICACAO]</b> — contexto, domínio e a arquitetura (espinha), num fluxo só com checkpoint meu entre as fases.
+
+Siga todo o processo de prompts/arquitetura/documentar-servico.md (Etapa 1 de 3): Fase A contexto (analisador-de-projeto, três destinos), Fase B domínio (analisador-de-dominio, três destinos), Fase C arquitetura (arquiteto-de-sistema: 5 âncoras + grill de 1ª passada) — gate e meu OK entre cada fase.
+
+Pronto quando: contexto + domínio + páginas de arquitetura geradas, e o handoff pra Etapa 2.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /documentar-servico</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>Completar a documentação (Etapa 2/3)</h3>
+          <p class="quando">Depois da Etapa 1 — os fluxos críticos e o runbook operacional.</p>
+          <pre class="msg">Objetivo: completar a doc técnica de <b>[NOME_DA_APLICACAO]</b> — os fluxos críticos e o runbook operacional, confirmados no código.
+
+Siga todo o processo de prompts/arquitetura/completar-documentacao.md (Etapa 2 de 3): Fase A fluxo(s) crítico(s) (documentador-fluxo, com os caminhos de falha), Fase B runbook (gerador-runbook, 4 campos por failure mode, nada inventado) — meu OK entre as fases.
+
+Pronto quando: fluxos + runbook gerados, e o handoff pra Etapa 3 (sessão nova).</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /completar-documentacao</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>Grill intenso de arquitetura (Etapa 3/3)</h3>
+          <p class="quando">Sessão NOVA sobre a doc gerada — atacar as incertezas, código-primeiro.</p>
+          <pre class="msg">Objetivo: atacar as incertezas da documentação gerada de <b>[NOME_DA_APLICACAO]</b> — cada ponto vago resolvido pelo código (com nível de certeza) ou perguntado a mim.
+
+Siga todo o processo de prompts/arquitetura/grill-arquitetura.md (Etapa 3 de 3, em sessão nova): monte o inventário das incertezas (ledger) e, pra cada uma, RE-ANALISE o código primeiro — achou: corrige inline + nível de certeza (alta/média/baixa + arquivo:linha); não achou: me pergunta (uma por vez). Atualize a doc inline.
+
+Pronto quando: ledger zerado e a tabela de certezas (incerteza → resolução → nível + evidência), com as pendências [a confirmar] explícitas.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /grill-arquitetura</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>Visão geral de arquitetura</h3>
+          <p class="quando">Documentar o serviço do zero ou atualizar a visão geral.</p>
+          <pre class="msg">Objetivo: a página de visão geral de arquitetura da aplicação <b>[NOME_DA_APLICACAO]</b> — propósito, contexto, integrações, fluxo principal, stack e quality goals — fiel ao código real, não aspiracional.
+
+Siga todo o processo de prompts/arquitetura/arquiteto-de-sistema.md: faça as 5 perguntas-âncora e depois me grile ramo a ramo no estilo grill-with-docs — uma pergunta por vez, ledger visível, sua resposta recomendada, documentando inline conforme fecharmos — até o ledger zerar. As âncoras são o piso, não o teto.
+
+Pronto quando: HTML no padrão da casa com os diagramas na convenção rígida, e nenhum ⚠ aberto que eu não tenha aceitado explicitamente.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /arquiteto-de-sistema</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>Fluxo transacional (técnico)</h3>
+          <p class="quando">Sequência de chamadas, payloads, estados — visão de runtime.</p>
+          <pre class="msg">Objetivo: a documentação de runtime do fluxo <b>[FLUXO]</b> na aplicação <b>[NOME_DA_APLICACAO]</b> — quem chama quem, em que ordem, com que payload, e o que acontece quando falha.
+
+Siga todo o processo de prompts/arquitetura/documentador-fluxo.md: sequence diagram com autonumber (e BEGIN/COMMIT onde houver transação), payloads relevantes, e os estados de erro, retry e timeout. Confirme cada chamada no código antes de desenhar — nada de fluxo aspiracional.
+
+Pronto quando: caminho feliz + caminhos de falha desenhados, batendo com o código real.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /documentador-fluxo</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>Runbook operacional</h3>
+          <p class="quando">Documentação de operação: failure modes, on-call, SLO.</p>
+          <pre class="msg">Objetivo: o runbook operacional de <b>[SERVICO_OU_FLUXO]</b> — o documento que alguém de on-call usa às 3h da manhã sem conhecer o serviço.
+
+Siga todo o processo de prompts/arquitetura/gerador-runbook.md: cada failure mode com sintoma observável, query de log/métrica para confirmar, ação imediata e mitigação permanente. Não invente SLO, threshold nem nome de dashboard — me pergunte num bloco único o que o código e a config não revelam.
+
+Pronto quando: todo failure mode tem os 4 campos preenchidos e nenhum valor foi inventado.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /gerador-runbook</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>Revisar documentação (grill técnico)</h3>
+          <p class="quando">Auditar uma página/ADR existente procurando furos.</p>
+          <pre class="msg">Objetivo: auditar <b>[PAGINA_OU_ADR]</b> como revisor cético — achar furos, garantias não implementadas e decisões disfarçadas de premissa ANTES que alguém confie nessa doc.
+
+Siga todo o processo de prompts/arquitetura/grill-doc.md: aplique as 7 lentes na ordem (terminologia, decisões disfarçadas de premissa, garantias vs implementação, janelas sem número...), e para cada achado traga a evidência — trecho citado + o que o código realmente mostra — com severidade e correção proposta.
+
+Pronto quando: relatório estruturado com achados acionáveis, ou a declaração explícita de que a doc sobreviveu às 7 lentes.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /grill-doc</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>Registrar uma decisão (ADR)</h3>
+          <p class="quando">Decisão tomada (ou madura o suficiente) que precisa virar registro.</p>
+          <pre class="msg">Objetivo: registrar a decisão <b>[DECISAO]</b> como ADR auditável — por que escolhemos, o que perdemos com isso, e como saberemos que deu certo.
+
+Siga todo o processo de prompts/arquitetura/gerador-adr.md: formato MADR, mínimo 3 decision drivers e 2 opções consideradas, trade-offs explícitos (toda decisão tem ônus — liste o que perdemos) e métrica de validação. Não invente contexto que você não tem — pergunte o que faltar num bloco único.
+
+Pronto quando: ADR numerada salva no padrão da casa, linkando as docs e ADRs relacionadas.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /gerador-adr</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
 
         <article class="msg-card">
           <h3>Brainstorm (antes de decidir)</h3>
@@ -175,23 +265,68 @@ Pronto quando: premissas ranqueadas por fragilidade × impacto, com teste barato
         </article>
 
         <article class="msg-card">
-          <h3>Registrar uma decisão (ADR)</h3>
-          <p class="quando">Decisão tomada (ou madura o suficiente) que precisa virar registro.</p>
-          <pre class="msg">Objetivo: registrar a decisão <b>[DECISAO]</b> como ADR auditável — por que escolhemos, o que perdemos com isso, e como saberemos que deu certo.
+          <h3>Review de arquitetura do código</h3>
+          <p class="quando">O código funciona, mas a estrutura precisa de revisão: acoplamento, costuras, módulos.</p>
+          <pre class="msg">Objetivo: revisar a ARQUITETURA do código em <b>[AREA_OU_MODULO]</b> — oportunidades de aprofundamento guiadas pelo domínio (CONTEXT/contextos) e pelas ADRs existentes.
 
-Siga todo o processo de prompts/arquitetura/gerador-adr.md: formato MADR, mínimo 3 decision drivers e 2 opções consideradas, trade-offs explícitos (toda decisão tem ônus — liste o que perdemos) e métrica de validação. Não invente contexto que você não tem — pergunte o que faltar num bloco único.
+Siga TODO o processo descrito em skills/arquitetura-review/improve-codebase-architecture/SKILL.md (em inglês; responda em PT-BR).
 
-Pronto quando: ADR numerada salva no padrão da casa, linkando as docs e ADRs relacionadas.</pre>
-          <div class="card-foot"><span class="slug">Copilot IDE: /gerador-adr</span><button class="copy-btn" type="button">Copiar</button></div>
+Pronto quando: oportunidades ranqueadas com custo/benefício e a primeira mudança segura proposta.</pre>
+          <div class="card-foot"><span class="slug">Skill: improve-codebase-architecture</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>Co-autoria de documentação</h3>
+          <p class="quando">Escrever doc estruturada (proposta, spec, decisão) com refino iterativo e teste com o leitor.</p>
+          <pre class="msg">Objetivo: co-criar <b>[DOCUMENTO — ex: a proposta de migração X]</b> num fluxo estruturado, sem despejar texto de uma vez.
+
+Siga TODO o processo descrito em skills/documentacao/doc-coauthoring/SKILL.md (em inglês; responda em PT-BR): os 3 estágios — juntar contexto, refinar/estruturar e testar com o leitor.
+
+Pronto quando: documento que transfere o contexto certo e funciona pro leitor-alvo, validado nos 3 estágios.</pre>
+          <div class="card-foot"><span class="slug">Skill: doc-coauthoring</span><button class="copy-btn" type="button">Copiar</button></div>
         </article>
 
       </div>
     </section>
 
     <section class="trilha">
-      <h2 class="section-eyebrow">Especificar e planejar</h2>
-      <p>Decisão tomada vira spec com critérios de aceite verificáveis, e a spec vira um plano
-         que alguém que não conhece o código consegue executar.</p>
+      <h2 class="section-eyebrow">Debugging</h2>
+      <p>Causa raiz com evidência ANTES de qualquer fix — nunca silenciar o sintoma no primeiro palpite.</p>
+      <div class="cards">
+
+        <article class="msg-card">
+          <h3>Investigar bug (causa raiz)</h3>
+          <p class="quando">Comportamento inesperado — antes de qualquer tentativa de correção.</p>
+          <pre class="msg"><b>[SINTOMA — cole o erro/stack trace real]</b>
+
+Objetivo: achar a CAUSA RAIZ disso — não silenciar o sintoma com o primeiro palpite.
+
+Siga todo o processo de prompts/engenharia/depurador-sistematico.md: as 4 fases na ordem, causa raiz demonstrada com evidência (arquivo:linha) ANTES de qualquer proposta de correção, fix mínimo, e a verificação rodada ao final com o output mostrado.
+
+Pronto quando: causa demonstrada + fix mínimo aplicado + teste/comando de verificação passando, com o output real na resposta.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /depurador-sistematico</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>Debugging sistemático</h3>
+          <p class="quando">Bug, teste falhando, comportamento inesperado — antes de propor fix.</p>
+          <pre class="msg"><b>[SINTOMA — cole o erro real]</b>
+
+Objetivo: causa raiz com evidência, não palpite.
+
+Siga TODO o processo descrito em skills/backend/systematic-debugging/SKILL.md (em inglês; responda em PT-BR): as 4 fases na ordem, sem pular pra solução.
+
+Pronto quando: causa demonstrada + fix mínimo + verificação passando com output.</pre>
+          <div class="card-foot"><span class="slug">Skill: systematic-debugging</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+      </div>
+    </section>
+
+    <section class="trilha">
+      <h2 class="section-eyebrow">Escrita de código</h2>
+      <p>Do pedido ao código sob controle: especificar e planejar, atacar o plano antes de executar,
+         abrir a task, executar com TDD, refatorar sob testes, revisar (e receber review), e fechar a branch.</p>
       <div class="cards">
 
         <article class="msg-card">
@@ -238,15 +373,6 @@ Pronto quando: lista de issues com escopo, dependências e ordem de ataque.</pre
           <div class="card-foot"><span class="slug">Skill: to-issues</span><button class="copy-btn" type="button">Copiar</button></div>
         </article>
 
-      </div>
-    </section>
-
-    <section class="trilha">
-      <h2 class="section-eyebrow">Atacar o plano antes de executar</h2>
-      <p>Plano pronto não é plano aprovado: ache os furos enquanto é barato — antes da execução,
-         não em produção.</p>
-      <div class="cards">
-
         <article class="msg-card">
           <h3>Grill do plano (pre-mortem)</h3>
           <p class="quando">Plano pronto, ANTES de aprovar — ache os furos enquanto é barato.</p>
@@ -268,15 +394,6 @@ Siga TODO o processo descrito em skills/julgar-planos/challenge/SKILL.md (em ing
 Pronto quando: modos de falha ranqueados por probabilidade × impacto, com mitigação ou veto pra cada um.</pre>
           <div class="card-foot"><span class="slug">Skill: challenge</span><button class="copy-btn" type="button">Copiar</button></div>
         </article>
-
-      </div>
-    </section>
-
-    <section class="trilha">
-      <h2 class="section-eyebrow">Executar com disciplina</h2>
-      <p>Do pedido à entrega sob controle: task aberta com escopo e plano aprovados, execução
-         etapa por etapa com evidência, e TDD em todo código de produção.</p>
-      <div class="cards">
 
         <article class="msg-card">
           <h3>Abrir uma task (controle de contexto)</h3>
@@ -337,43 +454,41 @@ Pronto quando: checklist de verificação da skill completo e suíte verde.</pre
           <div class="card-foot"><span class="slug">Skill: test-driven-development</span><button class="copy-btn" type="button">Copiar</button></div>
         </article>
 
-      </div>
-    </section>
-
-    <section class="trilha">
-      <h2 class="section-eyebrow">Depurar, revisar e verificar</h2>
-      <p>Qualidade com evidência: causa raiz demonstrada antes de qualquer fix, revisão cética
-         de código e de estrutura, e nenhum "pronto" sem output real.</p>
-      <div class="cards">
-
         <article class="msg-card">
-          <h3>Investigar bug (causa raiz)</h3>
-          <p class="quando">Comportamento inesperado — antes de qualquer tentativa de correção.</p>
-          <pre class="msg"><b>[SINTOMA — cole o erro/stack trace real]</b>
+          <h3>Refatorar sob testes (incremental)</h3>
+          <p class="quando">Limpar/reestruturar código sem mudar comportamento — sob rede de testes verde.</p>
+          <pre class="msg">Objetivo: refatorar <b>[ALVO — ex: a função de cálculo de juros]</b> sem mudar comportamento — passos pequenos, comportamento idêntico no fim.
 
-Objetivo: achar a CAUSA RAIZ disso — não silenciar o sintoma com o primeiro palpite.
+Siga todo o processo de prompts/engenharia/refatorador-incremental.md: garanta a rede de testes (caracterização se faltar), ande em passos pequenos (Mikado) e verifique a cada passo — refactor e feature nunca no mesmo commit.
 
-Siga todo o processo de prompts/engenharia/depurador-sistematico.md: as 4 fases na ordem, causa raiz demonstrada com evidência (arquivo:linha) ANTES de qualquer proposta de correção, fix mínimo, e a verificação rodada ao final com o output mostrado.
-
-Pronto quando: causa demonstrada + fix mínimo aplicado + teste/comando de verificação passando, com o output real na resposta.</pre>
-          <div class="card-foot"><span class="slug">Copilot IDE: /depurador-sistematico</span><button class="copy-btn" type="button">Copiar</button></div>
+Pronto quando: suíte verde igual ao início, diff só estrutural, com o output dos testes na resposta.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /refatorador-incremental</span><button class="copy-btn" type="button">Copiar</button></div>
         </article>
 
         <article class="msg-card">
-          <h3>Debugging sistemático</h3>
-          <p class="quando">Bug, teste falhando, comportamento inesperado — antes de propor fix.</p>
-          <pre class="msg"><b>[SINTOMA — cole o erro real]</b>
+          <h3>Estratégia de testes</h3>
+          <p class="quando">Decidir o que testar e em que nível — além do TDD unitário, com regressão dos bugs vistos.</p>
+          <pre class="msg">Objetivo: desenhar a estratégia de testes de <b>[AREA_OU_SERVICO]</b> — confiança × custo, não cobertura por cobertura.
 
-Objetivo: causa raiz com evidência, não palpite.
+Siga todo o processo de prompts/engenharia/estrategista-de-testes.md: mapeie riscos e cobertura atual, escolha o nível certo pra cada risco (unit/integração/contrato/e2e), priorize por risco × custo e inclua a regressão dos bugs já vistos.
 
-Siga TODO o processo descrito em skills/backend/systematic-debugging/SKILL.md (em inglês; responda em PT-BR): as 4 fases na ordem, sem pular pra solução.
-
-Pronto quando: causa demonstrada + fix mínimo + verificação passando com output.</pre>
-          <div class="card-foot"><span class="slug">Skill: systematic-debugging</span><button class="copy-btn" type="button">Copiar</button></div>
+Pronto quando: plano de testes priorizado e acionável (nome · nível · o que verifica), com o que NÃO testar explícito.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /estrategista-de-testes</span><button class="copy-btn" type="button">Copiar</button></div>
         </article>
 
         <article class="msg-card">
-          <h3>Code review</h3>
+          <h3>Revisar código (conduzir a review)</h3>
+          <p class="quando">Conduzir a revisão de um diff/PR — achados por severidade com evidência e veredito.</p>
+          <pre class="msg">Objetivo: revisar <b>[BRANCH_DIFF_OU_PR]</b> conduzindo a review — não reescrever; apontar com severidade e evidência.
+
+Siga todo o processo de prompts/engenharia/revisor-de-codigo.md: escopo do diff, as 4 dimensões (correção/bugs, segurança, simplicidade/reuso, testes), cada achado com severidade + arquivo:linha + sugestão, e um veredito ao final.
+
+Pronto quando: achados priorizados por severidade e veredito explícito (aprovar / com ajustes / bloquear).</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /revisor-de-codigo</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>Code review (template cético)</h3>
           <p class="quando">Antes de merge, ao fechar feature grande, ou pra revisar trabalho pronto.</p>
           <pre class="msg">Objetivo: code review rigoroso de <b>[BRANCH_DIFF_OU_ARQUIVOS]</b> contra os requisitos — não um "LGTM" educado.
 
@@ -384,14 +499,14 @@ Pronto quando: achados classificados por severidade, cada um com arquivo:linha e
         </article>
 
         <article class="msg-card">
-          <h3>Review de arquitetura do código</h3>
-          <p class="quando">O código funciona, mas a estrutura precisa de revisão: acoplamento, costuras, módulos.</p>
-          <pre class="msg">Objetivo: revisar a ARQUITETURA do código em <b>[AREA_OU_MODULO]</b> — oportunidades de aprofundamento guiadas pelo domínio (CONTEXT/contextos) e pelas ADRs existentes.
+          <h3>Receber code review</h3>
+          <p class="quando">Incorporar feedback de review com critério — sem defensividade nem aceitar tudo cegamente.</p>
+          <pre class="msg">Objetivo: incorporar o feedback do review de <b>[PR_OU_MUDANCA]</b> com critério — avaliar cada ponto, não obedecer nem rejeitar por reflexo.
 
-Siga TODO o processo descrito em skills/arquitetura-review/improve-codebase-architecture/SKILL.md (em inglês; responda em PT-BR).
+Siga TODO o processo descrito em skills/code-review/receiving-code-review/SKILL.md (em inglês; responda em PT-BR).
 
-Pronto quando: oportunidades ranqueadas com custo/benefício e a primeira mudança segura proposta.</pre>
-          <div class="card-foot"><span class="slug">Skill: improve-codebase-architecture</span><button class="copy-btn" type="button">Copiar</button></div>
+Pronto quando: cada comentário tratado (aplicado com razão, ou recusado com justificativa) e a suíte verde.</pre>
+          <div class="card-foot"><span class="slug">Skill: receiving-code-review</span><button class="copy-btn" type="button">Copiar</button></div>
         </article>
 
         <article class="msg-card">
@@ -405,117 +520,55 @@ Pronto quando: evidência real na resposta — ou a lista honesta do que ainda f
           <div class="card-foot"><span class="slug">Skill: verification-before-completion</span><button class="copy-btn" type="button">Copiar</button></div>
         </article>
 
-      </div>
-    </section>
-
-    <section class="trilha">
-      <h2 class="section-eyebrow">Documentar arquitetura e operação</h2>
-      <p>As docs técnicas da casa: visão geral fiel ao código, fluxos de runtime, operação de
-         on-call — e a auditoria cética que as mantém honestas.</p>
-      <div class="cards">
-
         <article class="msg-card">
-          <h3>Visão geral de arquitetura</h3>
-          <p class="quando">Documentar o serviço do zero ou atualizar a visão geral.</p>
-          <pre class="msg">Objetivo: a página de visão geral de arquitetura da aplicação <b>[NOME_DA_APLICACAO]</b> — propósito, contexto, integrações, fluxo principal, stack e quality goals — fiel ao código real, não aspiracional.
+          <h3>Worktrees git (trabalho paralelo)</h3>
+          <p class="quando">Tocar duas frentes sem trocar de branch nem embaralhar o working tree.</p>
+          <pre class="msg">Objetivo: usar git worktrees pra trabalhar em <b>[FRENTES — ex: o fix e a feature]</b> em paralelo, isolados, sem stash nem troca de branch.
 
-Siga todo o processo de prompts/arquitetura/arquiteto-de-sistema.md: faça as 5 perguntas-âncora e depois me grile ramo a ramo no estilo grill-with-docs — uma pergunta por vez, ledger visível, sua resposta recomendada, documentando inline conforme fecharmos — até o ledger zerar. As âncoras são o piso, não o teto.
+Siga TODO o processo descrito em skills/fluxo-dev/using-git-worktrees/SKILL.md (em inglês; responda em PT-BR).
 
-Pronto quando: HTML no padrão da casa com os diagramas na convenção rígida, e nenhum ⚠ aberto que eu não tenha aceitado explicitamente.</pre>
-          <div class="card-foot"><span class="slug">Copilot IDE: /arquiteto-de-sistema</span><button class="copy-btn" type="button">Copiar</button></div>
+Pronto quando: worktrees criados e a rotina de uso clara — cada frente no seu diretório isolado.</pre>
+          <div class="card-foot"><span class="slug">Skill: using-git-worktrees</span><button class="copy-btn" type="button">Copiar</button></div>
         </article>
 
         <article class="msg-card">
-          <h3>Fluxo transacional (técnico)</h3>
-          <p class="quando">Sequência de chamadas, payloads, estados — visão de runtime.</p>
-          <pre class="msg">Objetivo: a documentação de runtime do fluxo <b>[FLUXO]</b> na aplicação <b>[NOME_DA_APLICACAO]</b> — quem chama quem, em que ordem, com que payload, e o que acontece quando falha.
+          <h3>Fechar a branch</h3>
+          <p class="quando">Implementação pronta — decidir merge/PR/cleanup sem deixar pontas.</p>
+          <pre class="msg">Objetivo: fechar a branch <b>[BRANCH]</b> com disciplina — integrar (merge/PR), verificar e limpar, sem deixar trabalho órfão.
 
-Siga todo o processo de prompts/arquitetura/documentador-fluxo.md: sequence diagram com autonumber (e BEGIN/COMMIT onde houver transação), payloads relevantes, e os estados de erro, retry e timeout. Confirme cada chamada no código antes de desenhar — nada de fluxo aspiracional.
+Siga TODO o processo descrito em skills/fluxo-dev/finishing-a-development-branch/SKILL.md (em inglês; responda em PT-BR).
 
-Pronto quando: caminho feliz + caminhos de falha desenhados, batendo com o código real.</pre>
-          <div class="card-foot"><span class="slug">Copilot IDE: /documentador-fluxo</span><button class="copy-btn" type="button">Copiar</button></div>
+Pronto quando: branch integrada (ou PR aberto) com verificação, e o cleanup feito.</pre>
+          <div class="card-foot"><span class="slug">Skill: finishing-a-development-branch</span><button class="copy-btn" type="button">Copiar</button></div>
         </article>
 
         <article class="msg-card">
-          <h3>Runbook operacional</h3>
-          <p class="quando">Documentação de operação: failure modes, on-call, SLO.</p>
-          <pre class="msg">Objetivo: o runbook operacional de <b>[SERVICO_OU_FLUXO]</b> — o documento que alguém de on-call usa às 3h da manhã sem conhecer o serviço.
+          <h3>Dev orientada a subagentes</h3>
+          <p class="quando">Executar um plano com tarefas independentes despachando subagentes (spec → implementador → revisor).</p>
+          <pre class="msg">Objetivo: implementar <b>[PLANO_OU_TAREFAS]</b> via subagentes — cada tarefa independente executada e revisada por um subagente dedicado.
 
-Siga todo o processo de prompts/arquitetura/gerador-runbook.md: cada failure mode com sintoma observável, query de log/métrica para confirmar, ação imediata e mitigação permanente. Não invente SLO, threshold nem nome de dashboard — me pergunte num bloco único o que o código e a config não revelam.
+Siga TODO o processo descrito em skills/orquestracao/subagent-driven-development/SKILL.md (em inglês; responda em PT-BR), usando os prompts auxiliares da pasta (spec/implementador/revisor).
 
-Pronto quando: todo failure mode tem os 4 campos preenchidos e nenhum valor foi inventado.</pre>
-          <div class="card-foot"><span class="slug">Copilot IDE: /gerador-runbook</span><button class="copy-btn" type="button">Copiar</button></div>
+Pronto quando: tarefas executadas pelos subagentes e integradas, cada uma verificada.</pre>
+          <div class="card-foot"><span class="slug">Skill: subagent-driven-development</span><button class="copy-btn" type="button">Copiar</button></div>
         </article>
 
         <article class="msg-card">
-          <h3>Revisar documentação (grill técnico)</h3>
-          <p class="quando">Auditar uma página/ADR existente procurando furos.</p>
-          <pre class="msg">Objetivo: auditar <b>[PAGINA_OU_ADR]</b> como revisor cético — achar furos, garantias não implementadas e decisões disfarçadas de premissa ANTES que alguém confie nessa doc.
+          <h3>Agentes em paralelo</h3>
+          <p class="quando">Trabalho independente que dá pra paralelizar entre vários agentes ao mesmo tempo.</p>
+          <pre class="msg">Objetivo: despachar agentes em paralelo pra <b>[TRABALHO_INDEPENDENTE — ex: varrer N módulos]</b> sem que um atrapalhe o outro.
 
-Siga todo o processo de prompts/arquitetura/grill-doc.md: aplique as 7 lentes na ordem (terminologia, decisões disfarçadas de premissa, garantias vs implementação, janelas sem número...), e para cada achado traga a evidência — trecho citado + o que o código realmente mostra — com severidade e correção proposta.
+Siga TODO o processo descrito em skills/orquestracao/dispatching-parallel-agents/SKILL.md (em inglês; responda em PT-BR).
 
-Pronto quando: relatório estruturado com achados acionáveis, ou a declaração explícita de que a doc sobreviveu às 7 lentes.</pre>
-          <div class="card-foot"><span class="slug">Copilot IDE: /grill-doc</span><button class="copy-btn" type="button">Copiar</button></div>
+Pronto quando: tarefas distribuídas e resultados consolidados, com o isolamento entre agentes respeitado.</pre>
+          <div class="card-foot"><span class="slug">Skill: dispatching-parallel-agents</span><button class="copy-btn" type="button">Copiar</button></div>
         </article>
 
       </div>
     </section>
 
     <section class="trilha">
-      <h2 class="section-eyebrow">Documentar o negócio</h2>
-      <p>O que o código não conta: regras não-escritas, processos com seus desfechos, inventário
-         de regras e a linguagem ubíqua — tudo na língua do negócio, sem jargão técnico.</p>
-      <div class="cards">
-
-        <article class="msg-card">
-          <h3>Grill do negócio (interrogatório)</h3>
-          <p class="quando">Tirar do código o que ele não conta: regra não-escrita, dono, exceções.</p>
-          <pre class="msg">Objetivo: extrair de <b>[PROCESSO_OU_AREA]</b> na aplicação <b>[NOME_DA_APLICACAO]</b> as regras que NÃO estão escritas — quem decide, exceções, invariantes — e cristalizá-las no contexto de negócio.
-
-Siga todo o processo de prompts/negocio/grill-negocio.md: me interrogue por fases, uma pergunta por vez com sua resposta recomendada, mostrando o ledger ✓/▸/○ a cada rodada, explorando o código antes de perguntar, e atualize o contexto de negócio (nos TRÊS destinos) conforme fechamos cada ramo.
-
-Pronto quando: ledger zerado (todo ramo ✓ ou [a confirmar com quem]) e a tabela de regras resolvidas pronta pro catálogo (card "Catálogo de regras").</pre>
-          <div class="card-foot"><span class="slug">Copilot IDE: /grill-negocio</span><button class="copy-btn" type="button">Copiar</button></div>
-        </article>
-
-        <article class="msg-card">
-          <h3>Fluxo de negócio (feliz/triste)</h3>
-          <p class="quando">Desenho visual do processo com desfechos positivos e de exceção.</p>
-          <pre class="msg">Objetivo: o desenho do processo <b>[PROCESSO]</b> da aplicação <b>[NOME_DA_APLICACAO]</b> que uma pessoa de NEGÓCIO entende — quem faz o quê, onde se decide, como termina bem e como termina mal.
-
-Siga todo o processo de prompts/negocio/mapeador-de-fluxo-de-negocio.md: caminho feliz e pelo menos um caminho triste, diagrama no padrão da casa (classes papel/atividade/decisao/desfecho), linguagem do glossário do domínio — zero jargão técnico (nada de HTTP, fila, retry).
-
-Pronto quando: página com o diagrama validado por mim e todos os desfechos nomeados em termos de negócio.</pre>
-          <div class="card-foot"><span class="slug">Copilot IDE: /mapeador-de-fluxo-de-negocio</span><button class="copy-btn" type="button">Copiar</button></div>
-        </article>
-
-        <article class="msg-card">
-          <h3>Catálogo de regras</h3>
-          <p class="quando">Inventário das regras de negócio com origem, dono e consequência.</p>
-          <pre class="msg">Objetivo: o inventário auditável das regras de negócio da aplicação <b>[NOME_DA_APLICACAO]</b> — pra responder "por que o sistema recusou isso?" sem precisar ler código.
-
-Siga todo o processo de prompts/negocio/catalogo-de-regras.md: regras agrupadas por capacidade, toda regra com origem no código (arquivo:símbolo) ou marcada como regra de processo, dono e consequência de negócio. Regra sem dono identificável → marque [a confirmar com quem] em vez de inventar.
-
-Pronto quando: nenhuma regra sem origem rastreável e o catálogo batendo com o contexto de negócio.</pre>
-          <div class="card-foot"><span class="slug">Copilot IDE: /catalogo-de-regras</span><button class="copy-btn" type="button">Copiar</button></div>
-        </article>
-
-        <article class="msg-card">
-          <h3>Glossário do domínio</h3>
-          <p class="quando">Linguagem ubíqua: os termos do negócio, sem detalhe de implementação.</p>
-          <pre class="msg">Objetivo: a página de linguagem ubíqua da aplicação <b>[NOME_DA_APLICACAO]</b> — negócio e dev chamando as coisas pelo mesmo nome, com os sinônimos proibidos explícitos.
-
-Siga todo o processo de prompts/negocio/glossario-de-negocio.md: termos vindos do contexto de negócio, definição operacional curta (o que o termo É, não como funciona por dentro), sinônimos a evitar listados por termo, zero detalhe de implementação.
-
-Pronto quando: página gerada com os termos batendo 1:1 com o contexto de negócio — divergência encontrada é apontada, não silenciada.</pre>
-          <div class="card-foot"><span class="slug">Copilot IDE: /glossario-de-negocio</span><button class="copy-btn" type="button">Copiar</button></div>
-        </article>
-
-      </div>
-    </section>
-
-    <section class="trilha">
-      <h2 class="section-eyebrow">Design e frontend</h2>
+      <h2 class="section-eyebrow">UI/UX</h2>
       <p>Da direção visual ao acabamento fino: escolher estilo antes de produzir tela, evoluir
          com aprovação a cada decisão, manter o design system sem drift e polir o que já funciona.</p>
       <div class="cards">
@@ -628,6 +681,59 @@ Siga TODO o processo descrito em skills/frontend/bencium-impact-designer/SKILL.m
 
 Pronto quando: implementação entregue com as decisões visuais justificadas.</pre>
           <div class="card-foot"><span class="slug">Skill: bencium-impact-designer</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+      </div>
+    </section>
+
+    <section class="trilha">
+      <h2 class="section-eyebrow">Documentar o negócio</h2>
+      <p>O que o código não conta: regras não-escritas, processos com seus desfechos, inventário
+         de regras e a linguagem ubíqua — tudo na língua do negócio, sem jargão técnico.</p>
+      <div class="cards">
+
+        <article class="msg-card">
+          <h3>Grill do negócio (interrogatório)</h3>
+          <p class="quando">Tirar do código o que ele não conta: regra não-escrita, dono, exceções.</p>
+          <pre class="msg">Objetivo: extrair de <b>[PROCESSO_OU_AREA]</b> na aplicação <b>[NOME_DA_APLICACAO]</b> as regras que NÃO estão escritas — quem decide, exceções, invariantes — e cristalizá-las no contexto de negócio.
+
+Siga todo o processo de prompts/negocio/grill-negocio.md: me interrogue por fases, uma pergunta por vez com sua resposta recomendada, mostrando o ledger ✓/▸/○ a cada rodada, explorando o código antes de perguntar, e atualize o contexto de negócio (nos TRÊS destinos) conforme fechamos cada ramo.
+
+Pronto quando: ledger zerado (todo ramo ✓ ou [a confirmar com quem]) e a tabela de regras resolvidas pronta pro catálogo (card "Catálogo de regras").</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /grill-negocio</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>Fluxo de negócio (feliz/triste)</h3>
+          <p class="quando">Desenho visual do processo com desfechos positivos e de exceção.</p>
+          <pre class="msg">Objetivo: o desenho do processo <b>[PROCESSO]</b> da aplicação <b>[NOME_DA_APLICACAO]</b> que uma pessoa de NEGÓCIO entende — quem faz o quê, onde se decide, como termina bem e como termina mal.
+
+Siga todo o processo de prompts/negocio/mapeador-de-fluxo-de-negocio.md: caminho feliz e pelo menos um caminho triste, diagrama no padrão da casa (classes papel/atividade/decisao/desfecho), linguagem do glossário do domínio — zero jargão técnico (nada de HTTP, fila, retry).
+
+Pronto quando: página com o diagrama validado por mim e todos os desfechos nomeados em termos de negócio.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /mapeador-de-fluxo-de-negocio</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>Catálogo de regras</h3>
+          <p class="quando">Inventário das regras de negócio com origem, dono e consequência.</p>
+          <pre class="msg">Objetivo: o inventário auditável das regras de negócio da aplicação <b>[NOME_DA_APLICACAO]</b> — pra responder "por que o sistema recusou isso?" sem precisar ler código.
+
+Siga todo o processo de prompts/negocio/catalogo-de-regras.md: regras agrupadas por capacidade, toda regra com origem no código (arquivo:símbolo) ou marcada como regra de processo, dono e consequência de negócio. Regra sem dono identificável → marque [a confirmar com quem] em vez de inventar.
+
+Pronto quando: nenhuma regra sem origem rastreável e o catálogo batendo com o contexto de negócio.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /catalogo-de-regras</span><button class="copy-btn" type="button">Copiar</button></div>
+        </article>
+
+        <article class="msg-card">
+          <h3>Glossário do domínio</h3>
+          <p class="quando">Linguagem ubíqua: os termos do negócio, sem detalhe de implementação.</p>
+          <pre class="msg">Objetivo: a página de linguagem ubíqua da aplicação <b>[NOME_DA_APLICACAO]</b> — negócio e dev chamando as coisas pelo mesmo nome, com os sinônimos proibidos explícitos.
+
+Siga todo o processo de prompts/negocio/glossario-de-negocio.md: termos vindos do contexto de negócio, definição operacional curta (o que o termo É, não como funciona por dentro), sinônimos a evitar listados por termo, zero detalhe de implementação.
+
+Pronto quando: página gerada com os termos batendo 1:1 com o contexto de negócio — divergência encontrada é apontada, não silenciada.</pre>
+          <div class="card-foot"><span class="slug">Copilot IDE: /glossario-de-negocio</span><button class="copy-btn" type="button">Copiar</button></div>
         </article>
 
       </div>
@@ -809,19 +915,17 @@ Pronto quando: ADR numerada salva, que sobreviveu ao stress-test e ao grill, com
         </article>
 
         <article class="msg-card">
-          <h3>Combo: documentar um serviço do zero (contexto + visão geral + fluxo + runbook)</h3>
-          <p class="quando">Repo sem doc nenhuma — da fonte de verdade ao runbook de on-call, tudo auditado no final.</p>
-          <pre class="msg">Objetivo: gerar a documentação técnica completa da aplicação <b>[NOME_DA_APLICACAO]</b> — contexto, visão geral, fluxo crítico e operação — fiel ao código real e auditada antes de alguém confiar nela.
+          <h3>Combo: documentar um serviço do zero (fluxo de 3 etapas)</h3>
+          <p class="quando">Repo sem doc nenhuma — o fluxo canônico de 3 etapas, da fonte de verdade ao grill intenso.</p>
+          <pre class="msg">Objetivo: gerar a documentação técnica completa da aplicação <b>[NOME_DA_APLICACAO]</b> — do zero ao grill intenso — pelo fluxo canônico de 3 etapas obrigatórias, fiel ao código real.
 
-Encadeie NESTA ordem, com checkpoint meu entre as fases:
-1. CONTEXTO — siga todo o processo de prompts/arquitetura/analisador-de-projeto.md: project-context gravado nos TRÊS destinos (Amazon Q, Copilot e Kiro).
-2. VISÃO GERAL — siga prompts/arquitetura/arquiteto-de-sistema.md: a página de arquitetura, com as 5 perguntas-âncora e o grill ramo a ramo até o ledger zerar.
-3. FLUXO CRÍTICO — siga prompts/arquitetura/documentador-fluxo.md no fluxo <b>[FLUXO_MAIS_IMPORTANTE]</b>: sequence diagram com os caminhos de falha, confirmado no código.
-4. OPERAÇÃO — siga prompts/arquitetura/gerador-runbook.md: failure modes com os 4 campos preenchidos, nenhum valor inventado.
-5. AUDITORIA — siga prompts/arquitetura/grill-doc.md sobre cada página gerada: relatório de achados ou declaração de sobrevivência às 7 lentes.
+Encadeie NESTA ordem (cada etapa termina apontando a próxima; a Etapa 3 roda em sessão NOVA):
+1. FUNDAÇÃO + ARQUITETURA — siga prompts/arquitetura/documentar-servico.md (Etapa 1): contexto (3 destinos) + domínio (3 destinos) + visão geral e páginas-núcleo, com checkpoint meu entre as fases.
+2. FLUXOS + OPERAÇÃO — siga prompts/arquitetura/completar-documentacao.md (Etapa 2): fluxo(s) crítico(s) + runbook, confirmados no código.
+3. GRILL INTENSO — em sessão NOVA, siga prompts/arquitetura/grill-arquitetura.md (Etapa 3): ataque as incertezas código-primeiro, com níveis de certeza, atualizando a doc inline.
 
-Pronto quando: contexto + visão geral + fluxo + runbook publicados no padrão da casa, todos auditados.</pre>
-          <div class="card-foot"><span class="slug">Combo: preparar repo → visão geral → fluxo técnico → runbook → grill da doc</span><button class="copy-btn" type="button">Copiar</button></div>
+Pronto quando: contexto + domínio + arquitetura + fluxos + runbook publicados, e toda incerteza resolvida (pelo código com nível de certeza, ou por mim) — sem ⚠ aberto que eu não tenha aceitado.</pre>
+          <div class="card-foot"><span class="slug">Combo: documentar serviço (Etapa 1) → completar (Etapa 2) → grill intenso (Etapa 3)</span><button class="copy-btn" type="button">Copiar</button></div>
         </article>
 
         <article class="msg-card">

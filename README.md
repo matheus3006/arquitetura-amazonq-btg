@@ -17,7 +17,7 @@ Um pacote pronto para clonar dentro de cada serviço .NET do seu time. Inclui:
 - **Prompts** que clonam comportamento de skills especializadas — 4 trilhas (arquitetura, frontend, negocio, engenharia)
 - **Trilha de engenharia**: debugging sistemático, planejamento de implementação e disciplina de verificação (portes do superpowers)
 - **Protocolo de controle de contexto** (`controle-style`): toda edição nasce de uma task em `docs/controle/<task-id>/` — ciclo de 2 turnos otimizado para cota de requests, com hook de início de interação (Amazon Q + Kiro) que abre a task sozinho — sem trava no commit
-- **Biblioteca de skills importadas** (`skills/`): 30 Agent Skills copiadas verbatim das melhores fontes (superpowers, product/pm/c-level skills, mattpocock, bencium) em 13 categorias — espelhadas pelas camadas Copilot e Kiro; catálogo em `skills/README.md`
+- **Biblioteca de skills importadas** (`skills/`): 31 Agent Skills copiadas verbatim das melhores fontes (superpowers, anthropic-skills, product/pm/c-level skills, mattpocock, bencium) em 14 categorias — espelhadas pelas camadas Copilot e Kiro; catálogo em `skills/README.md`
 - **Design system** dark com paleta institucional + animações sutis
 - **Template viewer** para diagramas Mermaid com pan/zoom estilo Figma, fundo claro com traços escuros
 - **12 páginas HTML de exemplo** documentando um serviço fictício ("Liquidação Transacional") como referência de forma e qualidade
@@ -169,20 +169,20 @@ arquitetura/
 ├── .github/                                     ← gerado por tools/sync-copilot.sh — não editar
 │   ├── copilot-instructions.md
 │   ├── instructions/                            ← 5 rules (.instructions.md); contexto por-projeto é gerado aqui pelos analisadores
-│   ├── prompts/                                 ← slash commands (26 arquivos .prompt.md)
-│   └── skills/                                  ← Agent Skills (56: 26 wrappers + 30 importadas)
+│   ├── prompts/                                 ← slash commands (29 arquivos .prompt.md)
+│   └── skills/                                  ← Agent Skills (60: 29 wrappers + 31 importadas)
 ├── .kiro/
 │   ├── steering/                                ← gerado por sync-kiro.sh — 5 rules (inclusion: always); contexto por-projeto e foundation files são gerados aqui por-serviço
-│   ├── skills/                                  ← gerado por sync-kiro.sh — Agent Skills (56: 26 wrappers + 30 importadas)
+│   ├── skills/                                  ← gerado por sync-kiro.sh — Agent Skills (60: 29 wrappers + 31 importadas)
 │   └── hooks/                                   ← canônico (não gerado): controle-prompt.kiro.hook (promptSubmit do controle)
-├── skills/                                      ← biblioteca importada (FONTE das cópias verbatim — 13 categorias, 30 skills; ver skills/README.md)
+├── skills/                                      ← biblioteca importada (FONTE das cópias verbatim — 14 categorias, 31 skills; ver skills/README.md)
 ├── prompts/
-│   ├── arquitetura/                             ← 7 prompts (analisador, arquiteto, ADR, runbook, fluxo, grill, brainstorm)
+│   ├── arquitetura/                             ← 10 prompts (analisador, arquiteto, ADR, runbook, fluxo, grill, brainstorm + pipeline: documentar-servico, completar-documentacao, grill-arquitetura)
 │   ├── frontend/                                ← 4 prompts (ux-controlado, ui-pro-max, design-system, polidor)
 │   ├── negocio/                                 ← 5 prompts (analisador-dominio, catalogo, glossario, grill, mapeador)
 │   └── engenharia/                              ← 10 prompts (especificador, planejador, grill-plano, executor, tdd, depurador, controle-de-tarefa, refatorador-incremental, estrategista-de-testes, revisor-de-codigo)
 ├── tools/
-│   ├── manifest.tsv                             ← slug → trilha → descrição (gera os 78 wrappers)
+│   ├── manifest.tsv                             ← slug → trilha → descrição (gera os 87 wrappers)
 │   ├── sync-copilot.sh                          ← gera/valida a camada .github/
 │   ├── sync-kiro.sh                             ← gera/valida a camada .kiro/
 │   └── sync-como-usar.sh                        ← gera/valida o COMO-USAR.md a partir do .html

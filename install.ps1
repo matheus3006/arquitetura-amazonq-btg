@@ -9,7 +9,7 @@
 
   Copia: .amazonq/rules/ (5 rules) + .github/ (camada Copilot) + .kiro/ (camada Kiro:
            steering + Agent Skills) + prompts/ (4 trilhas) + skills/ (biblioteca de
-           30 skills importadas)
+           31 skills importadas)
          + COMO-USAR.html (raiz) + docs/arquitetura/ (css do design system, js dos
            templates e paginas HTML de exemplo — referencia de FORMA pros prompts;
            nunca sobrescreve arquivo ja existente no alvo)
@@ -73,7 +73,7 @@ foreach ($f in 'architecture-style','frontend-style','negocio-style','engenharia
 Write-Host "  + .github/instructions/ (5 instructions)"
 Copy-Item (Join-Path $PackDir '.github/prompts/*') (Join-Path $ghDst 'prompts') -Recurse -Force
 Copy-Item (Join-Path $PackDir '.github/skills/*')  (Join-Path $ghDst 'skills')  -Recurse -Force
-Write-Host "  + .github/prompts/ (26 wrappers) + .github/skills/ (56: 26 wrappers + 30 importadas)"
+Write-Host "  + .github/prompts/ (29 wrappers) + .github/skills/ (60: 29 wrappers + 31 importadas)"
 
 # 2b) Camada Kiro (steering + Agent Skills). Copiamos SO as 5 rules de estilo:
 #     *-context.md e os foundation files do Kiro (product/tech/structure.md)
@@ -87,7 +87,7 @@ foreach ($f in 'architecture-style','frontend-style','negocio-style','engenharia
 }
 Write-Host "  + .kiro/steering/ (5 rules)"
 Copy-Item (Join-Path $PackDir '.kiro/skills/*') (Join-Path $kiroDst 'skills') -Recurse -Force
-Write-Host "  + .kiro/skills/ (56 Agent Skills: 26 wrappers + 30 importadas)"
+Write-Host "  + .kiro/skills/ (60 Agent Skills: 29 wrappers + 31 importadas)"
 
 # 3) Prompts (4 trilhas)
 $promptsDst = Join-Path $Target 'prompts'
@@ -101,7 +101,7 @@ Write-Host "  + prompts/{arquitetura,frontend,negocio,engenharia}"
 $skillsDst = Join-Path $Target 'skills'
 New-Item -ItemType Directory -Force -Path $skillsDst | Out-Null
 Copy-Item (Join-Path $PackDir 'skills/*') $skillsDst -Recurse -Force
-Write-Host "  + skills/ (biblioteca: 30 skills importadas em 13 categorias)"
+Write-Host "  + skills/ (biblioteca: 31 skills importadas em 14 categorias)"
 
 # 4) Design system
 $dsDst = Join-Path $Target 'docs/arquitetura/design-system'
