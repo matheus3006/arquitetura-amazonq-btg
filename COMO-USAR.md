@@ -22,45 +22,13 @@
 
 Cards com rodapé Skill: vêm da biblioteca de skills importadas (cópias verbatim em skills/, conteúdo em inglês — peça resposta em PT-BR). No Kiro e no Copilot CLI elas ativam sozinhas quando seu pedido casa com a descrição; no Amazon Q e Copilot IDE, cole a mensagem do card. Catálogo completo: skills/README.md.
 
-## Antes de tudo: preparar o repositório
-
-Primeira invocação em um repositório? Comece aqui — todo o resto depende do contexto que estes dois cards geram. "Preparar o repositório" destrava as gerações técnicas; "Mapear o domínio" destrava as docs de negócio.
-
-### Preparar o repositório
-
-**Quando:** Primeira invocação em repo novo, ou quando o código mudou muito.
-
-```text
-Objetivo: gerar a fonte de verdade técnica deste repositório (project-context) — é ela que destrava todas as outras gerações e impede que a doc herde conteúdo do exemplo fictício.
-
-Analise a aplicação [NOME_DA_APLICACAO] seguindo todo o processo de prompts/arquitetura/analisador-de-projeto.md: detecte a stack e os padrões do código, me mostre o que encontrou, pergunte o que o código não revela (uma pergunta por vez), inclua a lista negativa (padrões que NÃO usamos) e grave o contexto nos TRÊS destinos (Amazon Q, Copilot e Kiro).
-
-Pronto quando: os três arquivos de contexto existem com o mesmo conteúdo e eu revisei o resumo.
-```
-
-_Copilot IDE: /analisador-de-projeto_
-
-### Mapear o domínio
-
-**Quando:** Primeira doc de negócio do repo, ou refresh após mudanças grandes.
-
-```text
-Objetivo: gerar a fonte de verdade de NEGÓCIO deste repositório (business-context) — as regras, atores, eventos e termos que o código sozinho não conta, e que todas as docs de negócio consomem.
-
-Analise a aplicação [NOME_DA_APLICACAO] seguindo todo o processo de prompts/negocio/analisador-de-dominio.md: detecte as regras candidatas no código (validações, enums, autorização, limites em config), os atores e os eventos, me grile por fases pra confirmar o que o código não revela (uma pergunta por vez), e grave o contexto de negócio nos TRÊS destinos (Amazon Q, Copilot e Kiro).
-
-Pronto quando: os três arquivos de contexto de negócio existem, idênticos, e eu revisei o resumo.
-```
-
-_Copilot IDE: /analisador-de-dominio_
-
 ## Arquitetura
 
 A prioridade nº 1 do pack: documentar o serviço fiel ao código (visão geral, fluxos, runbook), explorar e registrar decisões (brainstorm, ADR, stress-test) e pensar como arquiteto — modelo de domínio antes de tecnologia.
 
 ### Documentar serviço do zero (Etapa 1/3)
 
-**Quando:** Repo sem doc — gera contexto + domínio + a arquitetura (espinha) num fluxo só.
+**Quando:** Repo sem doc — gera contexto + domínio + a arquitetura (espinha) num fluxo só. Também é o refresh do contexto técnico: pare no gate após a Fase A quando só o código mudou.
 
 ```text
 Objetivo: documentar do zero a aplicação [NOME_DA_APLICACAO] — contexto, domínio e a arquitetura (espinha), num fluxo só com checkpoint meu entre as fases.
@@ -752,7 +720,21 @@ _Skill: bencium-impact-designer_
 
 ## Documentar o negócio
 
-O que o código não conta: regras não-escritas, processos com seus desfechos, inventário de regras e a linguagem ubíqua — tudo na língua do negócio, sem jargão técnico.
+O que o código não conta: regras não-escritas, processos com seus desfechos, inventário de regras e a linguagem ubíqua — tudo na língua do negócio, sem jargão técnico. Comece pelo "Mapear o domínio": ele gera o business-context que todos os outros cards desta trilha consomem.
+
+### Mapear o domínio
+
+**Quando:** Primeira doc de negócio do repo, ou refresh após mudanças grandes.
+
+```text
+Objetivo: gerar a fonte de verdade de NEGÓCIO deste repositório (business-context) — as regras, atores, eventos e termos que o código sozinho não conta, e que todas as docs de negócio consomem.
+
+Analise a aplicação [NOME_DA_APLICACAO] seguindo todo o processo de prompts/negocio/analisador-de-dominio.md: detecte as regras candidatas no código (validações, enums, autorização, limites em config), os atores e os eventos, me grile por fases pra confirmar o que o código não revela (uma pergunta por vez), e grave o contexto de negócio nos TRÊS destinos (Amazon Q, Copilot e Kiro).
+
+Pronto quando: os três arquivos de contexto de negócio existem, idênticos, e eu revisei o resumo.
+```
+
+_Copilot IDE: /analisador-de-dominio_
 
 ### Grill do negócio (interrogatório)
 
