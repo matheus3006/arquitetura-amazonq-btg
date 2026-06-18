@@ -16,9 +16,9 @@
   --color-surface-active:   #252b39;
 
   /* === COLOR — text ========================================================== */
-  --color-text-primary:     #f4f6f9;
-  --color-text-secondary:   #aeb6c6;   /* contraste: 9.6:1 no fundo, 8.8:1 no card (AAA) */
-  --color-text-muted:       #7d8698;   /* contraste: 5.3:1 no fundo, 4.9:1 no card (AA)  */
+  --color-text-primary:     #fbfcff;
+  --color-text-secondary:   #c4cbd8;   /* contraste: 12.0:1 no fundo, 11.0:1 no card (AAA) */
+  --color-text-muted:       #949dae;   /* contraste: 7.2:1 no fundo, 6.6:1 no card (AA)  */
   --color-text-inverse:     #0a0c12;
 
   /* === COLOR — accent (institutional blue) =================================== */
@@ -153,19 +153,19 @@
 [data-theme="light"] {
   color-scheme: light;
 
-  /* surfaces */
-  --color-bg:               #f5f7fa;
-  --color-bg-gradient-from: #f5f7fa;
-  --color-bg-gradient-to:   #eef1f6;
-  --color-surface:          #ffffff;
-  --color-surface-2:        #eef1f6;
-  --color-surface-hover:    #e8edf4;
-  --color-surface-active:   #dde4ee;
+  /* surfaces — off-white (não branco puro); escala monotônica, cards saltam do fundo */
+  --color-bg:               #e9edf3;
+  --color-bg-gradient-from: #e9edf3;
+  --color-bg-gradient-to:   #e1e7ef;
+  --color-surface:          #f8fafc;
+  --color-surface-2:        #e1e7ef;
+  --color-surface-hover:    #d9e0ea;
+  --color-surface-active:   #cfd8e6;
 
   /* text */
-  --color-text-primary:     #11151c;   /* 17.0:1 / 18.3:1 (AAA) */
-  --color-text-secondary:   #4a5263;   /* 7.3:1 / 7.8:1  (AAA) */
-  --color-text-muted:       #646d7e;   /* 4.9:1 / 5.2:1  (AA)  */
+  --color-text-primary:     #0e1219;   /* 16.0:1 / 17.9:1 (AAA) */
+  --color-text-secondary:   #3a4150;   /* 8.7:1 / 9.8:1  (AAA) */
+  --color-text-muted:       #525a6a;   /* 5.9:1 / 6.6:1  (AA)  */
   --color-text-inverse:     #ffffff;
 
   /* accent (azul institucional escurecido p/ AA sobre fundo claro) */
@@ -194,7 +194,7 @@
 
   /* highlight */
   --color-mark-bg:          rgba(28, 95, 184, 0.14);
-  --color-mark-text:        #11151c;
+  --color-mark-text:        #0e1219;
 
   /* shadows — suavizadas p/ fundo claro */
   --shadow-sm:     0 1px 2px rgba(16, 24, 40, 0.06);
