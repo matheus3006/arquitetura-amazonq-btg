@@ -5,7 +5,7 @@
 # Fonte canonica:  .amazonq/rules/*.md  +  tools/manifest.tsv  +  prompts/**
 # Gerado (commitado, NUNCA editado a mao):
 #   .kiro/steering/<rule>.md        (5 rules, frontmatter `inclusion: always`)
-#   .kiro/skills/<slug>/SKILL.md    (23 wrappers — Agent Skills, padrao aberto)
+#   .kiro/skills/<slug>/SKILL.md    (30 wrappers — Agent Skills, padrao aberto)
 #
 # Arquivos por-servico NUNCA gerados aqui (vivem so nos repos alvo):
 #   .kiro/steering/project-context.md / business-context.md (analisadores)

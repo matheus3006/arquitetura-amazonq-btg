@@ -44,5 +44,6 @@
 - Outras trilhas/rules alem de arquitetura.
 
 ## Pendencia
-- Comentario "23 wrappers" no sync-copilot.sh (cabecalho) esta desatualizado vs o real (30). Nao
-  tocado nesta task (fora de escopo; e so comentario interno do script). Candidato a limpeza futura.
+- ~~Comentario "23 wrappers" no sync-copilot.sh (cabecalho) esta desatualizado vs o real (30).~~
+  RESOLVIDO em docs/controle/2026-06-18-comentario-contagem-wrappers/ (23 -> 30 nos cabecalhos de
+  sync-copilot.sh e sync-kiro.sh).
