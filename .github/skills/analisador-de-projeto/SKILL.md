@@ -3,7 +3,7 @@ name: analisador-de-projeto
 description: "Analisa o repositorio e gera o contexto tecnico do projeto (roda primeiro em todo repo novo)"
 ---
 
-Siga TODO o processo descrito em `prompts/arquitetura/analisador-de-projeto.md` (na raiz deste repositorio), fase por
+Siga TODO o processo descrito em `ia/prompts/arquitetura/analisador-de-projeto.md` (na raiz deste repositorio), fase por
 fase, na ordem em que esta escrito.
 
 Regras de execucao:

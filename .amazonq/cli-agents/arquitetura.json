@@ -1,7 +1,7 @@
 {
   "name": "arquitetura",
-  "description": "Agente do pack arquitetura. Carrega as rules de estilo e ativa o protocolo de controle por um hook de inicio de interacao (docs/controle/), sem pre-commit bloqueante.",
-  "prompt": "Voce segue as rules em .amazonq/rules/ (carregadas como resources). O protocolo de controle de tarefas esta em .amazonq/rules/controle-style.md: todo pedido que cria ou altera um artefato exige uma task em docs/controle/<AAAA-MM-DD-slug>/ aberta ANTES de editar. O hook userPromptSubmit te lembra disso a cada interacao; nunca bloqueie o trabalho do usuario por causa do protocolo.",
+  "description": "Agente do pack arquitetura. Carrega as rules de estilo e ativa o protocolo de controle por um hook de inicio de interacao (doc/controle/), sem pre-commit bloqueante.",
+  "prompt": "Voce segue as rules em .amazonq/rules/ (carregadas como resources). O protocolo de controle de tarefas esta em .amazonq/rules/controle-style.md: todo pedido que cria ou altera um artefato exige uma task em doc/controle/<AAAA-MM-DD-slug>/ aberta ANTES de editar. O hook userPromptSubmit te lembra disso a cada interacao; nunca bloqueie o trabalho do usuario por causa do protocolo.",
   "tools": ["*"],
   "resources": [
     "file://.amazonq/rules/*.md"

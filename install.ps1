@@ -8,9 +8,9 @@
     pwsh install.ps1 -NoExamples              # NAO inclui as paginas HTML de exemplo
 
   Copia: .amazonq/rules/ (5 rules) + .github/ (camada Copilot) + .kiro/ (camada Kiro:
-           steering + Agent Skills) + prompts/ (4 trilhas) + skills/ (biblioteca de
-           31 skills importadas)
-         + COMO-USAR.html (raiz) + docs/arquitetura/ (css do design system, js dos
+           steering + Agent Skills) + ia/prompts/ (4 trilhas) + ia/skills/ (biblioteca de
+           32 skills importadas)
+         + ia/COMO-USAR.html + ia/design-system/ (css) + ia/templates/ (js +
            templates e paginas HTML de exemplo — referencia de FORMA pros prompts;
            nunca sobrescreve arquivo ja existente no alvo)
          + hooks de inicio de interacao do protocolo de controle (.amazonq/cli-agents/
@@ -73,7 +73,7 @@ foreach ($f in 'architecture-style','frontend-style','negocio-style','engenharia
 Write-Host "  + .github/instructions/ (5 instructions)"
 Copy-Item (Join-Path $PackDir '.github/prompts/*') (Join-Path $ghDst 'prompts') -Recurse -Force
 Copy-Item (Join-Path $PackDir '.github/skills/*')  (Join-Path $ghDst 'skills')  -Recurse -Force
-Write-Host "  + .github/prompts/ (29 wrappers) + .github/skills/ (60: 29 wrappers + 31 importadas)"
+Write-Host "  + .github/prompts/ (30 wrappers) + .github/skills/ (62: 30 wrappers + 32 importadas)"
 
 # 2b) Camada Kiro (steering + Agent Skills). Copiamos SO as 5 rules de estilo:
 #     *-context.md e os foundation files do Kiro (product/tech/structure.md)
@@ -87,56 +87,56 @@ foreach ($f in 'architecture-style','frontend-style','negocio-style','engenharia
 }
 Write-Host "  + .kiro/steering/ (5 rules)"
 Copy-Item (Join-Path $PackDir '.kiro/skills/*') (Join-Path $kiroDst 'skills') -Recurse -Force
-Write-Host "  + .kiro/skills/ (60 Agent Skills: 29 wrappers + 31 importadas)"
+Write-Host "  + .kiro/skills/ (62 Agent Skills: 30 wrappers + 32 importadas)"
 
 # 3) Prompts (4 trilhas)
-$promptsDst = Join-Path $Target 'prompts'
+$promptsDst = Join-Path $Target 'ia/prompts'
 New-Item -ItemType Directory -Force -Path $promptsDst | Out-Null
 foreach ($t in 'arquitetura','frontend','negocio','engenharia') {
-  Copy-Item (Join-Path $PackDir "prompts/$t") $promptsDst -Recurse -Force
+  Copy-Item (Join-Path $PackDir "ia/prompts/$t") $promptsDst -Recurse -Force
 }
-Write-Host "  + prompts/{arquitetura,frontend,negocio,engenharia}"
+Write-Host "  + ia/prompts/{arquitetura,frontend,negocio,engenharia}"
 
 # 3b) Biblioteca de skills importadas (fonte canonica das copias verbatim)
-$skillsDst = Join-Path $Target 'skills'
+$skillsDst = Join-Path $Target 'ia/skills'
 New-Item -ItemType Directory -Force -Path $skillsDst | Out-Null
-Copy-Item (Join-Path $PackDir 'skills/*') $skillsDst -Recurse -Force
-Write-Host "  + skills/ (biblioteca: 31 skills importadas em 14 categorias)"
+Copy-Item (Join-Path $PackDir 'ia/skills/*') $skillsDst -Recurse -Force
+Write-Host "  + ia/skills/ (biblioteca: 32 skills importadas em 14 categorias)"
 
 # 4) Design system
-$dsDst = Join-Path $Target 'docs/arquitetura/design-system'
+$dsDst = Join-Path $Target 'ia/design-system'
 New-Item -ItemType Directory -Force -Path $dsDst | Out-Null
-Copy-Item (Join-Path $PackDir 'docs/arquitetura/design-system/*.css') $dsDst -Force
-Write-Host "  + docs/arquitetura/design-system/*.css"
+Copy-Item (Join-Path $PackDir 'ia/design-system/*.css') $dsDst -Force
+Write-Host "  + ia/design-system/*.css"
 
 # 5) Runtime dos templates
-$tplDst = Join-Path $Target 'docs/arquitetura/templates'
+$tplDst = Join-Path $Target 'ia/templates'
 New-Item -ItemType Directory -Force -Path $tplDst | Out-Null
-Copy-Item (Join-Path $PackDir 'docs/arquitetura/templates/diagram-viewer.js') $tplDst -Force
-Copy-Item (Join-Path $PackDir 'docs/arquitetura/templates/sidebar.js')        $tplDst -Force
-Write-Host "  + docs/arquitetura/templates/diagram-viewer.js + sidebar.js"
+Copy-Item (Join-Path $PackDir 'ia/templates/diagram-viewer.js') $tplDst -Force
+Copy-Item (Join-Path $PackDir 'ia/templates/sidebar.js')        $tplDst -Force
+Write-Host "  + ia/templates/diagram-viewer.js + sidebar.js"
 
 # 5b) Paginas de exemplo - referencia de FORMA pros prompts (padrao; pule com
 #     -NoExamples). NUNCA sobrescreve: paginas ja geradas no alvo ficam intactas.
 if ($NoExamples) {
-  Write-Host "  > docs/arquitetura/templates/*.html (exemplos) pulados (-NoExamples)"
+  Write-Host "  > ia/templates/*.html (exemplos) pulados (-NoExamples)"
 } else {
-  $html = Get-ChildItem (Join-Path $PackDir 'docs/arquitetura/templates') -Filter '*.html' -ErrorAction SilentlyContinue
+  $html = Get-ChildItem (Join-Path $PackDir 'ia/templates') -Filter '*.html' -ErrorAction SilentlyContinue
   if ($html) {
     $copied = 0; $kept = 0
     foreach ($f in $html) {
       $dst = Join-Path $tplDst $f.Name
       if (Test-Path $dst) { $kept++ } else { Copy-Item $f.FullName $dst; $copied++ }
     }
-    Write-Host "  + docs/arquitetura/templates/*.html (exemplos de forma: $copied copiados, $kept preservados)"
+    Write-Host "  + ia/templates/*.html (exemplos de forma: $copied copiados, $kept preservados)"
   } else {
-    Write-Host "  ! docs/arquitetura/templates/*.html nao copiados (nenhum .html no pack?)"
+    Write-Host "  ! ia/templates/*.html nao copiados (nenhum .html no pack?)"
   }
 }
 
-# 6) Guia de uso (mensagens prontas - fica na RAIZ; abra no navegador)
-$comoSrc = Join-Path $PackDir 'COMO-USAR.html'
-$comoDst = Join-Path $Target 'COMO-USAR.html'
+# 6) Guia de uso (mensagens prontas - fica em ia/; abra no navegador)
+$comoSrc = Join-Path $PackDir 'ia/COMO-USAR.html'
+$comoDst = Join-Path $Target 'ia/COMO-USAR.html'
 if (-not (Test-Path -PathType Leaf $comoSrc)) {
   Write-Host "  ! COMO-USAR.html ausente no pack - pulado"
 } elseif (Test-Path -PathType Container $comoDst) {
@@ -144,11 +144,11 @@ if (-not (Test-Path -PathType Leaf $comoSrc)) {
 } else {
   Copy-Item $comoSrc $comoDst -Force -ErrorAction SilentlyContinue
   if (Test-Path -PathType Leaf $comoDst) {
-    Write-Host "  + COMO-USAR.html (raiz do repo)"
-    $comoMdSrc = Join-Path $PackDir 'COMO-USAR.md'
+    Write-Host "  + ia/COMO-USAR.html"
+    $comoMdSrc = Join-Path $PackDir 'ia/COMO-USAR.md'
     if (Test-Path -PathType Leaf $comoMdSrc) {
-      Copy-Item $comoMdSrc (Join-Path $Target 'COMO-USAR.md') -Force
-      Write-Host "  + COMO-USAR.md (versao markdown, mesma raiz)"
+      Copy-Item $comoMdSrc (Join-Path $Target 'ia/COMO-USAR.md') -Force
+      Write-Host "  + ia/COMO-USAR.md (versao markdown)"
     }
     # migracao: instalacoes antigas tinham o guia em docs/arquitetura/
     $comoOld = Join-Path $Target 'docs/arquitetura/COMO-USAR.html'
@@ -162,7 +162,7 @@ if (-not (Test-Path -PathType Leaf $comoSrc)) {
 }
 
 # 7) Hooks de inicio de interacao do protocolo de controle. Substituem o antigo
-#    pre-commit punitivo: orientam o agente a abrir/atualizar a task em docs/controle/
+#    pre-commit punitivo: orientam o agente a abrir/atualizar a task em doc/controle/
 #    ANTES de editar - NUNCA bloqueiam o commit do humano.
 $cliAgentsDst = Join-Path $Target '.amazonq/cli-agents'
 $hooksDst     = Join-Path $Target '.amazonq/hooks'
@@ -194,16 +194,16 @@ if (Test-Path -PathType Leaf $oldScript) {
 }
 
 # 7c) Migracao de caminho: a versao antiga guardava as tasks em controle/ na raiz.
-#     Move pra docs/controle/, preservando cada task (nunca sobrescreve task ja existente).
+#     Move pra doc/controle/, preservando cada task (nunca sobrescreve task ja existente).
 $oldCtl = Join-Path $Target 'controle'
-$newCtl = Join-Path $Target 'docs/controle'
+$newCtl = Join-Path $Target 'doc/controle'
 if ((Test-Path -PathType Container $oldCtl)) {
   New-Item -ItemType Directory -Force -Path $newCtl | Out-Null
   $moved = 0
   foreach ($d in Get-ChildItem -LiteralPath $oldCtl -Directory -ErrorAction SilentlyContinue) {
     $dst = Join-Path $newCtl $d.Name
     if (Test-Path $dst) {
-      Write-Host "  ! docs/controle/$($d.Name) ja existe - task deixada em controle/ (resolva a mao)"
+      Write-Host "  ! doc/controle/$($d.Name) ja existe - task deixada em controle/ (resolva a mao)"
     } else {
       Move-Item -LiteralPath $d.FullName -Destination $dst
       $moved++
@@ -211,14 +211,43 @@ if ((Test-Path -PathType Container $oldCtl)) {
   }
   if (-not (Get-ChildItem -LiteralPath $oldCtl -Force -ErrorAction SilentlyContinue)) {
     Remove-Item -LiteralPath $oldCtl -Force
-    Write-Host "  + controle/ (raiz, versao antiga) migrado pra docs/controle/ ($moved task(s))"
+    Write-Host "  + controle/ (raiz, versao antiga) migrado pra doc/controle/ ($moved task(s))"
   } elseif ($moved -gt 0) {
     Write-Host "  ! controle/ migrado em parte ($moved task(s)); restou conteudo - verifique a mao"
   }
 }
 
+# 7d) Migracao de LAYOUT (pre-ia/doc): o pack agora vive em ia/ e os outputs em doc/.
+#     Move os DADOS do usuario (docs/*) pra doc/ e remove as copias antigas do pack na raiz.
+$oldDocs = Join-Path $Target 'docs'
+if (Test-Path -PathType Container $oldDocs) {
+  New-Item -ItemType Directory -Force -Path (Join-Path $Target 'doc') | Out-Null
+  foreach ($d in Get-ChildItem -LiteralPath $oldDocs -Directory -ErrorAction SilentlyContinue) {
+    if ($d.Name -eq 'arquitetura') {
+      $dstArq = Join-Path $Target 'doc/arquitetura'
+      New-Item -ItemType Directory -Force -Path $dstArq | Out-Null
+      foreach ($item in Get-ChildItem -LiteralPath $d.FullName -Force -ErrorAction SilentlyContinue) {
+        if ($item.Name -in @('templates','design-system')) {
+          Remove-Item -LiteralPath $item.FullName -Recurse -Force          # do pack - ja em ia/
+        } elseif (-not (Test-Path (Join-Path $dstArq $item.Name))) {
+          Move-Item -LiteralPath $item.FullName -Destination (Join-Path $dstArq $item.Name)
+        }
+      }
+      Remove-Item -LiteralPath $d.FullName -Force -ErrorAction SilentlyContinue
+    } elseif (-not (Test-Path (Join-Path $Target ('doc/' + $d.Name)))) {
+      Move-Item -LiteralPath $d.FullName -Destination (Join-Path $Target ('doc/' + $d.Name))
+      Write-Host "  + docs/$($d.Name) (layout antigo) -> doc/$($d.Name)"
+    }
+  }
+  Remove-Item -LiteralPath $oldDocs -Force -ErrorAction SilentlyContinue
+}
+foreach ($old in 'prompts','skills','tools','COMO-USAR.html','COMO-USAR.md') {
+  $p = Join-Path $Target $old
+  if (Test-Path $p) { Remove-Item -LiteralPath $p -Recurse -Force; Write-Host "  + $old (raiz, layout antigo) removido - agora em ia/" }
+}
+
 # 8) Limpeza de lixo do Finder
-Get-ChildItem -Path $promptsDst, $skillsDst, $ghDst, $kiroDst, (Join-Path $Target 'docs/arquitetura') -Recurse -Force -Filter '.DS_Store' -ErrorAction SilentlyContinue |
+Get-ChildItem -Path (Join-Path $Target 'ia'), $ghDst, $kiroDst, (Join-Path $Target 'doc') -Recurse -Force -Filter '.DS_Store' -ErrorAction SilentlyContinue |
   Remove-Item -Force -ErrorAction SilentlyContinue
 
 Write-Host "`n[ok] Instalado. O Amazon Q le .amazonq/rules/, o Copilot le .github/ e o Kiro le .kiro/ automaticamente.`n"
@@ -228,4 +257,4 @@ Write-Host '   Negocio:    "analisa o dominio" -> "grilla o negocio"'
 Write-Host '   Frontend:   "polir essa pagina"'
 Write-Host '   Engenharia: "investiga esse bug" / "planeja a implementacao"'
 Write-Host '   Controle:   "nova tarefa: <slug> - <descricao>"  (protocolo de 2 turnos)'
-Write-Host "`nMensagens prontas por trilha: abra COMO-USAR.html (raiz do repo) no navegador"
+Write-Host "`nMensagens prontas por trilha: abra ia/COMO-USAR.html no navegador"

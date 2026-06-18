@@ -3,7 +3,7 @@ name: polidor-ui
 description: "Polimento de UI: microinteracoes, easing e acabamento (estilo Emil Kowalski)"
 ---
 
-Siga TODO o processo descrito em `prompts/frontend/polidor-ui.md` (na raiz deste repositorio), fase por
+Siga TODO o processo descrito em `ia/prompts/frontend/polidor-ui.md` (na raiz deste repositorio), fase por
 fase, na ordem em que esta escrito.
 
 Regras de execucao:

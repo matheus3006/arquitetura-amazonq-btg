@@ -3,7 +3,7 @@ name: depurador-sistematico
 description: "Depuracao sistematica em 4 fases: causa raiz com evidencia antes de qualquer correcao"
 ---
 
-Siga TODO o processo descrito em `prompts/engenharia/depurador-sistematico.md` (na raiz deste repositorio), fase por
+Siga TODO o processo descrito em `ia/prompts/engenharia/depurador-sistematico.md` (na raiz deste repositorio), fase por
 fase, na ordem em que esta escrito.
 
 Regras de execucao:

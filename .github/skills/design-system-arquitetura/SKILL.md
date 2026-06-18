@@ -3,7 +3,7 @@ name: design-system-arquitetura
 description: "Extensao e auditoria do design system do pack"
 ---
 
-Siga TODO o processo descrito em `prompts/frontend/design-system-arquitetura.md` (na raiz deste repositorio), fase por
+Siga TODO o processo descrito em `ia/prompts/frontend/design-system-arquitetura.md` (na raiz deste repositorio), fase por
 fase, na ordem em que esta escrito.
 
 Regras de execucao:

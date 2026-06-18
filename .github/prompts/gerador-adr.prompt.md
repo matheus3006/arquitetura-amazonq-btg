@@ -2,7 +2,7 @@
 description: "Gera ADRs em formato MADR com trade-offs explicitos e metrica de validacao"
 ---
 
-Siga TODO o processo descrito em `prompts/arquitetura/gerador-adr.md` (na raiz deste repositorio), fase por
+Siga TODO o processo descrito em `ia/prompts/arquitetura/gerador-adr.md` (na raiz deste repositorio), fase por
 fase, na ordem em que esta escrito.
 
 Regras de execucao:

@@ -1,13 +1,13 @@
 {
   "enabled": true,
   "name": "Protocolo de controle (inicio de interacao)",
-  "description": "A cada prompt, garante que pedidos que criam/alteram artefatos abram uma task de controle em docs/controle/ antes de editar. Substitui o pre-commit bloqueante por orientacao no inicio da interacao.",
+  "description": "A cada prompt, garante que pedidos que criam/alteram artefatos abram uma task de controle em doc/controle/ antes de editar. Substitui o pre-commit bloqueante por orientacao no inicio da interacao.",
   "version": "1",
   "when": {
     "type": "promptSubmit"
   },
   "then": {
     "type": "askAgent",
-    "prompt": "Protocolo de controle do pack arquitetura. Se a mensagem atual do usuario CRIA ou ALTERA qualquer artefato no repositorio (codigo, doc, spec, design, diagrama, plano, config — nao so codigo), antes de editar garanta que exista a task docs/controle/<AAAA-MM-DD-slug>/ com TASK.md (escopo + ACs + checklist) e LEDGER.md; derive o slug kebab-case do proprio pedido, sem perguntar o nome. Marque cada passo do checklist [x] ao concluir. Se for pergunta pura de leitura/conversa, nao abra task. Detalhes em .kiro/steering/controle-style.md. NAO bloqueie nem atrase o trabalho do usuario — apenas garanta o registro."
+    "prompt": "Protocolo de controle do pack arquitetura. Se a mensagem atual do usuario CRIA ou ALTERA qualquer artefato no repositorio (codigo, doc, spec, design, diagrama, plano, config — nao so codigo), antes de editar garanta que exista a task doc/controle/<AAAA-MM-DD-slug>/ com TASK.md (escopo + ACs + checklist) e LEDGER.md; derive o slug kebab-case do proprio pedido, sem perguntar o nome. Marque cada passo do checklist [x] ao concluir. Se for pergunta pura de leitura/conversa, nao abra task. Detalhes em .kiro/steering/controle-style.md. NAO bloqueie nem atrase o trabalho do usuario — apenas garanta o registro."
   }
 }

@@ -3,7 +3,7 @@ name: documentar-servico
 description: "Etapa 1 de 3 do fluxo de doc do zero: orquestra contexto (analisador-de-projeto) + dominio (analisador-de-dominio) + arquitetura (arquiteto-de-sistema) num fluxo so, com checkpoint entre fases"
 ---
 
-Siga TODO o processo descrito em `prompts/arquitetura/documentar-servico.md` (na raiz deste repositorio), fase por
+Siga TODO o processo descrito em `ia/prompts/arquitetura/documentar-servico.md` (na raiz deste repositorio), fase por
 fase, na ordem em que esta escrito.
 
 Regras de execucao:

@@ -3,7 +3,7 @@ name: grill-doc
 description: "Revisor cetico de documentacao: procura furos, inconsistencias e garantias nao implementadas"
 ---
 
-Siga TODO o processo descrito em `prompts/arquitetura/grill-doc.md` (na raiz deste repositorio), fase por
+Siga TODO o processo descrito em `ia/prompts/arquitetura/grill-doc.md` (na raiz deste repositorio), fase por
 fase, na ordem em que esta escrito.
 
 Regras de execucao:

@@ -2,7 +2,7 @@
 description: "Persona de arquiteto senior para visao geral e diagramas de arquitetura do servico"
 ---
 
-Siga TODO o processo descrito em `prompts/arquitetura/arquiteto-de-sistema.md` (na raiz deste repositorio), fase por
+Siga TODO o processo descrito em `ia/prompts/arquitetura/arquiteto-de-sistema.md` (na raiz deste repositorio), fase por
 fase, na ordem em que esta escrito.
 
 Regras de execucao:

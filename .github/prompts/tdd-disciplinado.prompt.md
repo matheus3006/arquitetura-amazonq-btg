@@ -2,7 +2,7 @@
 description: "Disciplina test-first por etapa: nenhum codigo de producao sem teste falhando antes (red-green-refactor)"
 ---
 
-Siga TODO o processo descrito em `prompts/engenharia/tdd-disciplinado.md` (na raiz deste repositorio), fase por
+Siga TODO o processo descrito em `ia/prompts/engenharia/tdd-disciplinado.md` (na raiz deste repositorio), fase por
 fase, na ordem em que esta escrito.
 
 Regras de execucao:

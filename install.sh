@@ -9,9 +9,9 @@
 #
 # Copia: .amazonq/rules/ (5 rules) + .github/ (camada Copilot: instructions,
 #        prompts, skills) + .kiro/ (camada Kiro: steering, skills)
-#        + prompts/ (4 trilhas) + skills/ (biblioteca de 31 skills importadas) e
-#        COMO-USAR.html (raiz) + docs/arquitetura/ (css do design system, js dos
-#        templates, paginas HTML de exemplo — referencia de FORMA pros prompts;
+#        + ia/prompts/ (4 trilhas) + ia/skills/ (biblioteca de 32 skills importadas) e
+#        ia/COMO-USAR.html + ia/design-system/ (css) + ia/templates/ (js +
+#        paginas HTML de exemplo — referencia de FORMA pros prompts;
 #        nunca sobrescreve arquivo ja existente no alvo)
 #        + hooks de inicio de interacao do protocolo de controle (.amazonq/cli-agents/
 #        + .amazonq/hooks/ + .kiro/hooks/) — orientam o agente a abrir a task; NAO bloqueiam commit
@@ -73,7 +73,7 @@ done
 echo "  ✓ .github/instructions/ (5 instructions)"
 cp -R "$PACK_DIR/.github/prompts/." "$TARGET/.github/prompts/"
 cp -R "$PACK_DIR/.github/skills/."  "$TARGET/.github/skills/"
-echo "  ✓ .github/prompts/ (29 wrappers) + .github/skills/ (60: 29 wrappers + 31 importadas)"
+echo "  ✓ .github/prompts/ (30 wrappers) + .github/skills/ (62: 30 wrappers + 32 importadas)"
 
 # 2b) Camada Kiro (steering + Agent Skills). Copiamos SO as 5 rules de estilo:
 #     *-context.md e os foundation files do Kiro (product/tech/structure.md)
@@ -84,64 +84,64 @@ for f in architecture-style frontend-style negocio-style engenharia-style contro
 done
 echo "  ✓ .kiro/steering/ (5 rules)"
 cp -R "$PACK_DIR/.kiro/skills/." "$TARGET/.kiro/skills/"
-echo "  ✓ .kiro/skills/ (60 Agent Skills: 29 wrappers + 31 importadas)"
+echo "  ✓ .kiro/skills/ (62 Agent Skills: 30 wrappers + 32 importadas)"
 
 # 3) Prompts (4 trilhas)
-mkdir -p "$TARGET/prompts"
+mkdir -p "$TARGET/ia/prompts"
 for t in arquitetura frontend negocio engenharia; do
-  cp -R "$PACK_DIR/prompts/$t" "$TARGET/prompts/"
+  cp -R "$PACK_DIR/ia/prompts/$t" "$TARGET/ia/prompts/"
 done
-echo "  ✓ prompts/{arquitetura,frontend,negocio,engenharia}"
+echo "  ✓ ia/prompts/{arquitetura,frontend,negocio,engenharia}"
 
 # 3b) Biblioteca de skills importadas (fonte canonica das copias verbatim)
-mkdir -p "$TARGET/skills"
-cp -R "$PACK_DIR/skills/." "$TARGET/skills/"
-echo "  ✓ skills/ (biblioteca: 31 skills importadas em 14 categorias)"
+mkdir -p "$TARGET/ia/skills"
+cp -R "$PACK_DIR/ia/skills/." "$TARGET/ia/skills/"
+echo "  ✓ ia/skills/ (biblioteca: 32 skills importadas em 14 categorias)"
 
 # 4) Design system (CSS reutilizavel)
-mkdir -p "$TARGET/docs/arquitetura/design-system"
-cp "$PACK_DIR/docs/arquitetura/design-system/"*.css "$TARGET/docs/arquitetura/design-system/"
-echo "  ✓ docs/arquitetura/design-system/*.css"
+mkdir -p "$TARGET/ia/design-system"
+cp "$PACK_DIR/ia/design-system/"*.css "$TARGET/ia/design-system/"
+echo "  ✓ ia/design-system/*.css"
 
 # 5) Runtime dos templates (viewer + sidebar)
-mkdir -p "$TARGET/docs/arquitetura/templates"
-cp "$PACK_DIR/docs/arquitetura/templates/diagram-viewer.js" "$TARGET/docs/arquitetura/templates/"
-cp "$PACK_DIR/docs/arquitetura/templates/sidebar.js"        "$TARGET/docs/arquitetura/templates/"
-echo "  ✓ docs/arquitetura/templates/diagram-viewer.js + sidebar.js"
+mkdir -p "$TARGET/ia/templates"
+cp "$PACK_DIR/ia/templates/diagram-viewer.js" "$TARGET/ia/templates/"
+cp "$PACK_DIR/ia/templates/sidebar.js"        "$TARGET/ia/templates/"
+echo "  ✓ ia/templates/diagram-viewer.js + sidebar.js"
 
 # 5b) Paginas de exemplo — referencia de FORMA pros prompts (padrao; pule com
 #     --no-examples). NUNCA sobrescreve: paginas ja geradas no alvo ficam intactas.
 if [ "$NO_EXAMPLES" = "1" ]; then
-  echo "  ↷ docs/arquitetura/templates/*.html (exemplos) pulados (--no-examples)"
+  echo "  ↷ ia/templates/*.html (exemplos) pulados (--no-examples)"
 else
   copied=0; kept=0
-  for f in "$PACK_DIR/docs/arquitetura/templates/"*.html; do
+  for f in "$PACK_DIR/ia/templates/"*.html; do
     [ -e "$f" ] || continue
     base="$(basename "$f")"
-    if [ -e "$TARGET/docs/arquitetura/templates/$base" ]; then
+    if [ -e "$TARGET/ia/templates/$base" ]; then
       kept=$((kept + 1))
     else
-      cp "$f" "$TARGET/docs/arquitetura/templates/$base"
+      cp "$f" "$TARGET/ia/templates/$base"
       copied=$((copied + 1))
     fi
   done
   if [ "$((copied + kept))" -eq 0 ]; then
-    echo "  ⚠ docs/arquitetura/templates/*.html nao copiados (nenhum .html no pack?)"
+    echo "  ⚠ ia/templates/*.html nao copiados (nenhum .html no pack?)"
   else
-    echo "  ✓ docs/arquitetura/templates/*.html (exemplos de forma: $copied copiados, $kept preservados)"
+    echo "  ✓ ia/templates/*.html (exemplos de forma: $copied copiados, $kept preservados)"
   fi
 fi
 
-# 6) Guia de uso (mensagens prontas — fica na RAIZ; abra no navegador)
-if [ ! -f "$PACK_DIR/COMO-USAR.html" ]; then
+# 6) Guia de uso (mensagens prontas — fica em ia/; abra no navegador)
+if [ ! -f "$PACK_DIR/ia/COMO-USAR.html" ]; then
   echo "  ⚠ COMO-USAR.html ausente no pack — pulado"
-elif [ -d "$TARGET/COMO-USAR.html" ]; then
+elif [ -d "$TARGET/ia/COMO-USAR.html" ]; then
   echo "  ⚠ COMO-USAR.html nao copiado (existe um DIRETORIO com esse nome no alvo)"
-elif cp "$PACK_DIR/COMO-USAR.html" "$TARGET/COMO-USAR.html" 2>/dev/null && [ -f "$TARGET/COMO-USAR.html" ]; then
-  echo "  ✓ COMO-USAR.html (raiz do repo)"
-  if [ -f "$PACK_DIR/COMO-USAR.md" ]; then
-    cp "$PACK_DIR/COMO-USAR.md" "$TARGET/COMO-USAR.md"
-    echo "  ✓ COMO-USAR.md (versao markdown, mesma raiz)"
+elif cp "$PACK_DIR/ia/COMO-USAR.html" "$TARGET/ia/COMO-USAR.html" 2>/dev/null && [ -f "$TARGET/ia/COMO-USAR.html" ]; then
+  echo "  ✓ ia/COMO-USAR.html"
+  if [ -f "$PACK_DIR/ia/COMO-USAR.md" ]; then
+    cp "$PACK_DIR/ia/COMO-USAR.md" "$TARGET/ia/COMO-USAR.md"
+    echo "  ✓ ia/COMO-USAR.md (versao markdown)"
   fi
   # migracao: instalacoes antigas tinham o guia em docs/arquitetura/ — remove a copia obsoleta
   if [ -f "$TARGET/docs/arquitetura/COMO-USAR.html" ]; then
@@ -154,7 +154,7 @@ fi
 
 # 7) Hooks de inicio de interacao do protocolo de controle. Substituem o antigo
 #    pre-commit punitivo: a cada interacao orientam o agente a abrir/atualizar a task
-#    em docs/controle/ ANTES de editar — NUNCA bloqueiam o commit do humano.
+#    em doc/controle/ ANTES de editar — NUNCA bloqueiam o commit do humano.
 mkdir -p "$TARGET/.amazonq/cli-agents" "$TARGET/.amazonq/hooks" "$TARGET/.kiro/hooks"
 cp "$PACK_DIR/.amazonq/cli-agents/arquitetura.json" "$TARGET/.amazonq/cli-agents/arquitetura.json"
 echo "  ✓ .amazonq/cli-agents/arquitetura.json (ative com: q chat --agent arquitetura)"
@@ -182,30 +182,59 @@ if [ -f "$TARGET/.amazonq/hooks/pre-commit-controle.sh" ]; then
 fi
 
 # 7c) Migracao de caminho: a versao antiga guardava as tasks em controle/ na raiz.
-#     Move pra docs/controle/, preservando cada task (nunca sobrescreve task ja existente).
+#     Move pra doc/controle/, preservando cada task (nunca sobrescreve task ja existente).
 if [ -d "$TARGET/controle" ] && [ ! -L "$TARGET/controle" ]; then
-  mkdir -p "$TARGET/docs/controle"
+  mkdir -p "$TARGET/doc/controle"
   moved=0
   for d in "$TARGET/controle"/*/; do
     [ -e "$d" ] || continue
     base="$(basename "$d")"
-    if [ -e "$TARGET/docs/controle/$base" ]; then
-      echo "  ⚠ docs/controle/$base ja existe — task '$base' deixada em controle/ (resolva a mao)"
+    if [ -e "$TARGET/doc/controle/$base" ]; then
+      echo "  ⚠ doc/controle/$base ja existe — task '$base' deixada em controle/ (resolva a mao)"
     else
-      mv "$d" "$TARGET/docs/controle/$base"
+      mv "$d" "$TARGET/doc/controle/$base"
       moved=$((moved + 1))
     fi
   done
   if [ -z "$(ls -A "$TARGET/controle" 2>/dev/null)" ]; then
     rmdir "$TARGET/controle"
-    echo "  ✓ controle/ (raiz, versao antiga) migrado pra docs/controle/ ($moved task(s))"
+    echo "  ✓ controle/ (raiz, versao antiga) migrado pra doc/controle/ ($moved task(s))"
   elif [ "$moved" -gt 0 ]; then
     echo "  ⚠ controle/ migrado em parte ($moved task(s)); restou conteudo — verifique a mao"
   fi
 fi
 
+# 7d) Migracao de LAYOUT (pre-ia/doc): o pack agora vive em ia/ e os outputs em doc/.
+#     Move os DADOS do usuario (docs/*) pra doc/ e remove as copias antigas do pack na raiz
+#     (reinstaladas em ia/ nas secoes acima). Preserva tudo do usuario; nunca sobrescreve.
+if [ -d "$TARGET/docs" ]; then
+  mkdir -p "$TARGET/doc"
+  for d in "$TARGET/docs"/*/; do
+    [ -d "$d" ] || continue
+    b="$(basename "$d")"
+    if [ "$b" = "arquitetura" ]; then
+      mkdir -p "$TARGET/doc/arquitetura"
+      for item in "$d"*; do
+        [ -e "$item" ] || continue
+        ib="$(basename "$item")"
+        case "$ib" in
+          templates|design-system) rm -rf "$item" ;;   # do pack — ja reinstalado em ia/
+          *) [ -e "$TARGET/doc/arquitetura/$ib" ] || mv "$item" "$TARGET/doc/arquitetura/$ib" ;;
+        esac
+      done
+      rmdir "$d" 2>/dev/null || true
+    elif [ ! -e "$TARGET/doc/$b" ]; then
+      mv "$d" "$TARGET/doc/$b"; echo "  ✓ docs/$b (layout antigo) -> doc/$b"
+    fi
+  done
+  rmdir "$TARGET/docs" 2>/dev/null || true
+fi
+for old in prompts skills tools COMO-USAR.html COMO-USAR.md; do
+  if [ -e "$TARGET/$old" ]; then rm -rf "$TARGET/$old"; echo "  ✓ $old (raiz, layout antigo) removido — agora em ia/"; fi
+done
+
 # 8) Limpeza de lixo do Finder
-find "$TARGET/prompts" "$TARGET/skills" "$TARGET/.github" "$TARGET/.kiro" "$TARGET/docs/arquitetura" \
+find "$TARGET/ia" "$TARGET/.github" "$TARGET/.kiro" "$TARGET/doc" \
   -name '.DS_Store' -delete 2>/dev/null || true
 
 echo ""
@@ -218,4 +247,4 @@ echo "   Frontend:   \"polir essa pagina\""
 echo "   Engenharia: \"investiga esse bug\" · \"planeja a implementacao\""
 echo "   Controle:   \"nova tarefa: <slug> — <descricao>\"  (protocolo de 2 turnos)"
 echo ""
-echo "📖 Mensagens prontas por trilha: abra COMO-USAR.html (raiz do repo) no navegador"
+echo "📖 Mensagens prontas por trilha: abra ia/COMO-USAR.html no navegador"

@@ -3,7 +3,7 @@ name: executor-de-plano
 description: "Executa o plano aprovado etapa por etapa com verificacao por etapa, regra de desvio e parada em bloqueio"
 ---
 
-Siga TODO o processo descrito em `prompts/engenharia/executor-de-plano.md` (na raiz deste repositorio), fase por
+Siga TODO o processo descrito em `ia/prompts/engenharia/executor-de-plano.md` (na raiz deste repositorio), fase por
 fase, na ordem em que esta escrito.
 
 Regras de execucao:

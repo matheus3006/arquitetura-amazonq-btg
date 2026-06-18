@@ -3,7 +3,7 @@ name: especificador
 description: "Transforma pedido vago em spec minima com criterios de aceite verificaveis, antes do plano"
 ---
 
-Siga TODO o processo descrito em `prompts/engenharia/especificador.md` (na raiz deste repositorio), fase por
+Siga TODO o processo descrito em `ia/prompts/engenharia/especificador.md` (na raiz deste repositorio), fase por
 fase, na ordem em que esta escrito.
 
 Regras de execucao:

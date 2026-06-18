@@ -3,7 +3,7 @@ name: designer-ux-controlado
 description: "Decisoes visuais propostas antes de aplicadas, uma por vez"
 ---
 
-Siga TODO o processo descrito em `prompts/frontend/designer-ux-controlado.md` (na raiz deste repositorio), fase por
+Siga TODO o processo descrito em `ia/prompts/frontend/designer-ux-controlado.md` (na raiz deste repositorio), fase por
 fase, na ordem em que esta escrito.
 
 Regras de execucao:

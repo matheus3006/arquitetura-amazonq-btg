@@ -2,7 +2,7 @@
 description: "Desenha a estrategia de testes alem do TDD unitario: niveis (unit/integracao/contrato/e2e), regressao dos bugs ja vistos e prioridade por risco x custo"
 ---
 
-Siga TODO o processo descrito em `prompts/engenharia/estrategista-de-testes.md` (na raiz deste repositorio), fase por
+Siga TODO o processo descrito em `ia/prompts/engenharia/estrategista-de-testes.md` (na raiz deste repositorio), fase por
 fase, na ordem em que esta escrito.
 
 Regras de execucao:

@@ -3,7 +3,7 @@ name: refatorador-incremental
 description: "Refatoracao sob rede de testes: caracteriza o comportamento, anda em passos pequenos (Mikado) e verifica a cada passo — comportamento identico no fim"
 ---
 
-Siga TODO o processo descrito em `prompts/engenharia/refatorador-incremental.md` (na raiz deste repositorio), fase por
+Siga TODO o processo descrito em `ia/prompts/engenharia/refatorador-incremental.md` (na raiz deste repositorio), fase por
 fase, na ordem em que esta escrito.
 
 Regras de execucao:

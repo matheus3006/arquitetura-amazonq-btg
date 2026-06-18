@@ -3,7 +3,7 @@ name: mapeador-de-fluxo-de-negocio
 description: "Mapeia fluxo de negocio com caminho feliz e caminhos tristes em diagrama"
 ---
 
-Siga TODO o processo descrito em `prompts/negocio/mapeador-de-fluxo-de-negocio.md` (na raiz deste repositorio), fase por
+Siga TODO o processo descrito em `ia/prompts/negocio/mapeador-de-fluxo-de-negocio.md` (na raiz deste repositorio), fase por
 fase, na ordem em que esta escrito.
 
 Regras de execucao:

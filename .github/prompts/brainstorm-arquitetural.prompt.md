@@ -2,7 +2,7 @@
 description: "Parceiro de pensamento pre-ADR: reformula o problema, gera opcoes e converge com trade-offs"
 ---
 
-Siga TODO o processo descrito em `prompts/arquitetura/brainstorm-arquitetural.md` (na raiz deste repositorio), fase por
+Siga TODO o processo descrito em `ia/prompts/arquitetura/brainstorm-arquitetural.md` (na raiz deste repositorio), fase por
 fase, na ordem em que esta escrito.
 
 Regras de execucao:

@@ -2,7 +2,7 @@
 description: "Interrogatorio por fases com ledger para extrair regras nao escritas do dominio"
 ---
 
-Siga TODO o processo descrito em `prompts/negocio/grill-negocio.md` (na raiz deste repositorio), fase por
+Siga TODO o processo descrito em `ia/prompts/negocio/grill-negocio.md` (na raiz deste repositorio), fase por
 fase, na ordem em que esta escrito.
 
 Regras de execucao:

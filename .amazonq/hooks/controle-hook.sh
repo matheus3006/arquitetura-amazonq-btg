@@ -16,7 +16,7 @@ cat <<EOF
 [protocolo de controle · inicio de interacao · hoje e $hoje]
 Se esta mensagem CRIA ou ALTERA qualquer artefato no repo (codigo, doc, spec, design,
 diagrama, plano, config — nao so codigo), abra/atualize a task ANTES de editar:
-  docs/controle/$hoje-<slug>/  ->  TASK.md (escopo + ACs + checklist) + LEDGER.md
+  doc/controle/$hoje-<slug>/  ->  TASK.md (escopo + ACs + checklist) + LEDGER.md
 Derive o <slug> (2-4 palavras kebab-case) do proprio pedido; nao peca o nome ao usuario.
 Marque cada passo do checklist [x] na hora em que concluir (o TASK.md e o status vivo).
 Pergunta pura de leitura/conversa (nao gera artefato): responda direto, sem task.

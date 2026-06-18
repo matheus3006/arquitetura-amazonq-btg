@@ -2,7 +2,7 @@
 description: "Analisa o dominio e gera o contexto de negocio (regras, atores, eventos)"
 ---
 
-Siga TODO o processo descrito em `prompts/negocio/analisador-de-dominio.md` (na raiz deste repositorio), fase por
+Siga TODO o processo descrito em `ia/prompts/negocio/analisador-de-dominio.md` (na raiz deste repositorio), fase por
 fase, na ordem em que esta escrito.
 
 Regras de execucao:

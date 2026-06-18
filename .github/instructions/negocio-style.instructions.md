@@ -25,7 +25,7 @@ Pedido de doc de negócio chega
         ↓
 os três arquivos de contexto de negócio existem?
         │
-        ├── NENHUM existe → carregue prompts/negocio/analisador-de-dominio.md PRIMEIRO.
+        ├── NENHUM existe → carregue ia/prompts/negocio/analisador-de-dominio.md PRIMEIRO.
         │        Pare a geração. Conclua a análise de domínio. Peça confirmação.
         │        Depois o usuário reinvoca o pedido original.
         │
@@ -48,7 +48,7 @@ de domínio o consome. Se faltar, sugira rodar `analisador-de-projeto.md` antes;
 seguir a partir do código.
 
 O contexto de negócio tem **peso de regra**, igual a esta. Quando define um termo ou regra,
-**sobrescreve** qualquer exemplo em `docs/arquitetura/templates/`.
+**sobrescreve** qualquer exemplo em `ia/templates/`.
 
 ---
 
@@ -59,8 +59,8 @@ O contexto de negócio tem **peso de regra**, igual a esta. Quando define um ter
 | `.github/instructions/negocio-style.instructions.md` (esta) | **REGRA** | Convenções + gate + hooks de negócio. |
 | Contexto de negócio: `.amazonq/rules/business-context.md` + `.github/instructions/business-context.instructions.md` + `.kiro/steering/business-context.md` | **REGRA por projeto** (gerada pelo analisador de domínio) | Fonte de verdade de negócio. Sobrescreve exemplos. |
 | Contexto do projeto: `.amazonq/rules/project-context.md` + `.github/instructions/project-context.instructions.md` + `.kiro/steering/project-context.md` | **REGRA por projeto** (trilha técnica, reusada) | Contexto de código que o negócio consome. |
-| `prompts/negocio/*.md` | **REGRA** (metodologia) | Carregue conforme a tabela de hooks § 2. |
-| `docs/arquitetura/design-system/*.css`, `docs/arquitetura/templates/diagram-viewer.js`, `docs/arquitetura/templates/sidebar.js` | **REGRA** (reuso) | Mesmos do pack técnico. Não duplicar, não substituir. |
+| `ia/prompts/negocio/*.md` | **REGRA** (metodologia) | Carregue conforme a tabela de hooks § 2. |
+| `ia/design-system/*.css`, `ia/templates/diagram-viewer.js`, `ia/templates/sidebar.js` | **REGRA** (reuso) | Mesmos do pack técnico. Não duplicar, não substituir. |
 
 A doc de negócio **mora junto** da técnica, no mesmo repo do serviço, e **compartilha** o par de contexto do projeto.
 
@@ -82,11 +82,11 @@ Nunca misture as duas numa mesma página. Um mesmo fluxo pode ter as duas docs �
 
 | Quando o usuário pedir / mencionar | Carregue |
 |---|---|
-| **Primeira doc de negócio** OU "analisa o domínio", "mapeia o negócio", par de contexto de negócio ausente/incompleto (ver gate) | `prompts/negocio/analisador-de-dominio.md` (antes de qualquer outro) |
-| "documentar fluxo de negócio", "caminho feliz", "caminho triste", "processo de negócio", "como o negócio funciona" | `prompts/negocio/mapeador-de-fluxo-de-negocio.md` |
-| "catálogo de regras", "regras de negócio", "que regras existem", "lista as regras" | `prompts/negocio/catalogo-de-regras.md` |
-| "glossário de negócio", "linguagem ubíqua", "termos do domínio", "dicionário de negócio" | `prompts/negocio/glossario-de-negocio.md` |
-| "grilla o negócio", "me interroga sobre as regras", "que regras não estão escritas", "estressa o domínio", "valida o entendimento de negócio" | `prompts/negocio/grill-negocio.md` |
+| **Primeira doc de negócio** OU "analisa o domínio", "mapeia o negócio", par de contexto de negócio ausente/incompleto (ver gate) | `ia/prompts/negocio/analisador-de-dominio.md` (antes de qualquer outro) |
+| "documentar fluxo de negócio", "caminho feliz", "caminho triste", "processo de negócio", "como o negócio funciona" | `ia/prompts/negocio/mapeador-de-fluxo-de-negocio.md` |
+| "catálogo de regras", "regras de negócio", "que regras existem", "lista as regras" | `ia/prompts/negocio/catalogo-de-regras.md` |
+| "glossário de negócio", "linguagem ubíqua", "termos do domínio", "dicionário de negócio" | `ia/prompts/negocio/glossario-de-negocio.md` |
+| "grilla o negócio", "me interroga sobre as regras", "que regras não estão escritas", "estressa o domínio", "valida o entendimento de negócio" | `ia/prompts/negocio/grill-negocio.md` |
 
 Ao gerar HTML final, aplique também `.github/instructions/frontend-style.instructions.md` (mesmo esqueleto, design-system e viewer da trilha técnica).
 
@@ -126,7 +126,7 @@ classDef desfechoTriste fill:#e85a5a,stroke:#0a0c12,color:#ffffff,stroke-width:2
 
 Idêntico ao da trilha técnica: siga `.github/instructions/frontend-style.instructions.md` § 1 e o esqueleto de `architecture-style.md` § 3 (mesmo `shell`, `sidebar.js`, `tokens.css` + `components.css`, `diagram-viewer.js`). **O que muda são as seções de conteúdo**, definidas por cada prompt — não a estrutura.
 
-As páginas geradas vivem em `docs/arquitetura/templates/` no repositório (junto de `sidebar.js`/`diagram-viewer.js`). **Crie `docs/arquitetura/` e subpastas se não existirem** antes de gravar.
+As páginas geradas vivem em `ia/templates/` no repositório (junto de `sidebar.js`/`diagram-viewer.js`). **Crie `doc/arquitetura/` e subpastas se não existirem** antes de gravar.
 
 ---
 

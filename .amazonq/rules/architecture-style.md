@@ -20,7 +20,7 @@ Pedido de geração chega
         ↓
 os três arquivos de contexto existem?
         │
-        ├── NENHUM existe → carregue `prompts/arquitetura/analisador-de-projeto.md` PRIMEIRO.
+        ├── NENHUM existe → carregue `ia/prompts/arquitetura/analisador-de-projeto.md` PRIMEIRO.
         │        Pare a geração original. Conclua a análise. Peça confirmação.
         │        Depois disso o usuário pode reinvocar o pedido original.
         │
@@ -36,7 +36,7 @@ os três arquivos de contexto existem?
 ```
 
 O contexto do projeto tem **peso de regra**, igual a este arquivo. Quando ele afirma "não usamos Outbox",
-isso **sobrescreve** qualquer exemplo em `docs/arquitetura/templates/` que mencione Outbox.
+isso **sobrescreve** qualquer exemplo em `ia/templates/` que mencione Outbox.
 
 ---
 
@@ -49,11 +49,11 @@ Antes de qualquer coisa, entenda como tratar o que existe aqui:
 | `.amazonq/rules/architecture-style.md` (este arquivo) | **REGRA** | Aplique sempre. Convenções de geração e hooks de prompt. |
 | `.amazonq/rules/frontend-style.md` | **REGRA** | Aplique sempre. Estrutura HTML e padrão de diagramas. |
 | Contexto do projeto: `.amazonq/rules/project-context.md` + `.github/instructions/project-context.instructions.md` + `.kiro/steering/project-context.md` | **REGRA por projeto** (gerada pelo analisador, nos três destinos) | Define este projeto específico. Sobrescreve exemplos. Se não existirem (ou faltar algum), agir conforme o gate acima (analisador ou espelhamento). |
-| `prompts/arquitetura/*.md` | **REGRA** (metodologia) | Carregue conforme tabela de hooks. Siga a metodologia descrita. |
-| `prompts/frontend/*.md` | **REGRA** (metodologia) | Carregue para tarefas visuais. |
-| `docs/arquitetura/design-system/tokens.css` e `components.css` | **REGRA** (CSS) | Use `var(--*)` sempre. Nunca hardcode cor/espaço/raio. |
-| `docs/arquitetura/templates/*.html` | **EXEMPLO** | Páginas de um serviço **fictício** chamado "Liquidação Transacional". Demonstram aplicação dos prompts. **Substitua toda substância (nomes, decisões, latências, stack, glossário) pelo serviço REAL** ao gerar nova documentação. Mantenha apenas o esqueleto estrutural. |
-| `docs/arquitetura/templates/sidebar.js` e `docs/arquitetura/templates/diagram-viewer.js` | **REGRA** (runtime) | Inclua em toda página gerada. Não substitua por alternativa. |
+| `ia/prompts/arquitetura/*.md` | **REGRA** (metodologia) | Carregue conforme tabela de hooks. Siga a metodologia descrita. |
+| `ia/prompts/frontend/*.md` | **REGRA** (metodologia) | Carregue para tarefas visuais. |
+| `ia/design-system/tokens.css` e `components.css` | **REGRA** (CSS) | Use `var(--*)` sempre. Nunca hardcode cor/espaço/raio. |
+| `ia/templates/*.html` | **EXEMPLO** | Páginas de um serviço **fictício** chamado "Liquidação Transacional". Demonstram aplicação dos prompts. **Substitua toda substância (nomes, decisões, latências, stack, glossário) pelo serviço REAL** ao gerar nova documentação. Mantenha apenas o esqueleto estrutural. |
+| `ia/templates/sidebar.js` e `ia/templates/diagram-viewer.js` | **REGRA** (runtime) | Inclua em toda página gerada. Não substitua por alternativa. |
 
 **Resumo:** estilo de redação, convenção de diagrama, estrutura HTML básica, fluxo dos prompts → **regra**.
 Conteúdo concreto, nomes de serviços, decisões específicas, valores de latência, terminologia de domínio → **exemplo, adaptar à realidade**.
@@ -67,7 +67,7 @@ Esta é **a única regra prescritiva sobre visual** neste workspace. Aplicação
 ### 1.1 Tecnologia: Mermaid via `diagram-viewer.js`
 
 - Use **Mermaid** (não outras ferramentas de diagrama, não imagens PNG, não SVG estático).
-- Renderização via o leitor estático em `docs/arquitetura/templates/diagram-viewer.js`. Esse leitor:
+- Renderização via o leitor estático em `ia/templates/diagram-viewer.js`. Esse leitor:
   - Carrega Mermaid e Panzoom como `<script>` clássicos (não ES Modules — quebram em `file://`).
   - Lê a fonte do diagrama de `<script type="text/mermaid" data-id="...">` no fim do `<body>`.
   - Renderiza com tema `neutral` (fundo claro, traços escuros — boa legibilidade).
@@ -138,21 +138,21 @@ Antes de responder, identifique se a intenção do usuário casa com algum gatil
 
 | Quando o usuário pedir / mencionar | Carregue este prompt |
 |---|---|
-| **Primeira invocação em um repositório** OU "analisa o projeto", "refresh project context", "atualiza contexto" OU par de contexto do projeto ausente/incompleto (ver gate) | `prompts/arquitetura/analisador-de-projeto.md` (sempre antes de qualquer outro prompt) |
-| "documentar o serviço do zero", "documentação técnica completa", "começar a documentação do repo" | `prompts/arquitetura/documentar-servico.md` (**Etapa 1/3** — orquestra contexto + domínio + arquitetura) |
-| "completar a documentação", "documentar os fluxos e o runbook" (após a Etapa 1) | `prompts/arquitetura/completar-documentacao.md` (**Etapa 2/3** — fluxos + runbook) |
-| "grill intenso de arquitetura", "questionar as incertezas da doc", "aprofundar a doc gerada" | `prompts/arquitetura/grill-arquitetura.md` (**Etapa 3/3** — código-primeiro, sessão nova) |
-| "sincronizar a doc com o código", "atualizar a doc depois da mudança/merge", "documentar o que mudou na branch" | `prompts/arquitetura/sincronizar-doc-codigo.md` (diff `main...HEAD` → grill do porquê com grill-me + human-architect-mindset → atualiza doc → ADR) |
-| "atualizar a visão geral", "só a página de arquitetura", "system context"/"container diagram" avulso | `prompts/arquitetura/arquiteto-de-sistema.md` (página única; o fluxo completo do zero é `documentar-servico`) |
-| "criar ADR", "registrar decisão", "decisão arquitetural", "MADR", "trade-off" | `prompts/arquitetura/gerador-adr.md` |
-| "runbook", "documentação operacional", "failure mode", "on-call", "SLO" | `prompts/arquitetura/gerador-runbook.md` |
-| "documentar fluxo", "sequência transacional", "fluxograma de processo", "saga", "fluxo de autorização" | `prompts/arquitetura/documentador-fluxo.md` |
-| "revisar documentação", "validar ADR", "achar furo na doc", "consistência", "auditoria de doc" | `prompts/arquitetura/grill-doc.md` |
-| "brainstorm", "explorar opções", "ainda não decidi", "ajuda a pensar", "discutir abordagem" | `prompts/arquitetura/brainstorm-arquitetural.md` |
-| "design", "cor", "tipografia", "visual", "layout", "como ficar bonito" | `prompts/frontend/designer-ux-controlado.md` |
-| "estilo", "paleta", "componente UI", "padrão visual catálogo" | `prompts/frontend/designer-ui-pro-max.md` |
-| "design system", "tokens", "padronizar componentes" | `prompts/frontend/design-system-arquitetura.md` |
-| "polir", "animação", "micro-interação", "detalhe", "acabamento" | `prompts/frontend/polidor-ui.md` |
+| **Primeira invocação em um repositório** OU "analisa o projeto", "refresh project context", "atualiza contexto" OU par de contexto do projeto ausente/incompleto (ver gate) | `ia/prompts/arquitetura/analisador-de-projeto.md` (sempre antes de qualquer outro prompt) |
+| "documentar o serviço do zero", "documentação técnica completa", "começar a documentação do repo" | `ia/prompts/arquitetura/documentar-servico.md` (**Etapa 1/3** — orquestra contexto + domínio + arquitetura) |
+| "completar a documentação", "documentar os fluxos e o runbook" (após a Etapa 1) | `ia/prompts/arquitetura/completar-documentacao.md` (**Etapa 2/3** — fluxos + runbook) |
+| "grill intenso de arquitetura", "questionar as incertezas da doc", "aprofundar a doc gerada" | `ia/prompts/arquitetura/grill-arquitetura.md` (**Etapa 3/3** — código-primeiro, sessão nova) |
+| "sincronizar a doc com o código", "atualizar a doc depois da mudança/merge", "documentar o que mudou na branch" | `ia/prompts/arquitetura/sincronizar-doc-codigo.md` (diff `main...HEAD` → grill do porquê com grill-me + human-architect-mindset → atualiza doc → ADR) |
+| "atualizar a visão geral", "só a página de arquitetura", "system context"/"container diagram" avulso | `ia/prompts/arquitetura/arquiteto-de-sistema.md` (página única; o fluxo completo do zero é `documentar-servico`) |
+| "criar ADR", "registrar decisão", "decisão arquitetural", "MADR", "trade-off" | `ia/prompts/arquitetura/gerador-adr.md` |
+| "runbook", "documentação operacional", "failure mode", "on-call", "SLO" | `ia/prompts/arquitetura/gerador-runbook.md` |
+| "documentar fluxo", "sequência transacional", "fluxograma de processo", "saga", "fluxo de autorização" | `ia/prompts/arquitetura/documentador-fluxo.md` |
+| "revisar documentação", "validar ADR", "achar furo na doc", "consistência", "auditoria de doc" | `ia/prompts/arquitetura/grill-doc.md` |
+| "brainstorm", "explorar opções", "ainda não decidi", "ajuda a pensar", "discutir abordagem" | `ia/prompts/arquitetura/brainstorm-arquitetural.md` |
+| "design", "cor", "tipografia", "visual", "layout", "como ficar bonito" | `ia/prompts/frontend/designer-ux-controlado.md` |
+| "estilo", "paleta", "componente UI", "padrão visual catálogo" | `ia/prompts/frontend/designer-ui-pro-max.md` |
+| "design system", "tokens", "padronizar componentes" | `ia/prompts/frontend/design-system-arquitetura.md` |
+| "polir", "animação", "micro-interação", "detalhe", "acabamento" | `ia/prompts/frontend/polidor-ui.md` |
 
 **Fluxo canônico de documentação do zero — 3 etapas obrigatórias:**
 `documentar-servico` (Etapa 1: contexto + domínio + arquitetura) → `completar-documentacao`
@@ -167,9 +167,9 @@ Quando gerar HTML final, **sempre** aplique também `.amazonq/rules/frontend-sty
 
 ## 3. Esqueleto de página HTML
 
-Todo HTML novo segue este esqueleto (demonstrado em `docs/arquitetura/templates/01-visao-geral.html` — os instaladores copiam as páginas de exemplo por padrão; numa instalação com `--no-examples`, o esqueleto abaixo é a referência completa). Detalhamento em `frontend-style.md`.
+Todo HTML novo segue este esqueleto (demonstrado em `ia/templates/01-visao-geral.html` — os instaladores copiam as páginas de exemplo por padrão; numa instalação com `--no-examples`, o esqueleto abaixo é a referência completa). Detalhamento em `frontend-style.md`.
 
-As páginas geradas vivem em `docs/arquitetura/templates/` no repositório (junto de `sidebar.js`/`diagram-viewer.js`). **Crie `docs/arquitetura/` e subpastas se não existirem** antes de gravar.
+As páginas geradas vivem em `ia/templates/` no repositório (junto de `sidebar.js`/`diagram-viewer.js`). **Crie `doc/arquitetura/` e subpastas se não existirem** antes de gravar.
 
 ```html
 <!DOCTYPE html>
@@ -244,7 +244,7 @@ Os termos abaixo são definição operacional **no exemplo fictício** "Liquida�
 
 ## 6. Comportamento de geração
 
-Toda página HTML gerada é gravada em `docs/arquitetura/templates/` (crie os diretórios se não existirem).
+Toda página HTML gerada é gravada em `ia/templates/` (crie os diretórios se não existirem).
 
 ### Ao gerar ADR
 - Mínimo 3 decision drivers. Mínimo 2 opções consideradas.
@@ -257,7 +257,7 @@ Toda página HTML gerada é gravada em `docs/arquitetura/templates/` (crie os di
 - Nunca inventar SLO/SLA. Se não souber, **pergunte ao usuário**.
 
 ### Ao gerar visão de arquitetura
-- Use a persona de `prompts/arquitetura/arquiteto-de-sistema.md`.
+- Use a persona de `ia/prompts/arquitetura/arquiteto-de-sistema.md`.
 - Faça as 5 perguntas-âncora descritas no prompt antes de gerar conteúdo concreto.
 - Renderize cada seção como `<section>` HTML semântica com `class="section-eyebrow"` no heading.
 

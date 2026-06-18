@@ -2,7 +2,7 @@
 description: "Conduz a revisao de codigo por dimensoes (correcao, seguranca, simplicidade/reuso, testes) com achados por severidade e evidencia arquivo:linha"
 ---
 
-Siga TODO o processo descrito em `prompts/engenharia/revisor-de-codigo.md` (na raiz deste repositorio), fase por
+Siga TODO o processo descrito em `ia/prompts/engenharia/revisor-de-codigo.md` (na raiz deste repositorio), fase por
 fase, na ordem em que esta escrito.
 
 Regras de execucao:

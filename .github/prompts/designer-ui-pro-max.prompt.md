@@ -2,7 +2,7 @@
 description: "Catalogo de estilos, paletas e padroes visuais para escolher direcao"
 ---
 
-Siga TODO o processo descrito em `prompts/frontend/designer-ui-pro-max.md` (na raiz deste repositorio), fase por
+Siga TODO o processo descrito em `ia/prompts/frontend/designer-ui-pro-max.md` (na raiz deste repositorio), fase por
 fase, na ordem em que esta escrito.
 
 Regras de execucao:

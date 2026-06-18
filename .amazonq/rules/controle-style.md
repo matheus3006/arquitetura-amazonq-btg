@@ -2,7 +2,7 @@
 
 > Lido automaticamente pelo Amazon Q em todo workspace que contenha esta pasta.
 > Governa o **protocolo de controle de tarefas**: toda edição no repositório nasce de uma
-> task com escopo, plano e evidências registrados em `docs/controle/`. Otimizado para cota de
+> task com escopo, plano e evidências registrados em `doc/controle/`. Otimizado para cota de
 > requests — 2 turnos por task, trivial em 1. Removível por repo: apague esta rule
 > e os hooks de início de interação (`.amazonq/cli-agents/arquitetura.json` +
 > `.amazonq/hooks/controle-hook.sh` + `.kiro/hooks/controle-prompt.kiro.hook`) se o time
@@ -16,7 +16,7 @@ Qualquer pedido que **crie ou modifique um entregável** — código, documento,
 diagrama, plano, configuração, pesquisa escrita, **qualquer artefato** que fique no
 repositório — exige task ativa, mesmo mandado como mensagem normal, sem comando especial.
 **O protocolo NÃO é só para código:** vale para QUALQUER task que produza ou altere um
-artefato. Dispare-o carregando `prompts/engenharia/controle-de-tarefa.md` e siga-o completo
+artefato. Dispare-o carregando `ia/prompts/engenharia/controle-de-tarefa.md` e siga-o completo
 (templates e fases lá).
 
 Única exceção — pergunta **puramente de leitura/conversa**, que não gera nem altera artefato
@@ -33,7 +33,7 @@ como override opcional quando o usuário quiser nomear na mão.
 
 | Turno | O que acontece |
 |---|---|
-| 1 · Plano | Criar `docs/controle/<task-id>/TASK.md` (escopo + ACs) e `PLANO.md` **ou** `PLANO.html` (pergunte o formato junto com as demais perguntas, no mesmo turno). Terminar pedindo aprovação. |
+| 1 · Plano | Criar `doc/controle/<task-id>/TASK.md` (escopo + ACs) e `PLANO.md` **ou** `PLANO.html` (pergunte o formato junto com as demais perguntas, no mesmo turno). Terminar pedindo aprovação. |
 | 2 · Execução | Usuário aprovou → condensar o plano em checklist dentro do TASK.md, executar **marcando cada item `[x]` na hora em que conclui** (o TASK.md é o status vivo), registrar decisões e evidências em `LEDGER.md`, fechar (`fase: concluida`). Tudo em UM turno. |
 
 Task trivial (1 arquivo, baixo risco, ou usuário declarou `tipo: trivial`): um turno só —
@@ -44,7 +44,7 @@ TASK.md mínimo + execução + LEDGER. Sem PLANO.
 - task-id: `AAAA-MM-DD-<slug>`. Caps: TASK.md ≤ 40 linhas · LEDGER.md ≤ 60 · PLANO.md ≤ 80 · PLANO.html sem cap.
 - Após a aprovação, o PLANO **nunca é relido** — a fonte da execução é o checklist do TASK.md.
 - **Status vivo:** marque cada passo do checklist como `[x]` em TASK.md no instante em que o conclui (nunca em lote no fim). O TASK.md é a fonte de verdade de onde a task está — é o que impede a sessão de se perder e o que outra sessão lê para retomar.
-- Retomada de task em sessão nova: leia SOMENTE `docs/controle/<task-id>/TASK.md` + `LEDGER.md`.
+- Retomada de task em sessão nova: leia SOMENTE `doc/controle/<task-id>/TASK.md` + `LEDGER.md`.
 - Quem garante que a task nasça é o **hook de início de interação** (Amazon Q `userPromptSubmit` + Kiro `promptSubmit`): a cada mensagem ele lembra de abrir/atualizar a task ANTES de editar. Não há pre-commit nem trava no `git commit` — o humano commita livre; os arquivos da task viajam junto com o artefato por disciplina, não por bloqueio.
 - Conclusão segue a disciplina de verificação da `engenharia-style.md` § 2 — evidência antes de afirmação.
 

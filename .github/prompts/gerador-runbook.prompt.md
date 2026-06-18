@@ -2,7 +2,7 @@
 description: "Gera runbooks operacionais com failure modes, sintomas e acoes"
 ---
 
-Siga TODO o processo descrito em `prompts/arquitetura/gerador-runbook.md` (na raiz deste repositorio), fase por
+Siga TODO o processo descrito em `ia/prompts/arquitetura/gerador-runbook.md` (na raiz deste repositorio), fase por
 fase, na ordem em que esta escrito.
 
 Regras de execucao:

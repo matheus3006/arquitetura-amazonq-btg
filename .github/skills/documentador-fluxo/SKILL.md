@@ -3,7 +3,7 @@ name: documentador-fluxo
 description: "Documenta fluxos transacionais com sequence diagrams e payloads"
 ---
 
-Siga TODO o processo descrito em `prompts/arquitetura/documentador-fluxo.md` (na raiz deste repositorio), fase por
+Siga TODO o processo descrito em `ia/prompts/arquitetura/documentador-fluxo.md` (na raiz deste repositorio), fase por
 fase, na ordem em que esta escrito.
 
 Regras de execucao:

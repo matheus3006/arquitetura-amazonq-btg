@@ -2,7 +2,7 @@
 description: "Cataloga regras de negocio com origem, dono e consequencia"
 ---
 
-Siga TODO o processo descrito em `prompts/negocio/catalogo-de-regras.md` (na raiz deste repositorio), fase por
+Siga TODO o processo descrito em `ia/prompts/negocio/catalogo-de-regras.md` (na raiz deste repositorio), fase por
 fase, na ordem em que esta escrito.
 
 Regras de execucao:

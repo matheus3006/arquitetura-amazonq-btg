@@ -12,7 +12,7 @@
 | Pasta / arquivo | Status | Como usar |
 |---|---|---|
 | `.amazonq/rules/engenharia-style.md` (esta) | **REGRA** | Disciplina de conclusão sempre ativa + hooks da trilha. |
-| `prompts/engenharia/*.md` | **REGRA** (metodologia) | Carregue conforme a tabela de hooks § 1. |
+| `ia/prompts/engenharia/*.md` | **REGRA** (metodologia) | Carregue conforme a tabela de hooks § 1. |
 
 **Sem gate de contexto:** as disciplinas desta trilha funcionam em qualquer repositório,
 com ou sem contexto de projeto. Quando o contexto existir, use-o.
@@ -23,19 +23,19 @@ com ou sem contexto de projeto. Quando o contexto existir, use-o.
 
 | Quando o usuário pedir / mencionar | Carregue |
 |---|---|
-| "debugga", "investiga esse bug", "não funciona", "causa raiz", "por que está quebrando", "teste falhando" | `prompts/engenharia/depurador-sistematico.md` |
-| "planeja a implementação", "plano de implementação", "quebra em etapas", "como implementar isso passo a passo" | `prompts/engenharia/planejador-de-implementacao.md` |
-| "escreve a spec", "especifica isso", pedido vago sem comportamento/critérios definidos | `prompts/engenharia/especificador.md` |
-| "grilla o plano", "estressa esse plano", "revisa o plano antes de executar", "pre-mortem do plano" | `prompts/engenharia/grill-plano.md` |
-| "executa o plano", "implementa o plano aprovado", "segue o plano" | `prompts/engenharia/executor-de-plano.md` |
-| "TDD", "test-first", "escreve o teste primeiro", etapa de código dentro de um plano | `prompts/engenharia/tdd-disciplinado.md` |
-| "refatora", "limpa esse código", "reduz a duplicação", "extrai isso", "renomeia sem mudar comportamento" | `prompts/engenharia/refatorador-incremental.md` |
-| "estratégia de testes", "que testes escrever", "falta cobertura", "testes de regressão", "que nível de teste" | `prompts/engenharia/estrategista-de-testes.md` |
-| "revisa esse código", "code review", "revisa o PR/diff", "o que tem de errado aqui" | `prompts/engenharia/revisor-de-codigo.md` |
+| "debugga", "investiga esse bug", "não funciona", "causa raiz", "por que está quebrando", "teste falhando" | `ia/prompts/engenharia/depurador-sistematico.md` |
+| "planeja a implementação", "plano de implementação", "quebra em etapas", "como implementar isso passo a passo" | `ia/prompts/engenharia/planejador-de-implementacao.md` |
+| "escreve a spec", "especifica isso", pedido vago sem comportamento/critérios definidos | `ia/prompts/engenharia/especificador.md` |
+| "grilla o plano", "estressa esse plano", "revisa o plano antes de executar", "pre-mortem do plano" | `ia/prompts/engenharia/grill-plano.md` |
+| "executa o plano", "implementa o plano aprovado", "segue o plano" | `ia/prompts/engenharia/executor-de-plano.md` |
+| "TDD", "test-first", "escreve o teste primeiro", etapa de código dentro de um plano | `ia/prompts/engenharia/tdd-disciplinado.md` |
+| "refatora", "limpa esse código", "reduz a duplicação", "extrai isso", "renomeia sem mudar comportamento" | `ia/prompts/engenharia/refatorador-incremental.md` |
+| "estratégia de testes", "que testes escrever", "falta cobertura", "testes de regressão", "que nível de teste" | `ia/prompts/engenharia/estrategista-de-testes.md` |
+| "revisa esse código", "code review", "revisa o PR/diff", "o que tem de errado aqui" | `ia/prompts/engenharia/revisor-de-codigo.md` |
 
 Pedido ambíguo entre investigar e implementar ("conserta o X") → primeiro o depurador
 (causa raiz demonstrada), depois proponha o planejador se a correção for maior que um fix pontual.
-Dúvida ainda pré-decisão ("não sei qual abordagem") → `prompts/arquitetura/brainstorm-arquitetural.md` primeiro (ver architecture-style § 2).
+Dúvida ainda pré-decisão ("não sei qual abordagem") → `ia/prompts/arquitetura/brainstorm-arquitetural.md` primeiro (ver architecture-style § 2).
 
 **Fluxo completo de uma feature** (cada elo é opcional, a ordem não):
 pedido vago → `especificador` → (abordagem em aberto? `brainstorm-arquitetural` → `gerador-adr`)
@@ -63,7 +63,7 @@ que afirme progresso ou conclusão, em qualquer trilha deste pack:
 
 - Convenções de documentação (trilhas `arquitetura`/`negocio`) e visual (`frontend`).
 - Orquestração de subagentes/worktrees tem agora skills próprias importadas
-  (`skills/orquestracao/` — subagent-driven-development, dispatching-parallel-agents; e
-  `skills/fluxo-dev/` — using-git-worktrees, finishing-a-development-branch): use-as nos
+  (`ia/skills/orquestracao/` — subagent-driven-development, dispatching-parallel-agents; e
+  `ia/skills/fluxo-dev/` — using-git-worktrees, finishing-a-development-branch): use-as nos
   harnesses que suportam (Claude Code, Copilot CLI, Kiro). Onde o harness não suporta, não
   tente emular à mão.

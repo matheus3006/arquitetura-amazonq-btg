@@ -11,9 +11,9 @@
 | Item | Status |
 |---|---|
 | Esqueleto HTML, padrão de carregamento de scripts, padrão `.diagram-viewer` | **REGRA** |
-| Tokens de cor, espaço, tipografia em `docs/arquitetura/design-system/tokens.css` | **REGRA de uso** (via `var(--*)`) |
-| Componentes em `docs/arquitetura/design-system/components.css` | **CATÁLOGO disponível** — use o existente, evite reinventar |
-| Conteúdo das páginas em `docs/arquitetura/templates/` | **EXEMPLO** — substitua substância pelo serviço real |
+| Tokens de cor, espaço, tipografia em `ia/design-system/tokens.css` | **REGRA de uso** (via `var(--*)`) |
+| Componentes em `ia/design-system/components.css` | **CATÁLOGO disponível** — use o existente, evite reinventar |
+| Conteúdo das páginas em `ia/templates/` | **EXEMPLO** — substitua substância pelo serviço real |
 | Visual final (paleta navy/azul; tema escuro padrão + tema claro opcional) | **CONVENÇÃO da casa** — discutível com o time real, hoje é o padrão |
 | Controles de leitura (alternar tema, tamanho de fonte) via `prefs.js` + rodapé da `sidebar.js` | **REGRA** — incluir `prefs.js` no `<head>` |
 
@@ -263,7 +263,7 @@ A paleta vive em `tokens.css`, em **dois temas**: escuro (`:root`, padrão) e cl
 
 ## 9. Motion (Emil Kowalski)
 
-Detalhes em `prompts/frontend/polidor-ui.md`. Princípios:
+Detalhes em `ia/prompts/frontend/polidor-ui.md`. Princípios:
 
 - **Press feedback obrigatório** em elementos clicáveis: `transform: scale(0.97)` no `:active`. Já aplicado em `.doc-card`, `.sidebar__link`, `.diagram-viewer__btn`.
 - **Easings customizados** (`--ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1)`) em vez dos CSS defaults.
