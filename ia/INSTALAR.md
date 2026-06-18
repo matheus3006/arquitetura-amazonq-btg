@@ -82,9 +82,10 @@ no alvo, é uma instalação anterior — preserve-os intactos.
 
 Também não copie: `ia/tools/` inteira (são scripts de manutenção do pack de origem),
 `INSTALAR.md`, `README.md`, `LICENSE`,
-`doc/` — são do pack, não do serviço. Atenção: o resto de
-`doc/arquitetura/` (css, os 2 `.js` e as páginas de exemplo) **é** copiado, assim como
-o `ia/COMO-USAR.html` da raiz, conforme a tabela acima.
+nem a `doc/` do pack — são do pack, não do serviço. Os assets reutilizáveis do pack
+(css, os 2 `.js`, as páginas de exemplo e o `ia/COMO-USAR.html`) **são** copiados, mas
+vivem em `ia/design-system/`, `ia/templates/` e `ia/`, conforme a tabela acima — não há
+mais nenhum asset do pack dentro de `doc/`.
 
 ## Passo 3 — Verifique a instalação
 
