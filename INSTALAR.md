@@ -132,11 +132,47 @@ Os scripts `install.sh` / `install.ps1` já fazem TODAS essas correções sozinh
 pre-commit, instalam os hooks novos e movem `controle/` → `docs/controle/`); esta tabela é
 para quando você instala/migra na mão.
 
+## Passo 4b — Prepare a documentação existente para o novo fluxo (diagnóstico, não-destrutivo)
+
+A re-instalação **preserva** a documentação que o usuário já gerou (os `project-context` /
+`business-context` nos três destinos e as páginas em `docs/arquitetura/`). Se essa doc foi gerada
+por uma versão **anterior ao fluxo canônico de 3 etapas** (`documentar-servico` →
+`completar-documentacao` → `grill-arquitetura`), ela pode estar incompleta. Este passo é **só
+diagnóstico**: você **NÃO edita nem gera nada** — entrega ao usuário um plano do que falta e qual
+card rodar. Diferente do Passo 4, os scripts **não** fazem isto (exige ler a doc e julgar); é
+tarefa sua, assistente.
+
+**Primeiro, há doc real a migrar?** Se o `project-context` (nos três destinos) ainda é o exemplo
+fictício **"Liquidação Transacional"**, então **não há doc gerada** — siga para o Passo 5 (primeiro
+uso normal). Só continue aqui se a doc descreve o **serviço real** do usuário.
+
+| Sinal na doc existente | O que falta | Card para completar (no `COMO-USAR`) |
+|---|---|---|
+| `project-context` real existe, mas faltam os `business-context.md` (`.amazonq/rules/`, `.github/instructions/business-context.instructions.md`, `.kiro/steering/`) | a fundação de negócio | **"Mapear o domínio"** — trilha _Documentar o negócio_ (`/analisador-de-dominio`) |
+| Há páginas em `docs/arquitetura/`, mas **sem runbook nem fluxos críticos** | operação + runtime | **"Completar a documentação (Etapa 2/3)"** (`/completar-documentacao`) |
+| Doc com `⚠ a confirmar`, números redondos ou garantias não resolvidas | auditoria das incertezas | **"Grill intenso de arquitetura (Etapa 3/3)"** (`/grill-arquitetura`, em sessão nova) |
+
+Regras deste passo:
+
+- **Não** rode os cards você mesmo nem edite a doc — apenas monte o diagnóstico.
+- **Não** re-rode a Etapa 1 "do zero" sobre uma doc que já existe (duplicaria/sobrescreveria). Quem
+  já tem doc completa **só os blocos que faltam** — é exatamente por isso que eles existem como
+  cards isolados (ex.: o `business-context` é preenchido só pelo "Mapear o domínio", sem refazer a
+  arquitetura).
+- A geração roda **depois**, disparada pelo usuário, sob o protocolo de controle (task de 2 turnos:
+  plano → aprovação → execução).
+
+**Saída:** no fechamento (Passo 5), apresente algo como _"sua doc tem X, falta Y e Z; para alinhar
+ao fluxo de 3 etapas, rode estes cards nesta ordem: …"_ — ou, se a doc já cobre as três etapas,
+_"nada a migrar"_.
+
 ## Passo 5 — Oriente o usuário (primeiro uso)
 
 Ao terminar, diga ao usuário, nas suas palavras:
 
-1. A instalação está completa e verificada (mostre a lista do Passo 3).
+1. A instalação está completa e verificada (mostre a lista do Passo 3). Se o **Passo 4b** detectou
+   doc anterior ao fluxo de 3 etapas, apresente aqui o **plano de migração** (o que já existe, o que
+   falta e a ordem dos cards a rodar) — sem executá-lo; quem dispara é o usuário.
 2. O primeiro passo de uso é gerar o contexto do projeto: mensagem "analisa o projeto"
    (Amazon Q e Kiro — no Kiro a skill `analisador-de-projeto` ativa por descrição) ou
    `/analisador-de-projeto` (Copilot IDE). Sem isso, o pack bloqueia gerações de
