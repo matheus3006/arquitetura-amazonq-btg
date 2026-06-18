@@ -68,6 +68,20 @@ Pronto quando: ledger zerado e a tabela de certezas (incerteza → resolução �
 
 _Copilot IDE: /grill-arquitetura_
 
+### Sincronizar doc com o código
+
+**Quando:** Branch a mergear (ou código recém-mergeado) — atualizar a doc e capturar o porquê.
+
+```text
+Objetivo: na branch [BRANCH], sincronizar a documentação da aplicação [NOME_DA_APLICACAO] com o que o código mudou — entender o PORQUÊ das mudanças e registrar a decisão.
+
+Siga todo o processo de prompts/arquitetura/sincronizar-doc-codigo.md: analise o git diff main...HEAD primeiro e monte o inventário (mudança → efeito na arquitetura → página afetada); me grile o porquê com grill-me + human-architect-mindset (o HAM no comando das dimensões — invariante, modo de falha, ordem, escala; uma pergunta por vez, código antes de perguntar); atualize as páginas afetadas + o project-context se a stack mudou; e ao final me pergunte sobre criar ADR se a mudança não partiu de uma ADR existente (encadeando o card "Registrar uma decisão (ADR)").
+
+Pronto quando: doc atualizada batendo com o diff, o porquê de cada mudança registrado, e a decisão registrada (ADR nova) ou referenciada (ADR existente).
+```
+
+_Copilot IDE: /sincronizar-doc-codigo_
+
 ### Visão geral de arquitetura
 
 **Quando:** Documentar o serviço do zero ou atualizar a visão geral.

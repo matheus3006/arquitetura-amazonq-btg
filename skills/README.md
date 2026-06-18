@@ -15,16 +15,17 @@ atualização = recopiar da fonte. O conteúdo é em inglês (original preservad
 Mensagens prontas para cada uma: `COMO-USAR.html` (raiz do repo — cards com rodapé `Skill:`, agrupados por propósito junto com os prompts do pack).
 
 `.github/skills/` e `.kiro/skills/` são GERADOS por `tools/sync-copilot.sh` /
-`tools/sync-kiro.sh` — que copiam esta pasta verbatim além dos 29 wrappers do pack.
+`tools/sync-kiro.sh` — que copiam esta pasta verbatim além dos 30 wrappers do pack.
 Editar aqui + rodar os dois syncs = camadas atualizadas.
 
-## Catálogo (31)
+## Catálogo (32)
 
 | Categoria | Skill | Fonte | O que entrega |
 |---|---|---|---|
 | arquitetura | `human-architect-mindset` | local (.agents) | pensamento arquitetural sistêmico: domínio, restrições, decomposição |
 | arquitetura | `cto-advisor` | c-level-skills | conselheiro técnico-estratégico: stack, dívida, build-vs-buy |
 | arquitetura | `brainstorming` | superpowers | exploração de intenção/requisitos/design ANTES de construir |
+| arquitetura | `grill-me` | superpowers | interrogatório 1-a-1 até entendimento compartilhado; resolve cada ramo da árvore de decisão |
 | pm | `senior-pm` | pm-skills | ofício de PM sênior: priorização, stakeholders, discovery→delivery |
 | pm | `product-manager-toolkit` | product-skills | caixa de ferramentas de PM: frameworks, métricas, rituais |
 | pm | `product-discovery` | product-skills | descoberta de produto: hipóteses, entrevistas, validação |
@@ -59,4 +60,4 @@ Editar aqui + rodar os dois syncs = camadas atualizadas.
 Superpowers (obra/Jesse Vincent, MIT) · claude-code-skills marketplace (pm/product/c-level/executive-mentor) ·
 anthropic-skills (doc-coauthoring) · skills locais (mattpocock, bencium, comunidade). Uso interno. Versões
 congeladas na data da cópia (2026-06-11; lote dev/debug — code-review, fluxo-dev, orquestracao — e
-doc-coauthoring em 2026-06-17); ver histórico git para atualizações.
+doc-coauthoring em 2026-06-17; grill-me em 2026-06-18); ver histórico git para atualizações.

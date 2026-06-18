@@ -146,6 +146,7 @@ Antes de responder, identifique se a intenção do usuário casa com algum gatil
 | "documentar o serviço do zero", "documentação técnica completa", "começar a documentação do repo" | `prompts/arquitetura/documentar-servico.md` (**Etapa 1/3** — orquestra contexto + domínio + arquitetura) |
 | "completar a documentação", "documentar os fluxos e o runbook" (após a Etapa 1) | `prompts/arquitetura/completar-documentacao.md` (**Etapa 2/3** — fluxos + runbook) |
 | "grill intenso de arquitetura", "questionar as incertezas da doc", "aprofundar a doc gerada" | `prompts/arquitetura/grill-arquitetura.md` (**Etapa 3/3** — código-primeiro, sessão nova) |
+| "sincronizar a doc com o código", "atualizar a doc depois da mudança/merge", "documentar o que mudou na branch" | `prompts/arquitetura/sincronizar-doc-codigo.md` (diff `main...HEAD` → grill do porquê com grill-me + human-architect-mindset → atualiza doc → ADR) |
 | "atualizar a visão geral", "só a página de arquitetura", "system context"/"container diagram" avulso | `prompts/arquitetura/arquiteto-de-sistema.md` (página única; o fluxo completo do zero é `documentar-servico`) |
 | "criar ADR", "registrar decisão", "decisão arquitetural", "MADR", "trade-off" | `prompts/arquitetura/gerador-adr.md` |
 | "runbook", "documentação operacional", "failure mode", "on-call", "SLO" | `prompts/arquitetura/gerador-runbook.md` |

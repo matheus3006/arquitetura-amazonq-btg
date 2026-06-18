@@ -27,3 +27,4 @@ revisor-de-codigo	engenharia	Conduz a revisao de codigo por dimensoes (correcao,
 documentar-servico	arquitetura	Etapa 1 de 3 do fluxo de doc do zero: orquestra contexto (analisador-de-projeto) + dominio (analisador-de-dominio) + arquitetura (arquiteto-de-sistema) num fluxo so, com checkpoint entre fases
 completar-documentacao	arquitetura	Etapa 2 de 3: completa a doc tecnica com os fluxos criticos (documentador-fluxo) e o runbook (gerador-runbook), confirmados no codigo
 grill-arquitetura	arquitetura	Etapa 3 de 3: grill intenso codigo-primeiro sobre a doc gerada — cada incerteza resolvida pelo codigo (com nivel de certeza) ou perguntada ao humano, atualizada inline
+sincronizar-doc-codigo	arquitetura	Atualiza a doc a partir do diff da branch: analisa o codigo, grilla o porque (grill-me + human-architect-mindset) e registra ADR quando a mudanca nao partiu de uma ADR existente
