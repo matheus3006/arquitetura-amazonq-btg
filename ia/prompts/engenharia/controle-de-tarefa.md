@@ -126,8 +126,8 @@ Esqueleto mínimo usando o design system do pack (ajuste o caminho relativo se n
 ```html
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
 <title>Plano — [TASK_ID]</title>
-<link rel="stylesheet" href="../../docs/arquitetura/design-system/tokens.css">
-<link rel="stylesheet" href="../../docs/arquitetura/design-system/components.css">
+<link rel="stylesheet" href="../../../ia/design-system/tokens.css">
+<link rel="stylesheet" href="../../../ia/design-system/components.css">
 </head><body>
 <main class="container">
   <h1>Plano — [TÍTULO]</h1>

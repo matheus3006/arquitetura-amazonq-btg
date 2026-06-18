@@ -242,7 +242,7 @@ Essa convenção **não muda** quando o resto do visual (paleta, tipografia, etc
 Abra qualquer página em `ia/templates/` direto no navegador (Chrome ou Firefox):
 
 ```
-file:///caminho/para/arquitetura/docs/arquitetura/templates/index.html
+file:///caminho/para/arquitetura/ia/templates/index.html
 ```
 
 Os scripts são classic (não module) — funciona em `file://` sem servidor.
