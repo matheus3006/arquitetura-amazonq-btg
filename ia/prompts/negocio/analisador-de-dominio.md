@@ -1,17 +1,14 @@
-# Prompt — Analisador de Domínio (bootstrap da visão de negócio)
+# Prompt — Analisador de Domínio (bootstrap da visão de negócio · Etapa 1/7 sessão 1b da trilha arquitetura)
 
-> ## STATUS
+> ## STATUS (rev 2026-06-19 — v2)
 >
-> **PRIMEIRO prompt da trilha `negocio` a rodar** em um repositório. Produz o contexto de
-> negócio em TRÊS destinos — `.amazonq/rules/business-context.md`,
-> `.github/instructions/business-context.instructions.md` e
-> `.kiro/steering/business-context.md` — a **fonte de verdade de negócio**
-> que o GATE de `negocio-style.md` exige e que todos os outros prompts de negócio consomem.
->
-> **Isento do GATE** (ele é quem cria o arquivo). Na **Fase 2** ele **delega ao protocolo do
-> `grill-negocio.md`** — não reimplemente o loop, siga aquele (regra de ouro + ledger + fases).
->
-> Conteúdo de `ia/templates/` é **EXEMPLO**. Reconstrua o negócio do **código e domínio reais**.
+> - **Duplo papel:** (a) **PRIMEIRO prompt da trilha `negocio`** a rodar em um repositório; (b) **sessão 1b da Etapa 1/7 da trilha de arquitetura** (reusado por ela — este arquivo vive em `ia/prompts/negocio/`, não é movido nem duplicado).
+> - Roda em **sessão própria** (regra master: cada PROMPT em sessão própria). Quando vier da trilha arquitetura, a task de controle já foi aberta na sessão 1a — você **apenda neste mesmo `doc/controle/<task-id>/QA.md`**.
+> - Para CADA pergunta-âncora respondida pelo usuário, **apenda no `QA.md` NO MESMO TURNO** (status vivo). Regra binária: **verbatim** quando houver decisão (escolha entre opções, nome de tecnologia, restrição numérica); **normalizada** (1 linha) caso contrário.
+> - Produz o contexto de negócio em TRÊS destinos de rules — `.amazonq/rules/business-context.md`, `.github/instructions/business-context.instructions.md` e `.kiro/steering/business-context.md` — a fonte de verdade de negócio que o GATE de `negocio-style.md` exige.
+> - **Isento do GATE** (ele é quem cria o arquivo). Na **Fase 2** ele **delega ao protocolo do `grill-negocio.md`** — não reimplemente o loop, siga aquele (regra de ouro + ledger + fases).
+> - Conteúdo de `ia/templates/` é **EXEMPLO**. Reconstrua o negócio do **código e domínio reais**.
+> - Próximo passo (quando vier da trilha arquitetura): **Etapa 2/7 — `arquiteto-de-sistema`** (em sessão NOVA).
 
 Clona `grill-with-docs` (domain awareness) + DDD (linguagem ubíqua / bounded contexts) + event-storming. Lê o código, **propõe** a visão de negócio candidata, **confirma com você por grilling**, e grava o `business-context.md`.
 
@@ -173,3 +170,7 @@ _Evitar_: <sinônimos a não usar>
 - `mapeador-de-fluxo-de-negocio.md` → atores, desfechos e regras reais nos fluxos.
 - `catalogo-de-regras.md` → a tabela de regras vira página.
 - `glossario-de-negocio.md` → o glossário vira página.
+
+## Handoff (quando vier da trilha arquitetura)
+
+> Sessão 1b/Etapa 1 concluída. Etapa 1 inteira fechada. Próxima sessão: **`arquiteto-de-sistema`** (Etapa 2/7) em **sessão NOVA**.
