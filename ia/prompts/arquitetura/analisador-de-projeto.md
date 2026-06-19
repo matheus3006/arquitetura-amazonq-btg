@@ -1,17 +1,14 @@
-# Prompt — Analisador de Projeto
+# Prompt — Analisador de Projeto (Etapa 1/7 · sessão 1a)
 
-> ## STATUS
+> ## STATUS (rev 2026-06-19 — v2)
 >
-> Este é o **PRIMEIRO prompt** a rodar quando o assistente é invocado em um workspace novo.
-> Sua função é entender o projeto real e produzir o contexto do projeto em TRÊS destinos —
-> `.amazonq/rules/project-context.md`, `.github/instructions/project-context.instructions.md`
-> e `.kiro/steering/project-context.md` —
-> que servem como **fonte de verdade** para todas as gerações de documentação subsequentes.
->
-> Outros prompts (`arquiteto-de-sistema`, `gerador-adr`, etc.) **dependem** desse contexto.
-> Sem ele, eles vão vazar conteúdo do exemplo (Liquidação Transacional).
->
-> A **única regra rígida de visual** é a convenção de diagramas na rule da trilha `arquitetura` § 1 (`.amazonq/rules/architecture-style.md` ou `.github/instructions/architecture-style.instructions.md`, conforme a ferramenta), que **não muda independente do projeto**.
+> - Esta é a **sessão 1a da Etapa 1/7** da trilha de doc de arquitetura. Roda em **sessão própria** (regra master: cada PROMPT em sessão própria).
+> - **Antes de gerar `project-context.md`**, abra a task de controle: `doc/controle/<AAAA-MM-DD-slug>/` com `TASK.md` (escopo+ACs+checklist), `QA.md` (vazio, com o cabeçalho do template em `controle-de-tarefa.md`), `LEDGER.md`.
+> - Para CADA pergunta-âncora respondida pelo usuário, **apenda no `QA.md` NO MESMO TURNO** em que a resposta chega (status vivo). Regra binária: **verbatim** sempre que houver decisão (escolha entre opções, nome de tecnologia, restrição numérica); **normalizada** (1 linha) caso contrário.
+> - Saída: `project-context.md` em 3 destinos de **rules** (`.amazonq/rules/`, `.github/instructions/project-context.instructions.md`, `.kiro/steering/`).
+> - Próximo passo (handoff): **sessão 1b — `analisador-de-dominio`** (em sessão NOVA; vive em `ia/prompts/negocio/`, reusado pela trilha arquitetura).
+> - Outros prompts (`arquiteto-de-sistema`, `gerador-adr`, etc.) dependem desse contexto. Sem ele, eles vão vazar conteúdo do exemplo (Liquidação Transacional).
+> - A **única regra rígida de visual** é a convenção de diagramas na rule da trilha `arquitetura` § 1 (`.amazonq/rules/architecture-style.md` ou `.github/instructions/architecture-style.instructions.md`, conforme a ferramenta).
 
 ## Quando usar
 
@@ -281,3 +278,7 @@ Toda geração subsequente lê `project-context.md` antes de gerar:
 - `gerador-runbook.md` → usa SLO real, não inventa
 - `documentador-fluxo.md` → usa atores e dependências reais
 - `grill-doc.md` → audita docs contra project-context, sinaliza divergências
+
+## Handoff
+
+> Sessão 1a/Etapa 1 concluída. Próxima sessão: **`analisador-de-dominio`** (sessão 1b/Etapa 1) em **sessão NOVA**. Não orquestre — abra nova sessão. Após 1b, segue Etapa 2/7 (`arquiteto-de-sistema`).
