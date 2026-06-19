@@ -1,5 +1,5 @@
 ---
-description: "Etapa 3 de 3: grill intenso codigo-primeiro sobre a doc gerada — cada incerteza resolvida pelo codigo (com nivel de certeza) ou perguntada ao humano, atualizada inline"
+description: "Etapa 5/7: grill intenso codigo-primeiro sobre a doc gerada — cada incerteza resolvida pelo codigo (com nivel de certeza) ou perguntada ao humano; respostas apendadas no QA.md no mesmo turno"
 ---
 
 Siga TODO o processo descrito em `ia/prompts/arquitetura/grill-arquitetura.md` (na raiz deste repositorio), fase por

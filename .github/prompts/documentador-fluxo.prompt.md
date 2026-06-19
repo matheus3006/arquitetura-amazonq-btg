@@ -1,5 +1,5 @@
 ---
-description: "Documenta fluxos transacionais com sequence diagrams e payloads"
+description: "Etapa 3/7: pagina(s) de fluxo critico em doc/arquitetura/ (sequenceDiagram com autonumber). Apenda entry no NAV de sidebar.js"
 ---
 
 Siga TODO o processo descrito em `ia/prompts/arquitetura/documentador-fluxo.md` (na raiz deste repositorio), fase por

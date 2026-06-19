@@ -1,9 +1,9 @@
 ---
-name: grill-arquitetura
-description: "Etapa 5/7: grill intenso codigo-primeiro sobre a doc gerada — cada incerteza resolvida pelo codigo (com nivel de certeza) ou perguntada ao humano; respostas apendadas no QA.md no mesmo turno"
+name: validador-sintaxe-mermaid
+description: "Etapa 7/7: validador sintaxe + Mermaid (so reporta; checklist canonico + ia/tools/validar-doc.sh --mermaid opcional). Pareamento data-id, tipo valido, 4 classDef, autonumber sempre em sequence"
 ---
 
-Siga TODO o processo descrito em `ia/prompts/arquitetura/grill-arquitetura.md` (na raiz deste repositorio), fase por
+Siga TODO o processo descrito em `ia/prompts/arquitetura/validador-sintaxe-mermaid.md` (na raiz deste repositorio), fase por
 fase, na ordem em que esta escrito.
 
 Regras de execucao:

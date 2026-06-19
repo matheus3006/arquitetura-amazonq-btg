@@ -1,6 +1,6 @@
 ---
 name: analisador-de-projeto
-description: "Analisa o repositorio e gera o contexto tecnico do projeto (roda primeiro em todo repo novo)"
+description: "Etapa 1/7 (sessao 1a): analisa o repositorio e gera project-context.md em 3 destinos de rules (Amazon Q/Copilot/Kiro). Pre-requisito de toda a trilha; cada prompt em sessao propria"
 ---
 
 Siga TODO o processo descrito em `ia/prompts/arquitetura/analisador-de-projeto.md` (na raiz deste repositorio), fase por

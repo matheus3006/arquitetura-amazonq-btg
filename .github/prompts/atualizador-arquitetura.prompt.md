@@ -1,8 +1,8 @@
 ---
-description: "Etapa 1/7 (sessao 1b, reusado pela trilha arquitetura): analisa o dominio e gera business-context.md em 3 destinos de rules (regras, atores, eventos). Apenda Q&A no QA.md no mesmo turno"
+description: "Complementar (fora da trilha 1-7): conforma doc ja existente em doc/arquitetura/ as regras v2. Diagnostica, ramifica (front->plano+aplica; logico->grill+QA.md), 1 task de controle por execucao"
 ---
 
-Siga TODO o processo descrito em `ia/prompts/negocio/analisador-de-dominio.md` (na raiz deste repositorio), fase por
+Siga TODO o processo descrito em `ia/prompts/arquitetura/atualizador-arquitetura.md` (na raiz deste repositorio), fase por
 fase, na ordem em que esta escrito.
 
 Regras de execucao:

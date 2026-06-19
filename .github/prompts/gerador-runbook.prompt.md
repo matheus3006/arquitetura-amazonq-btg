@@ -1,5 +1,5 @@
 ---
-description: "Gera runbooks operacionais com failure modes, sintomas e acoes"
+description: "Etapa 4/7: doc/arquitetura/runbook.html (4 campos obrigatorios por failure mode, nada inventado). Apenda entry no NAV de sidebar.js"
 ---
 
 Siga TODO o processo descrito em `ia/prompts/arquitetura/gerador-runbook.md` (na raiz deste repositorio), fase por

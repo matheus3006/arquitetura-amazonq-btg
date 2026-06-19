@@ -1,5 +1,5 @@
 ---
-description: "Etapa 1 de 3 do fluxo de doc do zero: orquestra contexto (analisador-de-projeto) + dominio (analisador-de-dominio) + arquitetura (arquiteto-de-sistema) num fluxo so, com checkpoint entre fases"
+description: "Indice da trilha de 7 etapas (8 sessoes — Etapa 1 = 2 sessoes). Aponta as etapas 1-7 em sequencia; cada prompt em sessao propria; NAO orquestra (deprecado o atalho anterior)"
 ---
 
 Siga TODO o processo descrito em `ia/prompts/arquitetura/documentar-servico.md` (na raiz deste repositorio), fase por

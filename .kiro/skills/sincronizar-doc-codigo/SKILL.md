@@ -1,6 +1,6 @@
 ---
 name: sincronizar-doc-codigo
-description: "Atualiza a doc a partir do diff da branch: analisa o codigo, grilla o porque (grill-me + human-architect-mindset) e registra ADR quando a mudanca nao partiu de uma ADR existente"
+description: "Atualiza a doc a partir do diff da branch: analisa o codigo, grilla o porque (grill-me + human-architect-mindset) e registra ADR quando a mudanca nao partiu de uma ADR existente (destino: doc/arquitetura/, ADRs em doc/adr/)"
 ---
 
 Siga TODO o processo descrito em `ia/prompts/arquitetura/sincronizar-doc-codigo.md` (na raiz deste repositorio), fase por

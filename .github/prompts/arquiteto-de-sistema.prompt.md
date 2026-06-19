@@ -1,5 +1,5 @@
 ---
-description: "Persona de arquiteto senior para visao geral e diagramas de arquitetura do servico"
+description: "Etapa 2/7: arquitetura/espinha (5 perguntas-ancora + grill + paginas-nucleo). Cada pagina criada em doc/arquitetura/ + entry no NAV de sidebar.js no mesmo passo"
 ---
 
 Siga TODO o processo descrito em `ia/prompts/arquitetura/arquiteto-de-sistema.md` (na raiz deste repositorio), fase por

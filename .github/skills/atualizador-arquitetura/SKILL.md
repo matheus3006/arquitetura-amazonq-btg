@@ -1,9 +1,9 @@
 ---
-name: completar-documentacao
-description: "Etapa 2 de 3: completa a doc tecnica com os fluxos criticos (documentador-fluxo) e o runbook (gerador-runbook), confirmados no codigo"
+name: atualizador-arquitetura
+description: "Complementar (fora da trilha 1-7): conforma doc ja existente em doc/arquitetura/ as regras v2. Diagnostica, ramifica (front->plano+aplica; logico->grill+QA.md), 1 task de controle por execucao"
 ---
 
-Siga TODO o processo descrito em `ia/prompts/arquitetura/completar-documentacao.md` (na raiz deste repositorio), fase por
+Siga TODO o processo descrito em `ia/prompts/arquitetura/atualizador-arquitetura.md` (na raiz deste repositorio), fase por
 fase, na ordem em que esta escrito.
 
 Regras de execucao:

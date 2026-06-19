@@ -1,8 +1,8 @@
 ---
-description: "Etapa 1/7 (sessao 1b, reusado pela trilha arquitetura): analisa o dominio e gera business-context.md em 3 destinos de rules (regras, atores, eventos). Apenda Q&A no QA.md no mesmo turno"
+description: "Etapa 7/7: validador sintaxe + Mermaid (so reporta; checklist canonico + ia/tools/validar-doc.sh --mermaid opcional). Pareamento data-id, tipo valido, 4 classDef, autonumber sempre em sequence"
 ---
 
-Siga TODO o processo descrito em `ia/prompts/negocio/analisador-de-dominio.md` (na raiz deste repositorio), fase por
+Siga TODO o processo descrito em `ia/prompts/arquitetura/validador-sintaxe-mermaid.md` (na raiz deste repositorio), fase por
 fase, na ordem em que esta escrito.
 
 Regras de execucao:
