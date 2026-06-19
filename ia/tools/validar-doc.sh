@@ -153,11 +153,32 @@ _rule_mermaid_pair() {
   done < <(grep -E 'data-diagram="[^"]+"' "$file")
 }
 
+# Regra mermaid-type: 1a linha nao-vazia do bloco DEVE ser tipo valido.
+_rule_mermaid_type() {
+  local file="$1" ln rule rest
+  while IFS=: read -r ln rule rest; do
+    [ -z "$ln" ] && continue
+    violation "$file" "$ln" "$rule" "$rest"
+  done < <(awk '
+    /<script[^>]*text\/mermaid/ { inm=1; first=1; line=NR; next }
+    /<\/script>/                { inm=0; next }
+    inm && first && /^[[:space:]]*$/ { next }
+    inm && first {
+      gsub(/^[[:space:]]+|[[:space:]]+$/,"",$0)
+      if ($0 !~ /^(flowchart|sequenceDiagram|classDiagram|stateDiagram-v2|erDiagram)/) {
+        print line":mermaid-type:1a linha invalida (use flowchart|sequenceDiagram|classDiagram|stateDiagram-v2|erDiagram): "$0
+      }
+      first=0
+    }
+  ' "$file")
+}
+
 run_mermaid() {
   local target="$1" file
   while IFS= read -r file; do
     [ -z "$file" ] && continue
     _rule_mermaid_pair "$file"
+    _rule_mermaid_type "$file"
   done < <(_iter_html "$target")
 }
 

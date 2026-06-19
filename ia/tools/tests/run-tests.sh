@@ -49,6 +49,9 @@ run_case "front: pagina orfa = FAIL"   "ia/tools/tests/fixtures/front/nav-bad"  
 run_case "mermaid: par OK"               "ia/tools/tests/fixtures/mermaid/ok-pair.html"  "--mermaid" 0 ""
 run_case "mermaid: data-diagram sem par" "ia/tools/tests/fixtures/mermaid/bad-pair.html" "--mermaid" 1 "mermaid-pair.*orphan"
 
+# === Regra: tipo valido na 1a linha do bloco (mermaid) ===
+run_case "mermaid: tipo invalido = FAIL" "ia/tools/tests/fixtures/mermaid/bad-type.html" "--mermaid" 1 "mermaid-type"
+
 echo
 echo "Total: PASS=$PASS FAIL=$FAIL"
 [ "$FAIL" -eq 0 ]
