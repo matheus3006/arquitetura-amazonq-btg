@@ -1,0 +1,6 @@
+# Réplicas pesadas e regeneráveis pelo instalador (~9,5 MB) — não poluem o repo do produto.
+# Clonou? rode o instalador 1× para materializá-las localmente.
+.github/skills/
+.github/prompts/
+.kiro/skills/
+ia/skills/

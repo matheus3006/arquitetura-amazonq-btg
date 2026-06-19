@@ -93,6 +93,20 @@ Mensagens prontas para cada gatilho: [COMO-USAR.html](COMO-USAR.html) (raiz do r
 
 > O pack tem **quatro trilhas: técnica, negócio, frontend e engenharia** — mais o **protocolo de controle de contexto** (rule `controle-style` + prompt `controle-de-tarefa` + hooks de início de interação). Os instaladores entregam tudo.
 
+## `.gitignore` no repo do produto
+
+O instalador semeia um bloco marcado e **idempotente** no `.gitignore` do serviço. Ele **ignora as
+réplicas pesadas e regeneráveis** — `.github/skills/`, `.github/prompts/`, `.kiro/skills/`, `ia/skills/`
+(~9,5 MB) — e **mantém versionada** a config minúscula (rules, instructions, steering, hooks ~200 KB),
+o **contexto por-serviço** (`project-context.md` / `business-context.md`) e `doc/`. O conteúdo do bloco
+vem de `ia/tools/lib/gitignore-pack-block.txt` (fonte única, lida por `install.sh` **e** `install.ps1` —
+sem drift entre os dois).
+
+**Regra "clonou → instala 1×":** quem clona o repo recebe as convenções (config versionada), mas as
+skills/prompts do seu assistente vivem fora do versionamento — rode o instalador uma vez para
+materializá-las localmente. Como, na mesma equipe, cada pessoa usa um assistente diferente
+(Amazon Q / Copilot / Kiro), isso mantém os três disponíveis sem inchar o repositório do serviço.
+
 ## Filosofia
 
 Uma única regra rígida: **a convenção de diagramas** (Mermaid + viewer + 4 classDefs com cores fixas).
@@ -160,8 +174,8 @@ arquitetura/
 │   │   ├── negocio-style.md                     ← regra universal — domínio, regras, glossário
 │   │   ├── engenharia-style.md                  ← regra universal — debugging + implementação
 │   │   ├── controle-style.md                    ← regra universal — protocolo de controle de tarefas (2 turnos + cota)
-│   │   ├── project-context.md                   ← (gerado por-projeto — não versionar)
-│   │   └── business-context.md                  ← (gerado por-projeto — não versionar)
+│   │   ├── project-context.md                   ← (gerado por-projeto — versione no repo do serviço)
+│   │   └── business-context.md                  ← (gerado por-projeto — versione no repo do serviço)
 │   ├── cli-agents/
 │   │   └── arquitetura.json                     ← agente Amazon Q com hook userPromptSubmit do controle
 │   └── hooks/

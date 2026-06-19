@@ -28,6 +28,14 @@ O script é idempotente e termina com a lista do que copiou. Se der erro, a mens
 autoexplicativa (alvo inexistente, opção desconhecida, alvo = próprio pack) — corrija e
 rode de novo. Se o script funcionou, pule para o Passo 3.
 
+**`.gitignore` do produto:** o script também semeia (idempotente) um bloco marcado no
+`.gitignore` do alvo — **ignora** as réplicas pesadas (`.github/skills/`, `.github/prompts/`,
+`.kiro/skills/`, `ia/skills/`) e **mantém versionada** a config + o **contexto por-serviço**
+(`project-context.md` / `business-context.md`, que devem ser versionados — é a análise revisada do
+produto) + `doc/`. **Regra "clonou → instala 1×":** quem clona o repo deve rodar o instalador uma
+vez para materializar as skills/prompts do seu assistente. (Na cópia manual do Passo 2, replique o
+bloco de `ia/tools/lib/gitignore-pack-block.txt` no `.gitignore` do alvo.)
+
 ## Passo 2 — Fallback: cópia manual (se você não pode rodar shell)
 
 Copie do pack para a raiz do repo alvo, preservando a estrutura de pastas:

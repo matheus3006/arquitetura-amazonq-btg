@@ -248,6 +248,15 @@ done
 find "$TARGET/ia" "$TARGET/.github" "$TARGET/.kiro" "$TARGET/doc" \
   -name '.DS_Store' -delete 2>/dev/null || true
 
+# 9) .gitignore do produto — bloco idempotente: ignora as replicas pesadas (skills/prompts,
+#    ~9,5 MB) e mantem versionada a config + o contexto por-servico + doc/. O conteudo vem de
+#    ia/tools/lib/gitignore-pack-block.txt (fonte unica, lida tambem pelo install.ps1 — sem drift).
+mkdir -p "$TARGET/ia/tools/lib"
+cp "$PACK_DIR/ia/tools/seed-gitignore.sh" "$TARGET/ia/tools/seed-gitignore.sh"
+cp "$PACK_DIR/ia/tools/lib/gitignore-pack-block.txt" "$TARGET/ia/tools/lib/gitignore-pack-block.txt"
+chmod +x "$TARGET/ia/tools/seed-gitignore.sh" 2>/dev/null || true
+bash "$PACK_DIR/ia/tools/seed-gitignore.sh" "$TARGET"
+
 echo ""
 echo "✅ Instalado. O Amazon Q le .amazonq/rules/, o Copilot le .github/ e o Kiro le .kiro/ automaticamente."
 echo ""

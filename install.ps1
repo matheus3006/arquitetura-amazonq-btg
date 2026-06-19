@@ -272,6 +272,39 @@ foreach ($old in 'prompts','skills','tools','COMO-USAR.html','COMO-USAR.md') {
 Get-ChildItem -Path (Join-Path $Target 'ia'), $ghDst, $kiroDst, (Join-Path $Target 'doc') -Recurse -Force -Filter '.DS_Store' -ErrorAction SilentlyContinue |
   Remove-Item -Force -ErrorAction SilentlyContinue
 
+# 9) .gitignore do produto - bloco idempotente: ignora as replicas pesadas (skills/prompts) e
+#    mantem versionada a config + o contexto por-servico + doc/. Le a MESMA fonte unica do bash
+#    (ia/tools/lib/gitignore-pack-block.txt) - sem drift entre os instaladores.
+$giToolsDst = Join-Path $Target 'ia/tools'
+$giLibDst   = Join-Path $Target 'ia/tools/lib'
+New-Item -ItemType Directory -Force -Path $giLibDst | Out-Null
+Copy-Item (Join-Path $PackDir 'ia/tools/seed-gitignore.sh') (Join-Path $giToolsDst 'seed-gitignore.sh') -Force
+Copy-Item (Join-Path $PackDir 'ia/tools/lib/gitignore-pack-block.txt') (Join-Path $giLibDst 'gitignore-pack-block.txt') -Force
+$giSot   = Join-Path $PackDir 'ia/tools/lib/gitignore-pack-block.txt'
+$giFile  = Join-Path $Target '.gitignore'
+$giStart = '# >>> arquitetura-pack (gerado pelo instalador) >>>'
+$giEnd   = '# <<< arquitetura-pack <<<'
+$giBlock = @($giStart) + (Get-Content -LiteralPath $giSot) + @($giEnd)
+if (-not (Test-Path -PathType Leaf $giFile)) {
+  Set-Content -LiteralPath $giFile -Value $giBlock -Encoding utf8
+} else {
+  $giCur = @(Get-Content -LiteralPath $giFile)
+  if ($giCur -contains $giStart) {
+    $giOut = New-Object System.Collections.Generic.List[string]
+    $giSkip = $false
+    foreach ($line in $giCur) {
+      if ($line -eq $giStart) { $giBlock | ForEach-Object { $giOut.Add($_) }; $giSkip = $true; continue }
+      if ($giSkip -and $line -eq $giEnd) { $giSkip = $false; continue }
+      if ($giSkip) { continue }
+      $giOut.Add($line)
+    }
+    Set-Content -LiteralPath $giFile -Value $giOut -Encoding utf8
+  } else {
+    Add-Content -LiteralPath $giFile -Value (@('') + $giBlock) -Encoding utf8
+  }
+}
+Write-Host "  + .gitignore (bloco do pack)"
+
 Write-Host "`n[ok] Instalado. O Amazon Q le .amazonq/rules/, o Copilot le .github/ e o Kiro le .kiro/ automaticamente.`n"
 Write-Host 'Comece:'
 Write-Host '   Tecnica:    "documenta esse servico"   (Copilot IDE: /analisador-de-projeto na 1a vez)'

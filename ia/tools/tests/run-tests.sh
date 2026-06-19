@@ -63,6 +63,13 @@ run_case "mermaid: seq sem autonumber = FAIL" "ia/tools/tests/fixtures/mermaid/s
 run_case "mermaid: seq com autonumber"         "ia/tools/tests/fixtures/mermaid/seq-ok.html"          "--mermaid" 0 ""
 run_case "all: pasta mermaid com mistura = FAIL" "ia/tools/tests/fixtures/mermaid" "--all" 1 "mermaid-"
 
+# === seed-gitignore.sh (arquivo de teste dedicado) ===
+if out=$(bash ia/tools/tests/test-seed-gitignore.sh 2>&1); then
+  echo "PASS: seed-gitignore (idempotencia + conteudo == SoT + preserva)"; PASS=$((PASS+1))
+else
+  echo "FAIL: seed-gitignore"; echo "$out" | sed 's/^/      /'; FAIL=$((FAIL+1))
+fi
+
 echo
 echo "Total: PASS=$PASS FAIL=$FAIL"
 [ "$FAIL" -eq 0 ]
