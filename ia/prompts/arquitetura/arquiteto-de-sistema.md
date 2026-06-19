@@ -4,6 +4,7 @@
 >
 > - Esta é a **Etapa 2/7** da trilha de doc de arquitetura. Roda em **sessão própria** (regra master: cada PROMPT em sessão própria).
 > - **Destino canônico:** `doc/arquitetura/` (páginas) — `ia/templates/` é só gabarito de FORMA.
+> - **Assets de runtime:** páginas geradas usam `../templates/prefs.js` + `../design-system/*.css` (→ `doc/templates/` + `doc/design-system/`); semeados de `ia/` pelo instalador (artefato de build; `ia/tools/seed-doc-assets.sh` re-semeia se faltarem). Não edite à mão.
 > - **NAV editor (regra obrigatória):** AO criar cada `.html` em `doc/arquitetura/`, **apenda no mesmo passo** a entry `{label, href}` na seção certa do `NAV` em `sidebar.js`. Página sem entry = órfã = rejeitada pelo validador #6 (Etapa 6/7).
 > - Para CADA pergunta de grilling respondida pelo usuário, **apenda no `QA.md` da task NO MESMO TURNO** (status vivo; verbatim em decisão).
 > - Próximo passo (handoff): **Etapa 3/7 — `documentador-fluxo`** (sessão NOVA).
@@ -100,7 +101,7 @@ Antes de entregar, pergunte ao usuário (pode ser num bloco só — é o fechame
 - **Idioma:** PT-BR + termos técnicos em inglês (`outbox`, `idempotency`, etc.).
 - **Tom:** factual e direto. Sem qualificadores vagos.
 - **Diagramas:** padrão `diagram-viewer` (`<div class="diagram-viewer" data-diagram>` + `<script type="text/mermaid">`) com as 4 classes da convenção.
-- **Sidebar:** incluir `<aside id="sidebar">` vazia e `<script src="sidebar.js">`. O usuário ajusta a navegação editando `sidebar.js` separadamente.
+- **Sidebar:** incluir `<aside id="sidebar">` + `<script src="sidebar.js">`. ESTE prompt apenda a entry `{label, href}` no `NAV` de `sidebar.js` no mesmo passo da criação da página (ver regra NAV editor no STATUS); o validador #6 (Etapa 6/7) só confere.
 
 ## Regras de comportamento
 

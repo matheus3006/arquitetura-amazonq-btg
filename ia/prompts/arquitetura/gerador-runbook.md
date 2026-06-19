@@ -4,6 +4,7 @@
 >
 > - Esta é a **Etapa 4/7** da trilha de doc de arquitetura. Roda em **sessão própria** (regra master).
 > - **Destino canônico:** `doc/arquitetura/runbook.html`.
+> - **Assets de runtime:** páginas geradas usam `../templates/prefs.js` + `../design-system/*.css` (→ `doc/templates/` + `doc/design-system/`); semeados de `ia/` pelo instalador (artefato de build; `ia/tools/seed-doc-assets.sh` re-semeia se faltarem). Não edite à mão.
 > - **NAV editor (regra obrigatória):** ao criar o `runbook.html`, **apenda no mesmo passo** a entry no `NAV` em `sidebar.js`. Página órfã = rejeitada pelo validador #6.
 > - Próximo passo (handoff): **Etapa 5/7 — `grill-arquitetura`** (sessão NOVA).
 > - **Conteúdo das páginas em `ia/templates/`** (exemplos do serviço fictício "Liquidação Transacional") é **EXEMPLO**. Runbooks reais devem seguir o esqueleto HTML padrão de `frontend-style.md` § 1 (sidebar + main + hero + sections); a convenção de diagramas de `architecture-style.md` § 1 quando o runbook contiver fluxos.

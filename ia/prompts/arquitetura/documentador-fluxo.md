@@ -4,6 +4,7 @@
 >
 > - Esta é a **Etapa 3/7** da trilha de doc de arquitetura. Roda em **sessão própria** (regra master).
 > - **Destino canônico:** `doc/arquitetura/` (páginas de fluxo) — `ia/templates/` é só gabarito de FORMA.
+> - **Assets de runtime:** páginas geradas usam `../templates/prefs.js` + `../design-system/*.css` (→ `doc/templates/` + `doc/design-system/`); semeados de `ia/` pelo instalador (artefato de build; `ia/tools/seed-doc-assets.sh` re-semeia se faltarem). Não edite à mão.
 > - **NAV editor (regra obrigatória):** ao criar cada página de fluxo, **apenda no mesmo passo** entry `{label, href}` na seção certa do `NAV` em `sidebar.js`. Página órfã = rejeitada pelo validador #6.
 > - **Mermaid:** `sequenceDiagram` com `autonumber` (regra binária — sempre); 4 `classDef` obrigatórios em `flowchart`; labels entre aspas; sem `<` `>` crus. O validador #7 (Etapa 7/7) aplica esses checks.
 > - Próximo passo (handoff): **Etapa 4/7 — `gerador-runbook`** (sessão NOVA).
