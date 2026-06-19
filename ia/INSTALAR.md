@@ -122,7 +122,7 @@ e aplique a correção:
 | Existe `.amazonq/hooks/pre-commit-controle.sh` | **Apague** — foi substituído pelos hooks de início de interação. |
 | Faltam `.amazonq/cli-agents/arquitetura.json`, `.amazonq/hooks/controle-hook.sh` ou `.kiro/hooks/controle-prompt.kiro.hook` | **Copie-os** do pack (tabela do Passo 2) e dê `+x` no `controle-hook.sh`. |
 | Existe `controle/` na **raiz** do repo (com tasks dentro) | **Mova** cada pasta de task para `doc/controle/` (crie se não existir). Preserve tudo — são dados do usuário; **não apague**. Se uma task de mesmo nome já existir em `doc/controle/`, faça merge sem sobrescrever. Remova o `controle/` só depois de vazio. |
-| `ia/skills/` sem as categorias `fluxo-dev`, `orquestracao` ou `documentacao` (ou com menos de 32 skills) | **Recopie** `ia/skills/`, `.github/` e `.kiro/` inteiras do pack — trazem as skills novas (5 do lote dev/debug + `doc-coauthoring`) e os 3 prompts novos. |
+| `ia/skills/` sem as categorias `fluxo-dev`, `orquestracao` ou `documentacao` (ou com menos de 32 skills) | **Recopie** `ia/skills/`, `.github/` e `.kiro/` inteiras do pack — trazem as skills novas (5 do lote dev/debug + `doc-coauthoring`) e os 3 prompts novos da v2 (`validador-visual`, `validador-sintaxe-mermaid`, `atualizador-arquitetura`). |
 | Rules/prompts ainda citam `controle/` (raiz) ou o "pre-commit" como trava | São sobrescritos ao recopiar `.amazonq/rules/`, `ia/prompts/`, `.github/` e `.kiro/` do pack — refaça a cópia (Passo 1 ou 2). |
 | **Layout pré-`ia/`+`doc/`**: existem `prompts/`, `skills/` ou `tools/` na **raiz**, ou uma pasta `docs/` (em vez de `doc/`) | **Migre o layout.** Mova os DADOS do usuário pra `doc/`: `docs/controle`→`doc/controle`, `docs/adr`→`doc/adr`, `docs/specs`/`docs/planos`→`doc/`, e a doc real em `docs/arquitetura/` (tudo **menos** `templates/` e `design-system/`, que são do pack) → `doc/arquitetura/`. **Remova** as cópias antigas do pack na raiz (`prompts/`, `skills/`, `tools/`, `COMO-USAR.html`, `COMO-USAR.md`) — já reinstaladas em `ia/`. Preserve os dados do usuário; nunca sobrescreva. |
 
@@ -137,47 +137,54 @@ Os scripts `install.sh` / `install.ps1` já fazem TODAS essas correções sozinh
 pre-commit, instalam os hooks novos, movem `controle/` → `doc/controle/` e migram o layout antigo
 para `ia/` + `doc/`); esta tabela é para quando você instala/migra na mão.
 
-## Passo 4b — Prepare a documentação existente para o novo fluxo (diagnóstico, não-destrutivo)
+## Passo 4b — Prepare a documentação existente para a trilha v2 (diagnóstico, não-destrutivo)
 
 A re-instalação **preserva** a documentação que o usuário já gerou (os `project-context` /
-`business-context` nos três destinos e as páginas em `doc/arquitetura/`). Se essa doc foi gerada
-por uma versão **anterior ao fluxo canônico de 3 etapas** (`documentar-servico` →
-`completar-documentacao` → `grill-arquitetura`), ela pode estar incompleta. Este passo é **só
-diagnóstico**: você **NÃO edita nem gera nada** — entrega ao usuário um plano do que falta e qual
-card rodar. Diferente do Passo 4, os scripts **não** fazem isto (exige ler a doc e julgar); é
-tarefa sua, assistente.
+`business-context` nos três destinos e as páginas em `doc/arquitetura/`). A v2 (2026-06-19)
+substituiu o fluxo antigo de 3 etapas (`documentar-servico` → `completar-documentacao` →
+`grill-arquitetura`) pela **trilha de 7 etapas / 8 sessões** (cada prompt em sessão própria);
+`completar-documentacao` foi **aposentado sem stub**. Doc gerada antes da v2 pode estar
+incompleta ou divergir do padrão visual. Este passo é **só diagnóstico**: você **NÃO edita nem
+gera nada** — entrega ao usuário um plano do que falta e qual ação rodar. Diferente do Passo 4,
+os scripts **não** fazem isto (exige ler a doc e julgar); é tarefa sua, assistente.
 
 **Primeiro, há doc real a migrar?** Se o `project-context` (nos três destinos) ainda é o exemplo
 fictício **"Liquidação Transacional"**, então **não há doc gerada** — siga para o Passo 5 (primeiro
 uso normal). Só continue aqui se a doc descreve o **serviço real** do usuário.
 
-| Sinal na doc existente | O que falta | Card para completar (no `COMO-USAR`) |
+| Sinal na doc existente | O que falta | Ação recomendada na v2 |
 |---|---|---|
-| `project-context` real existe, mas faltam os `business-context.md` (`.amazonq/rules/`, `.github/instructions/business-context.instructions.md`, `.kiro/steering/`) | a fundação de negócio | **"Mapear o domínio"** — trilha _Documentar o negócio_ (`/analisador-de-dominio`) |
-| Há páginas em `doc/arquitetura/`, mas **sem runbook nem fluxos críticos** | operação + runtime | **"Completar a documentação (Etapa 2/3)"** (`/completar-documentacao`) |
-| Doc com `⚠ a confirmar`, números redondos ou garantias não resolvidas | auditoria das incertezas | **"Grill intenso de arquitetura (Etapa 3/3)"** (`/grill-arquitetura`, em sessão nova) |
+| `project-context` real existe, mas faltam os `business-context.md` (`.amazonq/rules/`, `.github/instructions/business-context.instructions.md`, `.kiro/steering/`) | a fundação de negócio (sessão 1b da Etapa 1/7) | rodar `analisador-de-dominio` (em sessão própria) — apenda Q&A no `QA.md` no mesmo turno |
+| Há páginas em `doc/arquitetura/`, mas **sem fluxos críticos** | runtime (Etapa 3/7) | rodar `documentador-fluxo` em sessão nova; apenda entry no NAV de `sidebar.js` no mesmo passo |
+| Há páginas, mas **sem runbook** | operação (Etapa 4/7) | rodar `gerador-runbook` em sessão nova; apenda entry no NAV |
+| Doc com `⚠ a confirmar`, números redondos ou garantias não resolvidas | auditoria lógica (Etapa 5/7) | rodar `grill-arquitetura` em sessão nova; Q&A no `QA.md` no mesmo turno |
+| Doc visualmente fora do padrão (classes fora do design-system, cor hex hardcoded, página órfã do NAV, resíduo do exemplo fictício, Mermaid quebrado, esqueleto HTML errado) | conformidade com a v2 (drift de front/template/Mermaid) | rodar `atualizador-arquitetura` (complementar — fora da trilha; **1 task de controle por execução**; conforma in-place o que é front, abre grill para o que é lógico) |
 
 Regras deste passo:
 
-- **Não** rode os cards você mesmo nem edite a doc — apenas monte o diagnóstico.
+- **Não** rode as ações você mesmo nem edite a doc — apenas monte o diagnóstico.
 - **Não** re-rode a Etapa 1 "do zero" sobre uma doc que já existe (duplicaria/sobrescreveria). Quem
-  já tem doc completa **só os blocos que faltam** — é exatamente por isso que eles existem como
-  cards isolados (ex.: o `business-context` é preenchido só pelo "Mapear o domínio", sem refazer a
+  já tem doc completa **só os blocos que faltam** — é exatamente por isso que cada etapa é um prompt
+  isolado (ex.: o `business-context` é preenchido só por `analisador-de-dominio`, sem refazer a
   arquitetura).
-- A geração roda **depois**, disparada pelo usuário, sob o protocolo de controle (task de 2 turnos:
-  plano → aprovação → execução).
+- Para **drift de front/template/Mermaid** em doc existente, prefira o `atualizador-arquitetura`:
+  ele abre 1 task de controle por execução, conforma in-place o que é visual e abre grill (com
+  Q&A no QA.md) para o que é arquitetural.
+- A geração roda **depois**, disparada pelo usuário, sob o protocolo de controle (task com TASK.md +
+  QA.md + LEDGER.md — abertos ANTES da edição; status vivo).
 
-**Saída:** no fechamento (Passo 5), apresente algo como _"sua doc tem X, falta Y e Z; para alinhar
-ao fluxo de 3 etapas, rode estes cards nesta ordem: …"_ — ou, se a doc já cobre as três etapas,
-_"nada a migrar"_.
+**Saída:** no fechamento (Passo 5), apresente algo como _"sua doc tem X, falta Y e Z; para alinhar à
+trilha v2 de 7 etapas / 8 sessões, rode estas ações nesta ordem: …"_ — ou, se a doc já cobre o
+fluxo v2, _"nada a migrar; rode `validador-visual` + `validador-sintaxe-mermaid` para confirmar
+conformidade"_.
 
 ## Passo 5 — Oriente o usuário (primeiro uso)
 
 Ao terminar, diga ao usuário, nas suas palavras:
 
 1. A instalação está completa e verificada (mostre a lista do Passo 3). Se o **Passo 4b** detectou
-   doc anterior ao fluxo de 3 etapas, apresente aqui o **plano de migração** (o que já existe, o que
-   falta e a ordem dos cards a rodar) — sem executá-lo; quem dispara é o usuário.
+   doc anterior à trilha v2 (7 etapas / 8 sessões), apresente aqui o **plano de migração** (o que já
+   existe, o que falta e a ordem das ações a rodar) — sem executá-lo; quem dispara é o usuário.
 2. O primeiro passo de uso é gerar o contexto do projeto: mensagem "analisa o projeto"
    (Amazon Q e Kiro — no Kiro a skill `analisador-de-projeto` ativa por descrição) ou
    `/analisador-de-projeto` (Copilot IDE). Sem isso, o pack bloqueia gerações de
