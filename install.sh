@@ -73,7 +73,7 @@ done
 echo "  ✓ .github/instructions/ (5 instructions)"
 cp -R "$PACK_DIR/.github/prompts/." "$TARGET/.github/prompts/"
 cp -R "$PACK_DIR/.github/skills/."  "$TARGET/.github/skills/"
-echo "  ✓ .github/prompts/ (30 wrappers) + .github/skills/ (62: 30 wrappers + 32 importadas)"
+echo "  ✓ .github/prompts/ (32 wrappers) + .github/skills/ (64: 32 wrappers + 32 importadas)"
 
 # 2b) Camada Kiro (steering + Agent Skills). Copiamos SO as 5 rules de estilo:
 #     *-context.md e os foundation files do Kiro (product/tech/structure.md)
@@ -84,7 +84,7 @@ for f in architecture-style frontend-style negocio-style engenharia-style contro
 done
 echo "  ✓ .kiro/steering/ (5 rules)"
 cp -R "$PACK_DIR/.kiro/skills/." "$TARGET/.kiro/skills/"
-echo "  ✓ .kiro/skills/ (62 Agent Skills: 30 wrappers + 32 importadas)"
+echo "  ✓ .kiro/skills/ (64 Agent Skills: 32 wrappers + 32 importadas)"
 
 # 3) Prompts (4 trilhas)
 mkdir -p "$TARGET/ia/prompts"

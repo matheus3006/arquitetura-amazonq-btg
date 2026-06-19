@@ -73,7 +73,7 @@ foreach ($f in 'architecture-style','frontend-style','negocio-style','engenharia
 Write-Host "  + .github/instructions/ (5 instructions)"
 Copy-Item (Join-Path $PackDir '.github/prompts/*') (Join-Path $ghDst 'prompts') -Recurse -Force
 Copy-Item (Join-Path $PackDir '.github/skills/*')  (Join-Path $ghDst 'skills')  -Recurse -Force
-Write-Host "  + .github/prompts/ (30 wrappers) + .github/skills/ (62: 30 wrappers + 32 importadas)"
+Write-Host "  + .github/prompts/ (32 wrappers) + .github/skills/ (64: 32 wrappers + 32 importadas)"
 
 # 2b) Camada Kiro (steering + Agent Skills). Copiamos SO as 5 rules de estilo:
 #     *-context.md e os foundation files do Kiro (product/tech/structure.md)
@@ -87,7 +87,7 @@ foreach ($f in 'architecture-style','frontend-style','negocio-style','engenharia
 }
 Write-Host "  + .kiro/steering/ (5 rules)"
 Copy-Item (Join-Path $PackDir '.kiro/skills/*') (Join-Path $kiroDst 'skills') -Recurse -Force
-Write-Host "  + .kiro/skills/ (62 Agent Skills: 30 wrappers + 32 importadas)"
+Write-Host "  + .kiro/skills/ (64 Agent Skills: 32 wrappers + 32 importadas)"
 
 # 3) Prompts (4 trilhas)
 $promptsDst = Join-Path $Target 'ia/prompts'

@@ -15,7 +15,7 @@ atualização = recopiar da fonte. O conteúdo é em inglês (original preservad
 Mensagens prontas para cada uma: `COMO-USAR.html` (raiz do repo — cards com rodapé `Skill:`, agrupados por propósito junto com os prompts do pack).
 
 `.github/skills/` e `.kiro/skills/` são GERADOS por `ia/tools/sync-copilot.sh` /
-`ia/tools/sync-kiro.sh` — que copiam esta pasta verbatim além dos 30 wrappers do pack.
+`ia/tools/sync-kiro.sh` — que copiam esta pasta verbatim além dos 32 wrappers do pack.
 Editar aqui + rodar os dois syncs = camadas atualizadas.
 
 ## Catálogo (32)

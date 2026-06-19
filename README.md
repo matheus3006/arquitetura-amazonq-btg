@@ -170,12 +170,12 @@ arquitetura/
 │   ├── copilot-instructions.md
 │   ├── instructions/                            ← 5 rules (.instructions.md); contexto por-projeto é gerado aqui pelos analisadores
 │   ├── ia/prompts/                                 ← slash commands (29 arquivos .prompt.md)
-│   └── ia/skills/                                  ← Agent Skills (60: 29 wrappers + 31 importadas)
+│   └── ia/skills/                                  ← Agent Skills (64: 32 wrappers + 32 importadas)
 ├── .kiro/
 │   ├── steering/                                ← gerado por sync-kiro.sh — 5 rules (inclusion: always); contexto por-projeto e foundation files são gerados aqui por-serviço
-│   ├── ia/skills/                                  ← gerado por sync-kiro.sh — Agent Skills (60: 29 wrappers + 31 importadas)
+│   ├── ia/skills/                                  ← gerado por sync-kiro.sh — Agent Skills (64: 32 wrappers + 32 importadas)
 │   └── hooks/                                   ← canônico (não gerado): controle-prompt.kiro.hook (promptSubmit do controle)
-├── ia/skills/                                      ← biblioteca importada (FONTE das cópias verbatim — 14 categorias, 31 skills; ver ia/skills/README.md)
+├── ia/skills/                                      ← biblioteca importada (FONTE das cópias verbatim — 14 categorias, 32 skills; ver ia/skills/README.md)
 ├── ia/prompts/
 │   ├── arquitetura/                             ← 10 prompts (analisador, arquiteto, ADR, runbook, fluxo, grill, brainstorm + pipeline: documentar-servico, completar-documentacao, grill-arquitetura)
 │   ├── frontend/                                ← 4 prompts (ux-controlado, ui-pro-max, design-system, polidor)

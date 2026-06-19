@@ -6,8 +6,8 @@
 # Gerado (commitado, NUNCA editado a mao):
 #   .github/copilot-instructions.md
 #   .github/instructions/<rule>.instructions.md     (5 rules)
-#   .github/prompts/<slug>.prompt.md                (30 wrappers)
-#   .github/skills/<slug>/SKILL.md                  (30 wrappers)
+#   .github/prompts/<slug>.prompt.md                (32 wrappers)
+#   .github/skills/<slug>/SKILL.md                  (32 wrappers)
 #
 # Uso:
 #   bash ia/tools/sync-copilot.sh           # (re)gera .github/
