@@ -55,6 +55,11 @@ run_case "mermaid: tipo invalido = FAIL" "ia/tools/tests/fixtures/mermaid/bad-ty
 # === Regra: 4 classDef obrigatorios em flowchart (mermaid) ===
 run_case "mermaid: falta classDef = FAIL" "ia/tools/tests/fixtures/mermaid/missing-classdef.html" "--mermaid" 1 "mermaid-classdef.*extAsync"
 
+# === Regra: autonumber sempre em sequenceDiagram (mermaid) + suite --all ===
+run_case "mermaid: seq sem autonumber = FAIL" "ia/tools/tests/fixtures/mermaid/seq-no-autonum.html" "--mermaid" 1 "mermaid-autonumber"
+run_case "mermaid: seq com autonumber"         "ia/tools/tests/fixtures/mermaid/seq-ok.html"          "--mermaid" 0 ""
+run_case "all: pasta mermaid com mistura = FAIL" "ia/tools/tests/fixtures/mermaid" "--all" 1 "mermaid-"
+
 echo
 echo "Total: PASS=$PASS FAIL=$FAIL"
 [ "$FAIL" -eq 0 ]

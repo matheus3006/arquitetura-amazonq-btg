@@ -203,6 +203,23 @@ _rule_mermaid_classdefs() {
   ' "$file")
 }
 
+# Regra mermaid-autonumber: TODO sequenceDiagram tem 'autonumber' (regra binaria).
+_rule_mermaid_autonumber() {
+  local file="$1" ln rule rest
+  while IFS=: read -r ln rule rest; do
+    [ -z "$ln" ] && continue
+    violation "$file" "$ln" "$rule" "$rest"
+  done < <(awk '
+    /<script[^>]*text\/mermaid/ { inm=1; line=NR; isseq=0; hasauto=0; next }
+    /<\/script>/ {
+      if (inm && isseq && !hasauto) print line":mermaid-autonumber:sequenceDiagram sem '\''autonumber'\'' (regra binaria: sempre)"
+      inm=0; next
+    }
+    inm && /^[[:space:]]*sequenceDiagram/ { isseq=1; next }
+    inm && isseq && /^[[:space:]]*autonumber/ { hasauto=1 }
+  ' "$file")
+}
+
 run_mermaid() {
   local target="$1" file
   while IFS= read -r file; do
@@ -210,6 +227,7 @@ run_mermaid() {
     _rule_mermaid_pair "$file"
     _rule_mermaid_type "$file"
     _rule_mermaid_classdefs "$file"
+    _rule_mermaid_autonumber "$file"
   done < <(_iter_html "$target")
 }
 
