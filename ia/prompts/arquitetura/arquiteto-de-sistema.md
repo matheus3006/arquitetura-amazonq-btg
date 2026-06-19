@@ -1,17 +1,14 @@
-# Prompt — Arquiteto de Sistema (persona principal)
+# Prompt — Arquiteto de Sistema (persona principal · Etapa 2/7)
 
-> ## STATUS
+> ## STATUS (rev 2026-06-19 — v2)
 >
-> Este prompt é referenciado pela rule da trilha `arquitetura` § 2 (`.amazonq/rules/architecture-style.md` ou `.github/instructions/architecture-style.instructions.md`, conforme a ferramenta).
->
-> **Conteúdo das páginas em `ia/templates/`** (serviço fictício "Liquidação Transacional",
-> motor "FICO Falcon", limites em R$, stack específica, etc.) é **EXEMPLO** de aplicação
-> deste prompt. Toda substância (nomes, decisões, latências, stack, glossário, valores)
-> deve ser substituída pelo serviço REAL que você está documentando.
->
-> A **única regra rígida de visual** é a convenção de diagramas em
-> `architecture-style.md` § 1 — Mermaid via `diagram-viewer.js`,
-> sintaxe `flowchart`, classes `person` / `sys` / `ext` / `extAsync`.
+> - Esta é a **Etapa 2/7** da trilha de doc de arquitetura. Roda em **sessão própria** (regra master: cada PROMPT em sessão própria).
+> - **Destino canônico:** `doc/arquitetura/` (páginas) — `ia/templates/` é só gabarito de FORMA.
+> - **NAV editor (regra obrigatória):** AO criar cada `.html` em `doc/arquitetura/`, **apenda no mesmo passo** a entry `{label, href}` na seção certa do `NAV` em `sidebar.js`. Página sem entry = órfã = rejeitada pelo validador #6 (Etapa 6/7).
+> - Para CADA pergunta de grilling respondida pelo usuário, **apenda no `QA.md` da task NO MESMO TURNO** (status vivo; verbatim em decisão).
+> - Próximo passo (handoff): **Etapa 3/7 — `documentador-fluxo`** (sessão NOVA).
+> - **Conteúdo das páginas em `ia/templates/`** (serviço fictício "Liquidação Transacional", motor "FICO Falcon", limites em R$, stack específica, etc.) é **EXEMPLO** de aplicação deste prompt. Toda substância (nomes, decisões, latências, stack, glossário, valores) deve ser substituída pelo serviço REAL que você está documentando.
+> - A **única regra rígida de visual histórica** é a convenção de diagramas em `architecture-style.md` § 1 (Mermaid via `diagram-viewer.js`, sintaxe `flowchart`, classes `person`/`sys`/`ext`/`extAsync`). A partir da v2, o esqueleto HTML e o vocabulário de classes do design-system também são gate (Etapa 6/7).
 
 Clona o comportamento das skills `engineering:system-design` + `human-architect-mindset`.
 
@@ -130,3 +127,7 @@ Antes de entregar, pergunte ao usuário (pode ser num bloco só — é o fechame
 - `documentador-fluxo.md` — para cada fluxo transacional crítico.
 - `gerador-runbook.md` — após arquitetura, antes de produção.
 - `grill-doc.md` — para revisar a versão final.
+
+## Handoff
+
+> Etapa 2/7 concluída. Próxima sessão: **`documentador-fluxo`** (Etapa 3/7) em **sessão NOVA**.
