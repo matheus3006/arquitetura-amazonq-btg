@@ -41,6 +41,10 @@ run_case "front: hex inline = FAIL" "ia/tools/tests/fixtures/front/hex-bad.html"
 # === Regra: forbidden-terms (front) ===
 run_case "front: forbidden term = FAIL" "ia/tools/tests/fixtures/front/forbidden-bad.html" "--front" 1 "forbidden-term.*Liquida"
 
+# === Regra: NAV orfa (front, so em pasta com sidebar.js) ===
+run_case "front: NAV completo (pasta)" "ia/tools/tests/fixtures/front/nav-good" "--front" 0 ""
+run_case "front: pagina orfa = FAIL"   "ia/tools/tests/fixtures/front/nav-bad"  "--front" 1 "nav-orfa.*orfa.html"
+
 echo
 echo "Total: PASS=$PASS FAIL=$FAIL"
 [ "$FAIL" -eq 0 ]

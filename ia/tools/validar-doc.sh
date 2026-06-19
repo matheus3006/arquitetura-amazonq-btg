@@ -68,6 +68,22 @@ _rule_known_classes() {
   done < <(grep -nE 'class="[^"]*"' "$file")
 }
 
+# Regra nav-orfa: cada .html da pasta tem entry no NAV de sidebar.js.
+# Roda so quando target e PASTA com sidebar.js (arquivo unico = N-A).
+_rule_nav_orphan() {
+  local dir="$1" sidebar page base
+  [ -d "$dir" ] || return 0
+  sidebar="$dir/sidebar.js"
+  [ -f "$sidebar" ] || return 0
+  while IFS= read -r page; do
+    [ -z "$page" ] && continue
+    base=$(basename "$page")
+    if ! grep -qE "href:[[:space:]]*\"$base\"" "$sidebar"; then
+      violation "$page" 1 "nav-orfa" "arquivo $base nao tem entry no NAV em sidebar.js"
+    fi
+  done < <(find "$dir" -maxdepth 1 -name '*.html' -type f)
+}
+
 # Regra forbidden-terms: zero residuo do exemplo ficticio (case-insensitive substring).
 _rule_forbidden_terms() {
   local file="$1" term line content
@@ -111,6 +127,7 @@ _rule_head_order() {
 
 run_front() {
   local target="$1" file
+  _rule_nav_orphan "$target"
   while IFS= read -r file; do
     [ -z "$file" ] && continue
     _rule_head_order "$file"
