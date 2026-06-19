@@ -17,7 +17,7 @@ Um pacote pronto para clonar dentro de cada serviço .NET do seu time. Inclui:
 - **Prompts** que clonam comportamento de skills especializadas — 4 trilhas (arquitetura, frontend, negocio, engenharia)
 - **Trilha de engenharia**: debugging sistemático, planejamento de implementação e disciplina de verificação (portes do superpowers)
 - **Protocolo de controle de contexto** (`controle-style`): toda edição nasce de uma task em `doc/controle/<task-id>/` — ciclo de 2 turnos otimizado para cota de requests, com hook de início de interação (Amazon Q + Kiro) que abre a task sozinho — sem trava no commit
-- **Biblioteca de skills importadas** (`ia/skills/`): 31 Agent Skills copiadas verbatim das melhores fontes (superpowers, anthropic-skills, product/pm/c-level skills, mattpocock, bencium) em 14 categorias — espelhadas pelas camadas Copilot e Kiro; catálogo em `ia/skills/README.md`
+- **Biblioteca de skills importadas** (`ia/skills/`): 32 Agent Skills copiadas verbatim das melhores fontes (superpowers, anthropic-skills, product/pm/c-level skills, mattpocock, bencium) em 14 categorias — espelhadas pelas camadas Copilot e Kiro; catálogo em `ia/skills/README.md`
 - **Design system** dark com paleta institucional + animações sutis
 - **Template viewer** para diagramas Mermaid com pan/zoom estilo Figma, fundo claro com traços escuros
 - **12 páginas HTML de exemplo** documentando um serviço fictício ("Liquidação Transacional") como referência de forma e qualidade
