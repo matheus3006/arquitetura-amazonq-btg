@@ -1,22 +1,22 @@
-analisador-de-projeto	arquitetura	Analisa o repositorio e gera o contexto tecnico do projeto (roda primeiro em todo repo novo)
-arquiteto-de-sistema	arquitetura	Persona de arquiteto senior para visao geral e diagramas de arquitetura do servico
-gerador-adr	arquitetura	Gera ADRs em formato MADR com trade-offs explicitos e metrica de validacao
-gerador-runbook	arquitetura	Gera runbooks operacionais com failure modes, sintomas e acoes
-documentador-fluxo	arquitetura	Documenta fluxos transacionais com sequence diagrams e payloads
+analisador-de-projeto	arquitetura	Etapa 1/7 (sessao 1a): analisa o repositorio e gera project-context.md em 3 destinos de rules (Amazon Q/Copilot/Kiro). Pre-requisito de toda a trilha; cada prompt em sessao propria
+arquiteto-de-sistema	arquitetura	Etapa 2/7: arquitetura/espinha (5 perguntas-ancora + grill + paginas-nucleo). Cada pagina criada em doc/arquitetura/ + entry no NAV de sidebar.js no mesmo passo
+gerador-adr	arquitetura	Gera ADRs em formato MADR com trade-offs explicitos e metrica de validacao (destino: doc/adr/)
+gerador-runbook	arquitetura	Etapa 4/7: doc/arquitetura/runbook.html (4 campos obrigatorios por failure mode, nada inventado). Apenda entry no NAV de sidebar.js
+documentador-fluxo	arquitetura	Etapa 3/7: pagina(s) de fluxo critico em doc/arquitetura/ (sequenceDiagram com autonumber). Apenda entry no NAV de sidebar.js
 grill-doc	arquitetura	Revisor cetico de documentacao: procura furos, inconsistencias e garantias nao implementadas
 brainstorm-arquitetural	arquitetura	Parceiro de pensamento pre-ADR: reformula o problema, gera opcoes e converge com trade-offs
 designer-ux-controlado	frontend	Decisoes visuais propostas antes de aplicadas, uma por vez
 designer-ui-pro-max	frontend	Catalogo de estilos, paletas e padroes visuais para escolher direcao
 design-system-arquitetura	frontend	Extensao e auditoria do design system do pack
 polidor-ui	frontend	Polimento de UI: microinteracoes, easing e acabamento (estilo Emil Kowalski)
-analisador-de-dominio	negocio	Analisa o dominio e gera o contexto de negocio (regras, atores, eventos)
+analisador-de-dominio	negocio	Etapa 1/7 (sessao 1b, reusado pela trilha arquitetura): analisa o dominio e gera business-context.md em 3 destinos de rules (regras, atores, eventos). Apenda Q&A no QA.md no mesmo turno
 mapeador-de-fluxo-de-negocio	negocio	Mapeia fluxo de negocio com caminho feliz e caminhos tristes em diagrama
 catalogo-de-regras	negocio	Cataloga regras de negocio com origem, dono e consequencia
 glossario-de-negocio	negocio	Gera o glossario do dominio (linguagem ubiqua)
 grill-negocio	negocio	Interrogatorio por fases com ledger para extrair regras nao escritas do dominio
 depurador-sistematico	engenharia	Depuracao sistematica em 4 fases: causa raiz com evidencia antes de qualquer correcao
 planejador-de-implementacao	engenharia	Transforma spec/decisao em plano de etapas pequenas e independentemente verificaveis
-controle-de-tarefa	engenharia	Protocolo de controle para QUALQUER task que crie ou modifique um artefato (codigo, doc, spec, design, diagrama, plano) — nao so codigo. 2 turnos: escopo+plano aprovados viram checklist (status vivo, marcado a cada passo), execucao com ledger de evidencias
+controle-de-tarefa	engenharia	Protocolo de controle para QUALQUER task que crie ou modifique um artefato (codigo, doc, spec, design, diagrama, plano) — nao so codigo. 2 turnos: escopo+plano aprovados viram checklist (status vivo, marcado a cada passo), execucao com ledger de evidencias. Tasks de doc/grill geram tambem QA.md (status vivo, mesmo turno)
 grill-plano	engenharia	Interrogatorio socratico do plano de implementacao: anda a arvore de decisoes e acha furos, premissas e riscos antes da aprovacao
 executor-de-plano	engenharia	Executa o plano aprovado etapa por etapa com verificacao por etapa, regra de desvio e parada em bloqueio
 tdd-disciplinado	engenharia	Disciplina test-first por etapa: nenhum codigo de producao sem teste falhando antes (red-green-refactor)
@@ -24,7 +24,9 @@ especificador	engenharia	Transforma pedido vago em spec minima com criterios de 
 refatorador-incremental	engenharia	Refatoracao sob rede de testes: caracteriza o comportamento, anda em passos pequenos (Mikado) e verifica a cada passo — comportamento identico no fim
 estrategista-de-testes	engenharia	Desenha a estrategia de testes alem do TDD unitario: niveis (unit/integracao/contrato/e2e), regressao dos bugs ja vistos e prioridade por risco x custo
 revisor-de-codigo	engenharia	Conduz a revisao de codigo por dimensoes (correcao, seguranca, simplicidade/reuso, testes) com achados por severidade e evidencia arquivo:linha
-documentar-servico	arquitetura	Etapa 1 de 3 do fluxo de doc do zero: orquestra contexto (analisador-de-projeto) + dominio (analisador-de-dominio) + arquitetura (arquiteto-de-sistema) num fluxo so, com checkpoint entre fases
-completar-documentacao	arquitetura	Etapa 2 de 3: completa a doc tecnica com os fluxos criticos (documentador-fluxo) e o runbook (gerador-runbook), confirmados no codigo
-grill-arquitetura	arquitetura	Etapa 3 de 3: grill intenso codigo-primeiro sobre a doc gerada — cada incerteza resolvida pelo codigo (com nivel de certeza) ou perguntada ao humano, atualizada inline
-sincronizar-doc-codigo	arquitetura	Atualiza a doc a partir do diff da branch: analisa o codigo, grilla o porque (grill-me + human-architect-mindset) e registra ADR quando a mudanca nao partiu de uma ADR existente
+documentar-servico	arquitetura	Indice da trilha de 7 etapas (8 sessoes — Etapa 1 = 2 sessoes). Aponta as etapas 1-7 em sequencia; cada prompt em sessao propria; NAO orquestra (deprecado o atalho anterior)
+grill-arquitetura	arquitetura	Etapa 5/7: grill intenso codigo-primeiro sobre a doc gerada — cada incerteza resolvida pelo codigo (com nivel de certeza) ou perguntada ao humano; respostas apendadas no QA.md no mesmo turno
+sincronizar-doc-codigo	arquitetura	Atualiza a doc a partir do diff da branch: analisa o codigo, grilla o porque (grill-me + human-architect-mindset) e registra ADR quando a mudanca nao partiu de uma ADR existente (destino: doc/arquitetura/, ADRs em doc/adr/)
+validador-visual	arquitetura	Etapa 6/7: validador visual/template (so reporta; checklist canonico + ia/tools/validar-doc.sh --front opcional). Verifica navegabilidade, esqueleto, vocabulario fechado de classes, cores via var(--color-*), forbidden-terms
+validador-sintaxe-mermaid	arquitetura	Etapa 7/7: validador sintaxe + Mermaid (so reporta; checklist canonico + ia/tools/validar-doc.sh --mermaid opcional). Pareamento data-id, tipo valido, 4 classDef, autonumber sempre em sequence
+atualizador-arquitetura	arquitetura	Complementar (fora da trilha 1-7): conforma doc ja existente em doc/arquitetura/ as regras v2. Diagnostica, ramifica (front->plano+aplica; logico->grill+QA.md), 1 task de controle por execucao
