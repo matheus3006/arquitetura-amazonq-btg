@@ -10,9 +10,11 @@
 # Copia: .amazonq/rules/ (5 rules) + .github/ (camada Copilot: instructions,
 #        prompts, skills) + .kiro/ (camada Kiro: steering, skills)
 #        + ia/prompts/ (4 trilhas) + ia/skills/ (biblioteca de 32 skills importadas) e
-#        ia/COMO-USAR.html + ia/design-system/ (css) + ia/templates/ (js +
-#        paginas HTML de exemplo — referencia de FORMA pros prompts;
+#        ia/COMO-USAR.html + ia/design-system/ (css) + ia/templates/ (prefs.js + viewer +
+#        sidebar + paginas HTML de exemplo — referencia de FORMA pros prompts;
 #        nunca sobrescreve arquivo ja existente no alvo)
+#        + doc/templates/ + doc/design-system/ (assets de runtime semeados de ia/ pros
+#        docs gerados em doc/arquitetura/) + ia/tools/seed-doc-assets.sh (re-semear)
 #        + hooks de inicio de interacao do protocolo de controle (.amazonq/cli-agents/
 #        + .amazonq/hooks/ + .kiro/hooks/) — orientam o agente a abrir a task; NAO bloqueiam commit
 # NAO copia: arquivos de contexto por-servico (project/business-context nos
@@ -103,11 +105,12 @@ mkdir -p "$TARGET/ia/design-system"
 cp "$PACK_DIR/ia/design-system/"*.css "$TARGET/ia/design-system/"
 echo "  ✓ ia/design-system/*.css"
 
-# 5) Runtime dos templates (viewer + sidebar)
+# 5) Runtime dos templates (prefs + viewer + sidebar)
 mkdir -p "$TARGET/ia/templates"
+cp "$PACK_DIR/ia/templates/prefs.js"          "$TARGET/ia/templates/"
 cp "$PACK_DIR/ia/templates/diagram-viewer.js" "$TARGET/ia/templates/"
 cp "$PACK_DIR/ia/templates/sidebar.js"        "$TARGET/ia/templates/"
-echo "  ✓ ia/templates/diagram-viewer.js + sidebar.js"
+echo "  ✓ ia/templates/prefs.js + diagram-viewer.js + sidebar.js"
 
 # 5b) Paginas de exemplo — referencia de FORMA pros prompts (padrao; pule com
 #     --no-examples). NUNCA sobrescreve: paginas ja geradas no alvo ficam intactas.
@@ -131,6 +134,14 @@ else
     echo "  ✓ ia/templates/*.html (exemplos de forma: $copied copiados, $kept preservados)"
   fi
 fi
+
+# 5c) Assets de runtime sob doc/ — os docs gerados em doc/arquitetura/ referenciam
+#     ../templates/prefs.js e ../design-system/*.css. Artefato de build: semeado de ia/
+#     (idempotente). Instala tambem o helper para re-semear quando ia/ mudar.
+mkdir -p "$TARGET/ia/tools"
+cp "$PACK_DIR/ia/tools/seed-doc-assets.sh" "$TARGET/ia/tools/seed-doc-assets.sh"
+chmod +x "$TARGET/ia/tools/seed-doc-assets.sh" 2>/dev/null || true
+bash "$PACK_DIR/ia/tools/seed-doc-assets.sh" "$TARGET"
 
 # 6) Guia de uso (mensagens prontas — fica em ia/; abra no navegador)
 if [ ! -f "$PACK_DIR/ia/COMO-USAR.html" ]; then

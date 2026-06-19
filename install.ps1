@@ -10,9 +10,11 @@
   Copia: .amazonq/rules/ (5 rules) + .github/ (camada Copilot) + .kiro/ (camada Kiro:
            steering + Agent Skills) + ia/prompts/ (4 trilhas) + ia/skills/ (biblioteca de
            32 skills importadas)
-         + ia/COMO-USAR.html + ia/design-system/ (css) + ia/templates/ (js +
+         + ia/COMO-USAR.html + ia/design-system/ (css) + ia/templates/ (prefs.js + js +
            templates e paginas HTML de exemplo — referencia de FORMA pros prompts;
            nunca sobrescreve arquivo ja existente no alvo)
+         + doc/templates/ + doc/design-system/ (assets de runtime semeados de ia/ pros
+           docs gerados em doc/arquitetura/) + ia/tools/seed-doc-assets.sh (re-semear)
          + hooks de inicio de interacao do protocolo de controle (.amazonq/cli-agents/
            + .amazonq/hooks/ + .kiro/hooks/) — orientam o agente a abrir a task; NAO bloqueiam commit
   NAO copia: arquivos de contexto por-servico (project/business-context nos tres lados)
@@ -89,11 +91,14 @@ Write-Host "  + .kiro/steering/ (5 rules)"
 Copy-Item (Join-Path $PackDir '.kiro/skills/*') (Join-Path $kiroDst 'skills') -Recurse -Force
 Write-Host "  + .kiro/skills/ (64 Agent Skills: 32 wrappers + 32 importadas)"
 
-# 3) Prompts (4 trilhas)
+# 3) Prompts (4 trilhas) — copia o CONTEUDO de cada trilha (glob /*) pra um dir criado,
+#    como as demais copias recursivas: evita aninhar ia/prompts/<t>/<t>/ em re-run no Windows.
 $promptsDst = Join-Path $Target 'ia/prompts'
 New-Item -ItemType Directory -Force -Path $promptsDst | Out-Null
 foreach ($t in 'arquitetura','frontend','negocio','engenharia') {
-  Copy-Item (Join-Path $PackDir "ia/prompts/$t") $promptsDst -Recurse -Force
+  $tDst = Join-Path $promptsDst $t
+  New-Item -ItemType Directory -Force -Path $tDst | Out-Null
+  Copy-Item (Join-Path $PackDir "ia/prompts/$t/*") $tDst -Recurse -Force
 }
 Write-Host "  + ia/prompts/{arquitetura,frontend,negocio,engenharia}"
 
@@ -109,12 +114,13 @@ New-Item -ItemType Directory -Force -Path $dsDst | Out-Null
 Copy-Item (Join-Path $PackDir 'ia/design-system/*.css') $dsDst -Force
 Write-Host "  + ia/design-system/*.css"
 
-# 5) Runtime dos templates
+# 5) Runtime dos templates (prefs + viewer + sidebar)
 $tplDst = Join-Path $Target 'ia/templates'
 New-Item -ItemType Directory -Force -Path $tplDst | Out-Null
+Copy-Item (Join-Path $PackDir 'ia/templates/prefs.js')          $tplDst -Force
 Copy-Item (Join-Path $PackDir 'ia/templates/diagram-viewer.js') $tplDst -Force
 Copy-Item (Join-Path $PackDir 'ia/templates/sidebar.js')        $tplDst -Force
-Write-Host "  + ia/templates/diagram-viewer.js + sidebar.js"
+Write-Host "  + ia/templates/prefs.js + diagram-viewer.js + sidebar.js"
 
 # 5b) Paginas de exemplo - referencia de FORMA pros prompts (padrao; pule com
 #     -NoExamples). NUNCA sobrescreve: paginas ja geradas no alvo ficam intactas.
@@ -133,6 +139,22 @@ if ($NoExamples) {
     Write-Host "  ! ia/templates/*.html nao copiados (nenhum .html no pack?)"
   }
 }
+
+# 5c) Assets de runtime sob doc/ (os docs gerados em doc/arquitetura/ referenciam
+#     ../templates/prefs.js e ../design-system/*.css). Artefato de build: semeado de ia/
+#     (idempotente). Instala tambem o helper .sh para re-semear quando ia/ mudar.
+$toolsDst = Join-Path $Target 'ia/tools'
+New-Item -ItemType Directory -Force -Path $toolsDst | Out-Null
+Copy-Item (Join-Path $PackDir 'ia/tools/seed-doc-assets.sh') $toolsDst -Force
+$docTpl = Join-Path $Target 'doc/templates'
+$docDs  = Join-Path $Target 'doc/design-system'
+New-Item -ItemType Directory -Force -Path $docTpl, $docDs | Out-Null
+foreach ($j in 'prefs.js','sidebar.js','diagram-viewer.js') {
+  $src = Join-Path $tplDst $j
+  if (Test-Path -PathType Leaf $src) { Copy-Item $src (Join-Path $docTpl $j) -Force }
+}
+Copy-Item (Join-Path $dsDst '*.css') $docDs -Force
+Write-Host "  + doc/templates/ + doc/design-system/ semeados de ia/ (artefato de build)"
 
 # 6) Guia de uso (mensagens prontas - fica em ia/; abra no navegador)
 $comoSrc = Join-Path $PackDir 'ia/COMO-USAR.html'
