@@ -32,6 +32,9 @@ run_case "cli: pasta inexistente = exit 2" "/nao/existe/abc" "--front" 2 "pasta"
 run_case "front: head correto"                  "ia/tools/tests/fixtures/front/head-ok.html"        "--front" 0 ""
 run_case "front: prefs.js depois de CSS = FAIL" "ia/tools/tests/fixtures/front/head-bad-order.html" "--front" 1 "head-order"
 
+# === Regra: vocabulario fechado de classes (front) ===
+run_case "front: class fora do lib = FAIL" "ia/tools/tests/fixtures/front/class-bad.html" "--front" 1 "class-unknown.*my-custom-section"
+
 echo
 echo "Total: PASS=$PASS FAIL=$FAIL"
 [ "$FAIL" -eq 0 ]

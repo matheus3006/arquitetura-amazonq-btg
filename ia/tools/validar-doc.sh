@@ -49,6 +49,25 @@ _iter_html() {
 # Regras --front
 # ============================================================================
 
+_load_classes() {
+  [ -f "$LIB_DIR/design-system-classes.txt" ] || return 1
+  grep -vE '^(#|$)' "$LIB_DIR/design-system-classes.txt"
+}
+
+# Regra class-unknown: toda classe usada DEVE estar em design-system-classes.txt.
+_rule_known_classes() {
+  local file="$1" allowed line content classes c
+  allowed=$(_load_classes 2>/dev/null) || return 0
+  while IFS=: read -r line content; do
+    classes=$(echo "$content" | grep -oE 'class="[^"]*"' | sed -E 's/class="([^"]*)"/\1/g')
+    for c in $classes; do
+      # match exato (Fx) — escape-safe para classes com -- ou __
+      grep -qFx "$c" <<<"$allowed" && continue
+      violation "$file" "$line" "class-unknown" "classe '$c' nao esta em design-system-classes.txt"
+    done
+  done < <(grep -nE 'class="[^"]*"' "$file")
+}
+
 # Regra head-order: prefs.js DEVE aparecer ANTES do primeiro <link ... .css>.
 _rule_head_order() {
   local file="$1" prefs_line css_line
@@ -66,6 +85,7 @@ run_front() {
   while IFS= read -r file; do
     [ -z "$file" ] && continue
     _rule_head_order "$file"
+    _rule_known_classes "$file"
   done < <(_iter_html "$target")
 }
 
