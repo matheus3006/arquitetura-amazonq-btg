@@ -68,6 +68,20 @@ _rule_known_classes() {
   done < <(grep -nE 'class="[^"]*"' "$file")
 }
 
+# Regra no-hex: zero cor hex hardcoded fora dos classDef Mermaid.
+_rule_no_hex() {
+  local file="$1" ln rule rest
+  while IFS=: read -r ln rule rest; do
+    [ -z "$ln" ] && continue
+    violation "$file" "$ln" "$rule" "$rest"
+  done < <(awk '
+    /<script[^>]*text\/mermaid/ { inm=1; next }
+    /<\/script>/                { inm=0; next }
+    inm                          { next }
+    /#[0-9a-fA-F]{3,8}/         { print NR":hex-hardcoded:use var(--color-*) em vez de hex" }
+  ' "$file")
+}
+
 # Regra head-order: prefs.js DEVE aparecer ANTES do primeiro <link ... .css>.
 _rule_head_order() {
   local file="$1" prefs_line css_line
@@ -86,6 +100,7 @@ run_front() {
     [ -z "$file" ] && continue
     _rule_head_order "$file"
     _rule_known_classes "$file"
+    _rule_no_hex "$file"
   done < <(_iter_html "$target")
 }
 

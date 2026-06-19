@@ -35,6 +35,9 @@ run_case "front: prefs.js depois de CSS = FAIL" "ia/tools/tests/fixtures/front/h
 # === Regra: vocabulario fechado de classes (front) ===
 run_case "front: class fora do lib = FAIL" "ia/tools/tests/fixtures/front/class-bad.html" "--front" 1 "class-unknown.*my-custom-section"
 
+# === Regra: zero hex hardcoded fora dos classDef Mermaid (front) ===
+run_case "front: hex inline = FAIL" "ia/tools/tests/fixtures/front/hex-bad.html" "--front" 1 "hex-hardcoded"
+
 echo
 echo "Total: PASS=$PASS FAIL=$FAIL"
 [ "$FAIL" -eq 0 ]
