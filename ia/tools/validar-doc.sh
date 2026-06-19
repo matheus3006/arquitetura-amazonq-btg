@@ -173,12 +173,43 @@ _rule_mermaid_type() {
   ' "$file")
 }
 
+# Regra mermaid-classdef: flowchart precisa dos 4 classDef (person/sys/ext/extAsync).
+# awk faz a checagem por bloco e emite as violacoes direto (evita problemas de multiline em read).
+_rule_mermaid_classdefs() {
+  local file="$1" ln rule rest
+  while IFS=: read -r ln rule rest; do
+    [ -z "$ln" ] && continue
+    violation "$file" "$ln" "$rule" "$rest"
+  done < <(awk '
+    BEGIN { need["person"]=1; need["sys"]=1; need["ext"]=1; need["extAsync"]=1 }
+    /<script[^>]*text\/mermaid/ {
+      inm=1; line=NR; isflow=0;
+      for (c in need) found[c]=0;
+      next
+    }
+    /<\/script>/ {
+      if (inm && isflow) {
+        for (c in need) if (!found[c]) print line":mermaid-classdef:falta classDef "c" no bloco (ver mermaid-classdefs.txt)"
+      }
+      inm=0; next
+    }
+    inm && /^[[:space:]]*flowchart/ { isflow=1; next }
+    inm && isflow && /^[[:space:]]*classDef[[:space:]]+/ {
+      s = $0
+      sub(/^[[:space:]]*classDef[[:space:]]+/, "", s)
+      sub(/[[:space:]].*/, "", s)
+      found[s]=1
+    }
+  ' "$file")
+}
+
 run_mermaid() {
   local target="$1" file
   while IFS= read -r file; do
     [ -z "$file" ] && continue
     _rule_mermaid_pair "$file"
     _rule_mermaid_type "$file"
+    _rule_mermaid_classdefs "$file"
   done < <(_iter_html "$target")
 }
 

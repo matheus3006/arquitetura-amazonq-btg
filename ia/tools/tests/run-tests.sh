@@ -52,6 +52,9 @@ run_case "mermaid: data-diagram sem par" "ia/tools/tests/fixtures/mermaid/bad-pa
 # === Regra: tipo valido na 1a linha do bloco (mermaid) ===
 run_case "mermaid: tipo invalido = FAIL" "ia/tools/tests/fixtures/mermaid/bad-type.html" "--mermaid" 1 "mermaid-type"
 
+# === Regra: 4 classDef obrigatorios em flowchart (mermaid) ===
+run_case "mermaid: falta classDef = FAIL" "ia/tools/tests/fixtures/mermaid/missing-classdef.html" "--mermaid" 1 "mermaid-classdef.*extAsync"
+
 echo
 echo "Total: PASS=$PASS FAIL=$FAIL"
 [ "$FAIL" -eq 0 ]
