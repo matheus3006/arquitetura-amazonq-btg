@@ -88,7 +88,7 @@ Se a decisão envolve fluxo novo, adicione um diagrama seguindo a convenção r�
 
 ### Passo 6 — Nomenclatura e localização
 
-- Explore `docs/<servico>/adr/` no workspace para descobrir o próximo número.
+- Explore `doc/adr/` no workspace para descobrir o próximo número. (Destino canônico v2; espelha o layout `ia/`+`doc/` do pack.)
 - Numeração: zero-padding 4 dígitos. Ex: `0042`.
 - Slug: kebab-case curto. Ex: `0042-outbox-pattern-pagamentos.html`.
 - ADRs **aceitas nunca são editadas**. Para reverter, crie nova ADR com `Status: Supersedes ADR-XXXX`.

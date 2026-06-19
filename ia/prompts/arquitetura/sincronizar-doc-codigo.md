@@ -4,7 +4,7 @@
 >
 > Este prompt é referenciado pela rule da trilha `arquitetura` § 2 (`.amazonq/rules/architecture-style.md` ou `.github/instructions/architecture-style.instructions.md`, conforme a ferramenta).
 >
-> **Standalone** — não é etapa do fluxo de documentação do zero (esse é `documentar-servico` → `completar-documentacao` → `grill-arquitetura`). Aqui o gatilho é **mudança de código**: o fluxo de 3 etapas cria a doc; este a **mantém em dia** quando o código muda, e captura o **porquê** da mudança.
+> **Standalone** — não é etapa da trilha de doc do zero (essa é o índice em `documentar-servico` → 7 etapas, ver `architecture-style.md` § 2). Aqui o gatilho é **mudança de código**: a trilha cria a doc; este a **mantém em dia** quando o código muda, e captura o **porquê** da mudança.
 >
 > Diferente do `grill-arquitetura.md` (ataca incertezas da doc já gerada): aqui o ponto de partida é o **diff** de uma branch a mergear, e o fluxo termina **registrando a decisão** (ADR) quando a mudança não partiu de uma ADR existente.
 
@@ -39,7 +39,7 @@ Leia o diff **de verdade** (não só nomes de arquivo). Para cada mudança relev
 | Mudança no código (`arquivo:linha`) | O que muda na arquitetura | Página de doc afetada · a incerteza (o porquê) |
 
 - "Mudança na arquitetura" = novo contrato, dependência, fluxo, invariante, estado, config, limite.
-- "Página afetada" = qual página de `docs/<servico>/` (visão geral, padrões, dados, fluxos, runbook, enums…) descreve aquilo — e, se a stack/padrões mudaram, o `project-context`.
+- "Página afetada" = qual página de `doc/arquitetura/` (visão geral, padrões, dados, fluxos, runbook, enums…) descreve aquilo — e, se a stack/padrões mudaram, o `project-context`.
 - "A incerteza" = o que o diff **não** explica: por que essa escolha, qual alternativa foi descartada, que invariante isso protege.
 
 **Gate de saída:** inventário montado; cada mudança relevante mapeada a uma página de doc e a uma incerteza (o que vira o ledger do grill).
@@ -56,7 +56,7 @@ Siga **`ia/skills/arquitetura/grill-me/SKILL.md`** com o **`human-architect-mind
 
 ### Fase C — Atualizar a documentação afetada
 Com o entendimento do grill, atualize **inline**:
-- as páginas de `docs/<servico>/` que o inventário marcou (fluxos, padrões, dados, visão geral…), fiéis ao código novo + ao porquê;
+- as páginas de `doc/arquitetura/` que o inventário marcou (fluxos, padrões, dados, visão geral…), fiéis ao código novo + ao porquê;
 - o `project-context` (nos **três destinos**: Amazon Q, Copilot, Kiro) **se** stack/padrões/dependências mudaram;
 - diagramas na convenção rígida (`frontend-style.md` § 1 / `architecture-style.md` § 1) quando o fluxo mudou.
 
@@ -65,7 +65,7 @@ Onde o grill deixou pendência, marque `⚠ a confirmar` — não invente.
 **Gate de saída:** a doc atualizada bate com o diff; nenhuma garantia escrita sem código que a sustente.
 
 ### Fase D — ADR (registrar ou referenciar a decisão)
-1. **Busque** as ADRs existentes em `docs/<servico>/adr/` e cruze com os temas do grill. **Mostre as candidatas** ("isto parece coberto pela ADR-00XX").
+1. **Busque** as ADRs existentes em `doc/adr/` e cruze com os temas do grill. **Mostre as candidatas** ("isto parece coberto pela ADR-00XX").
 2. **Já existe ADR** que cobre a decisão → **linke-a** na doc atualizada (não duplique).
 3. **Não existe** → **pergunte** se o usuário quer registrar a decisão. Se sim, **encadeie `ia/prompts/arquitetura/gerador-adr.md`**, passando o contexto já capturado (problema, opções consideradas, trade-offs, o porquê do grill).
 
@@ -106,6 +106,6 @@ Onde o grill deixou pendência, marque `⚠ a confirmar` — não invente.
 ## Referências
 - Motor e dimensões do grill: `ia/skills/arquitetura/grill-me/SKILL.md` + `ia/skills/arquitetura/human-architect-mindset/SKILL.md`.
 - Registro da decisão: `ia/prompts/arquitetura/gerador-adr.md`.
-- Fluxo de documentação do zero (complementar): `ia/prompts/arquitetura/documentar-servico.md` → `completar-documentacao.md` → `grill-arquitetura.md`.
+- Fluxo de documentação do zero (complementar): índice em `ia/prompts/arquitetura/documentar-servico.md`, depois 7 etapas (`analisador-de-projeto` → `analisador-de-dominio` → `arquiteto-de-sistema` → `documentador-fluxo` → `gerador-runbook` → `grill-arquitetura` → `validador-visual` → `validador-sintaxe-mermaid`).
 - Andaime do protocolo de grilling (ledger, rodada, anti-padrões): `ia/prompts/engenharia/grill-plano.md` / `ia/prompts/negocio/grill-negocio.md`.
 - Disciplina de conclusão: `engenharia-style.md` § 2.
