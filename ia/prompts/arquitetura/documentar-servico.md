@@ -1,88 +1,45 @@
-# Prompt — Documentar Serviço (Etapa 1 de 3 · fundação + arquitetura)
+# Índice da trilha de doc de arquitetura — 7 etapas, 8 sessões
 
-> ## STATUS
->
-> Este prompt é referenciado pela rule da trilha `arquitetura` § 2 (`.amazonq/rules/architecture-style.md` ou `.github/instructions/architecture-style.instructions.md`, conforme a ferramenta).
->
-> É a **Etapa 1 do fluxo canônico de documentação do zero** (3 etapas obrigatórias):
-> **1. `documentar-servico` (este)** → 2. `completar-documentacao` (fluxos + runbook) →
-> 3. `grill-arquitetura` (grill intenso, em outra sessão).
->
-> **Orquestrador, não reescrita:** este prompt **chama** os processos de
-> `analisador-de-projeto.md`, `analisador-de-dominio.md` e `arquiteto-de-sistema.md` em
-> sequência — cada um continua sendo a metodologia daquela fase. A **única regra rígida de
-> visual** é a convenção de diagramas em `architecture-style.md` § 1.
+**LEIA ESTE BLOCO ANTES DE QUALQUER COISA:**
 
-## Quando usar
-- "documentar o serviço do zero", "começar a documentação", "preparar e documentar este repo", primeira passada completa de doc técnica.
-- Substitui a necessidade de rodar `analisador-de-projeto` e depois `arquiteto-de-sistema` na mão: aqui é um fluxo só, com checkpoint seu entre as fases.
+- A trilha de doc de arquitetura são **7 etapas conceituais** correspondendo a **8 sessões** (Etapa 1 tem 2 sessões).
+- **Rode TODAS na ordem 1→7, cada PROMPT em sessão própria** (regra master).
+- Este prompt **não orquestra** — ele é só o índice + handoff inicial. Quem gera/valida é cada prompt abaixo, em sessão nova.
+- Antes da Etapa 1, abra a **task de controle** (`doc/controle/<AAAA-MM-DD-slug>/` com `TASK.md` + `QA.md` + `LEDGER.md`).
 
-Não use para: refresh pontual de UMA página (use o prompt-base direto) nem para fluxo/runbook (isso é a Etapa 2).
+## Sequência
 
-## Stack de skills (qualidade top tier — use em todas as fases)
-- `ia/skills/arquitetura/human-architect-mindset/SKILL.md` — modelo de domínio e restrições antes de tecnologia.
-- `ia/skills/arquitetura-review/improve-codebase-architecture/SKILL.md` — ler a arquitetura real do código (não a aspiracional).
-- `ia/skills/documentacao/doc-coauthoring/SKILL.md` — co-autoria: juntar contexto → refinar/estruturar → testar com o leitor.
-- `ia/skills/backend/verification-before-completion/SKILL.md` — nada de "pronto" sem evidência; o que não foi confirmado vira `[a confirmar]`.
+| Etapa | Sessão | Prompt | Onde | Tipo |
+|---|---|---|---|---|
+| 1 | 1a | `analisador-de-projeto` | `ia/prompts/arquitetura/` | geração — contexto |
+| 1 | 1b | `analisador-de-dominio` | `ia/prompts/negocio/` (reusado pela trilha arquitetura) | geração — domínio |
+| 2 | 2  | `arquiteto-de-sistema` | `ia/prompts/arquitetura/` | geração — espinha |
+| 3 | 3  | `documentador-fluxo`   | `ia/prompts/arquitetura/` | geração — fluxos |
+| 4 | 4  | `gerador-runbook`      | `ia/prompts/arquitetura/` | geração — runbook |
+| 5 | 5  | `grill-arquitetura`    | `ia/prompts/arquitetura/` | validação **lógica** |
+| 6 | 6  | `validador-visual`     | `ia/prompts/arquitetura/` | validação **visual** (só reporta) |
+| 7 | 7  | `validador-sintaxe-mermaid` | `ia/prompts/arquitetura/` | validação **forma** (só reporta) |
 
-## Metodologia — 3 fases com gate (checkpoint do usuário entre cada uma)
+## Destino canônico de saída
 
-### Fase A — Contexto técnico  (gate de tudo)
-Rode TODO o processo de `ia/prompts/arquitetura/analisador-de-projeto.md`: detecte stack e
-padrões do código, pergunte o que o código não revela (uma por vez), inclua a lista negativa
-e grave `project-context.md` nos TRÊS destinos (Amazon Q, Copilot, Kiro).
+- Páginas geradas → `doc/arquitetura/`.
+- ADRs → `doc/adr/`.
+- `ia/templates/` é só **gabarito de FORMA** (referência) — nunca destino de gravação.
 
-**Gate de saída:** os três `project-context.md` existem, idênticos, e o usuário revisou o resumo. **PARE e confirme** antes da Fase B.
+## QA-ledger (registra o input do usuário)
 
-### Fase B — Domínio de negócio
-Rode TODO o processo de `ia/prompts/negocio/analisador-de-dominio.md`: regras candidatas no
-código, atores, eventos, grilling por fases, e grave `business-context` nos TRÊS destinos.
+- A task de controle ganha um `QA.md` (template em `controle-de-tarefa.md`).
+- Cada par pergunta → resposta é apendado **no mesmo turno** em que a resposta chega (status vivo).
+- Regra binária: **verbatim** sempre que houver decisão (escolha entre opções, nome de tecnologia, restrição numérica); **normalizada** (1 linha) caso contrário.
 
-**Gate de saída:** os três `business-context` existem, idênticos, e o usuário revisou o resumo. **PARE e confirme** antes da Fase C.
+## NAV (responsabilidade do gerador)
 
-### Fase C — Arquitetura (a espinha do template)
-Rode TODO o processo de `ia/prompts/arquitetura/arquiteto-de-sistema.md`: as 5 perguntas-âncora
-+ o grilling ramo a ramo (1ª passada — o exaustivo é a Etapa 3), produzindo as páginas HTML
-no padrão da casa. Cubra a **espinha**:
-- **Visão geral** (`01-visao-geral` como referência de forma) — propósito, contexto, integrações, fluxo principal, stack, quality goals.
-- **Páginas-núcleo que derivam direto** do contexto+domínio: padrões transacionais aplicáveis, modelo de dados, infraestrutura — **só as que o código sustenta** (não force páginas do exemplo que não se aplicam).
+Cada etapa que cria um `.html` em `doc/arquitetura/` (Etapas 2, 3, 4) **DEVE** apendar a entry `{label, href}` na seção certa do `NAV` em `sidebar.js` **no mesmo passo**. Página sem entry = órfã = rejeitada pelo validador #6.
 
-Cada decisão difícil-de-reverter + surpreendente + com trade-off real → ofereça ADR
-(`gerador-adr.md`). Incerteza que o código não fecha → marque `⚠ a confirmar` (a Etapa 3 ataca isso).
+## Próximo passo
 
-**Gate de saída:** páginas geradas com os diagramas na convenção rígida (§ 1), conteúdo do serviço REAL (zero "Liquidação Transacional"), e cada `⚠` explicitamente aceito pelo usuário ou deixado para a Etapa 3.
+> Abra a task de controle e rode a Etapa 1, sessão 1a: **`analisador-de-projeto`** (em sessão própria).
 
-## Handoff (obrigatório no fim)
-Feche entregando, em uma linha clara:
+## Para doc JÁ existente
 
-> **Etapa 1 concluída.** Contexto + domínio + arquitetura (espinha) gerados. **Próximo passo
-> obrigatório:** rode a **Etapa 2 — `completar-documentacao.md`** (fluxos críticos + runbook).
-> Depois dela, a **Etapa 3 — `grill-arquitetura.md`** numa sessão nova.
-
-## Regras de comportamento
-- Não pule fase nem o gate dela — cada fase alimenta a próxima; contexto/domínio incompletos produzem arquitetura que mente.
-- Não duplique a metodologia dos prompts-base — siga cada um por inteiro, não a sua lembrança dele.
-- Não invente SLO, latência, stack nem regra — o que ninguém confirmou vira `[a confirmar com <quem>]`.
-- Disciplina de conclusão (`engenharia-style.md` § 2): afirmação só com evidência.
-
-## Saída esperada
-1. Resumo por fase (o que foi gerado, onde).
-2. Lista dos `⚠ a confirmar` que passam pra Etapa 3.
-3. O handoff acima.
-
-## Exemplo de invocação
-
-> Quero documentar do zero o serviço de Conciliação Bancária (repo `conciliacao-banco`).
-> Siga `ia/prompts/arquitetura/documentar-servico.md` — Etapa 1 do fluxo de 3 etapas.
-
-| Ferramenta | Como invocar |
-|---|---|
-| Amazon Q (IDE ou `q chat`) | Mensagem nomeando o prompt, como acima |
-| Copilot (VS Code / Visual Studio / JetBrains) | `/documentar-servico` |
-| Copilot CLI | Gatilho natural ("documentar o serviço do zero") — a instruction roteia |
-| Kiro (IDE / CLI) | Descreva o pedido — a Agent Skill ativa por descrição |
-
-## Referências
-- Etapa 2: `ia/prompts/arquitetura/completar-documentacao.md` · Etapa 3: `ia/prompts/arquitetura/grill-arquitetura.md`.
-- Prompts-base orquestrados: `analisador-de-projeto.md`, `ia/prompts/negocio/analisador-de-dominio.md`, `arquiteto-de-sistema.md`.
-- Convenção de diagramas (regra rígida): `architecture-style.md` § 1. Esqueleto HTML: `frontend-style.md` § 1.
+Não use a trilha 1→7 — use o **`atualizador-arquitetura`** (prompt complementar, fora da trilha numerada).
