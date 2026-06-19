@@ -45,6 +45,10 @@ run_case "front: forbidden term = FAIL" "ia/tools/tests/fixtures/front/forbidden
 run_case "front: NAV completo (pasta)" "ia/tools/tests/fixtures/front/nav-good" "--front" 0 ""
 run_case "front: pagina orfa = FAIL"   "ia/tools/tests/fixtures/front/nav-bad"  "--front" 1 "nav-orfa.*orfa.html"
 
+# === Regra: pareamento data-diagram <-> data-id (mermaid) ===
+run_case "mermaid: par OK"               "ia/tools/tests/fixtures/mermaid/ok-pair.html"  "--mermaid" 0 ""
+run_case "mermaid: data-diagram sem par" "ia/tools/tests/fixtures/mermaid/bad-pair.html" "--mermaid" 1 "mermaid-pair.*orphan"
+
 echo
 echo "Total: PASS=$PASS FAIL=$FAIL"
 [ "$FAIL" -eq 0 ]

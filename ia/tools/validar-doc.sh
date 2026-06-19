@@ -137,7 +137,29 @@ run_front() {
   done < <(_iter_html "$target")
 }
 
-run_mermaid() { :; }
+# ============================================================================
+# Regras --mermaid
+# ============================================================================
+
+# Regra mermaid-pair: cada data-diagram="X" tem script[type=text/mermaid][data-id="X"].
+_rule_mermaid_pair() {
+  local file="$1" id line n
+  while IFS= read -r line; do
+    id=$(echo "$line" | sed -E 's/.*data-diagram="([^"]+)".*/\1/')
+    if ! grep -qE "type=\"text/mermaid\"[^>]*data-id=\"$id\"" "$file"; then
+      n=$(grep -nE "data-diagram=\"$id\"" "$file" | head -1 | cut -d: -f1)
+      violation "$file" "$n" "mermaid-pair" "data-diagram=\"$id\" sem script[type=text/mermaid][data-id=\"$id\"] correspondente"
+    fi
+  done < <(grep -E 'data-diagram="[^"]+"' "$file")
+}
+
+run_mermaid() {
+  local target="$1" file
+  while IFS= read -r file; do
+    [ -z "$file" ] && continue
+    _rule_mermaid_pair "$file"
+  done < <(_iter_html "$target")
+}
 
 case "$FLAG" in
   --front)   run_front "$TARGET" ;;
