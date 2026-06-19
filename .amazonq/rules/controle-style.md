@@ -44,7 +44,8 @@ TASK.md mínimo + execução + LEDGER. Sem PLANO.
 - task-id: `AAAA-MM-DD-<slug>`. Caps: TASK.md ≤ 40 linhas · LEDGER.md ≤ 60 · PLANO.md ≤ 80 · PLANO.html sem cap.
 - Após a aprovação, o PLANO **nunca é relido** — a fonte da execução é o checklist do TASK.md.
 - **Status vivo:** marque cada passo do checklist como `[x]` em TASK.md no instante em que o conclui (nunca em lote no fim). O TASK.md é a fonte de verdade de onde a task está — é o que impede a sessão de se perder e o que outra sessão lê para retomar.
-- Retomada de task em sessão nova: leia SOMENTE `doc/controle/<task-id>/TASK.md` + `LEDGER.md`.
+- **QA.md (tasks de doc ou grill):** crie `doc/controle/<task-id>/QA.md` a partir do template em `controle-de-tarefa.md`. Apenda cada par P→R **no mesmo turno** em que a resposta chega. Regra binária: **verbatim** sempre que houver decisão (escolha, nome de tecnologia, restrição numérica/temporal); **normalizada** caso contrário. O cap de 60 linhas do LEDGER.md **não** se aplica ao QA.md.
+- Retomada de task em sessão nova: leia SOMENTE `doc/controle/<task-id>/TASK.md` + `LEDGER.md` (+ `QA.md` se a task for de doc/grill).
 - Quem garante que a task nasça é o **hook de início de interação** (Amazon Q `userPromptSubmit` + Kiro `promptSubmit`): a cada mensagem ele lembra de abrir/atualizar a task ANTES de editar. Não há pre-commit nem trava no `git commit` — o humano commita livre; os arquivos da task viajam junto com o artefato por disciplina, não por bloqueio.
 - Conclusão segue a disciplina de verificação da `engenharia-style.md` § 2 — evidência antes de afirmação.
 

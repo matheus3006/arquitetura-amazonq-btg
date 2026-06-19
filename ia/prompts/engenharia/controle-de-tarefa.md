@@ -119,6 +119,22 @@ task_id: AAAA-MM-DD-slug
 - <vazio ou itens que ficaram para outra task>
 ```
 
+## Template — QA.md (quando a task é de **doc** ou **grill** — registra o input do usuário)
+
+> **Status vivo:** apendado NO MESMO TURNO em que a resposta chega. Edição lazy ao final é proibida.
+> **Regra binária:** **verbatim** sempre que houver decisão (escolha entre opções, nome de tecnologia,
+> restrição numérica/temporal); **normalizada** (1 linha) caso contrário.
+> Cap de 60 linhas do LEDGER.md **NÃO se aplica** ao QA.md (arquivo à parte).
+
+````markdown
+# QA — <task-id>
+
+## Perguntas & Respostas
+- [AAAA-MM-DD] P: <pergunta feita ao usuário>
+  R: <normalizada em 1 linha>          # se NÃO houver decisão
+  R: verbatim: "<trecho do usuário>"   # se houver decisão (escolha/nome/restrição)
+````
+
 ## Template — PLANO.html (quando o usuário escolher visual)
 
 Esqueleto mínimo usando o design system do pack (ajuste o caminho relativo se necessário):
