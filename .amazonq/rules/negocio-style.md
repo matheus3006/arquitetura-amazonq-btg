@@ -122,7 +122,7 @@ classDef desfechoTriste fill:#e85a5a,stroke:#0a0c12,color:#ffffff,stroke-width:2
 
 Idêntico ao da trilha técnica: siga `.amazonq/rules/frontend-style.md` § 1 e o esqueleto de `architecture-style.md` § 3 (mesmo `shell`, `sidebar.js`, `tokens.css` + `components.css`, `diagram-viewer.js`). **O que muda são as seções de conteúdo**, definidas por cada prompt — não a estrutura.
 
-As páginas geradas vivem em `ia/templates/` no repositório (junto de `sidebar.js`/`diagram-viewer.js`). **Crie `doc/arquitetura/` e subpastas se não existirem** antes de gravar.
+**Destino canônico (rev v2):** páginas geradas vivem em **`doc/arquitetura/`** (criada se não existir); ADRs em `doc/adr/`. `ia/templates/` é **apenas gabarito de FORMA** (junto de `sidebar.js`/`diagram-viewer.js`), nunca destino de gravação.
 
 ---
 
