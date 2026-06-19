@@ -384,7 +384,7 @@ flowchart TB
     classDef domain   fill:#1c4e93,stroke:#0a0c12,color:#ffffff,stroke-width:2.5px
     classDef app      fill:#4a8fe7,stroke:#0a0c12,color:#ffffff,stroke-width:2px
     classDef infra    fill:#ffffff,stroke:#1f2937,color:#0a0c12,stroke-width:1.5px
-    classDef ext      fill:#f9fafb,stroke:#6b7280,color:#0a0c12,stroke-width:1.5px,stroke-dasharray:5 3
+    classDef external fill:#f9fafb,stroke:#6b7280,color:#0a0c12,stroke-width:1.5px,stroke-dasharray:5 3
 
     Canal["Canal HTTP<br/>POST /autorizar"]
 
@@ -422,11 +422,11 @@ flowchart TB
     HttpA --> AntF
     MsgA --> SNS
 
-    class Canal ext
+    class Canal external
     class API,RepoA,HttpA,MsgA infra
     class UC,Ports app
     class Agg domain
-    class DB,AntF,SNS ext
+    class DB,AntF,SNS external
   </script>
 
   <script src="sidebar.js"></script>

@@ -12,7 +12,7 @@ da trilha de arquitetura (spec: [doc/specs/2026-06-19-pipeline-arquitetura-v2-de
 | Flag       | O que verifica |
 |------------|---------------|
 | `--front`   | Vocabulário fechado de classes, ordem do `<head>`, cor hex hardcoded, NAV órfão, resíduo do exemplo |
-| `--mermaid` | Pareamento `data-diagram`↔`data-id`, tipo válido na 1ª linha, 4 `classDef`, `autonumber` em sequence |
+| `--mermaid` | Pareamento `data-diagram`↔`data-id`, tipo válido na 1ª linha, hex do SoT nos `classDef` de nome reservado (C4: person/sys/ext/extAsync), `autonumber` em sequence |
 | `--all`     | Roda os dois |
 
 ## Exit codes
@@ -28,7 +28,7 @@ Editáveis em `ia/tools/lib/`:
 | Arquivo | Conteúdo | Lido por |
 |---|---|---|
 | `design-system-classes.txt` | Vocabulário fechado de classes | `--front` |
-| `mermaid-classdefs.txt` | 4 classDef com hex exatos | `--mermaid` |
+| `mermaid-classdefs.txt` | Nomes reservados C4 (person/sys/ext/extAsync) com hex exatos — NÃO obrigatórios em todo flowchart; só checados quando declarados | `--mermaid` |
 | `forbidden-terms.txt` | Termos proibidos (resíduo do exemplo) | `--front` |
 
 Adicionar/remover regra ou item = editar **um** arquivo. Nada hardcoded no script.
@@ -41,7 +41,7 @@ Suite com 17 casos cobrindo:
 
 - 3 casos de CLI/exit codes (sem args, flag inválida, pasta inexistente).
 - 5 casos de `--front`: head-order, class-unknown, hex-hardcoded, forbidden-terms, nav-órfã.
-- 5 casos de `--mermaid`: pair-OK, pair-FAIL, type-invalid, classdef-faltando, autonumber-FAIL, autonumber-OK.
+- casos de `--mermaid`: pair-OK, pair-FAIL, type-invalid, classdef-hex-FAIL, reservado-parcial-OK, autonumber-FAIL, autonumber-OK.
 - 1 caso de `--all` (pasta com mistura → FAIL).
 
 Fixtures em `ia/tools/tests/fixtures/{front,mermaid}/`.

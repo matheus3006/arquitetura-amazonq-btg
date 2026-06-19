@@ -173,10 +173,12 @@ _rule_mermaid_type() {
   ' "$file")
 }
 
-# Regra mermaid-classdef: flowchart precisa dos 4 classDef (person/sys/ext/extAsync) E
-# cada um com os hex EXATOS do SoT (ia/tools/lib/mermaid-classdefs.txt: fill/stroke/color).
-# awk faz a checagem por bloco e emite as violacoes direto (evita problemas de multiline em read).
-# Se o SoT nao for encontrado, degrada para checar apenas a presenca (fallback gracioso).
+# Regra mermaid-classdef-hex: os NOMES RESERVADOS da paleta C4 (person/sys/ext/extAsync) —
+# quando declarados num flowchart — DEVEM usar os hex EXATOS do SoT
+# (ia/tools/lib/mermaid-classdefs.txt: fill/stroke/color). NAO exigimos os 4 em todo flowchart:
+# so o diagrama de CONTEXTO usa a taxonomia C4; os demais (camadas, infra, pipeline, decisao)
+# tem classDefs proprios de nome livre. Se o SoT nao for encontrado, a checagem de hex e
+# pulada (fallback gracioso).
 _rule_mermaid_classdefs() {
   local file="$1" ln rule rest
   while IFS=: read -r ln rule rest; do
@@ -204,24 +206,14 @@ _rule_mermaid_classdefs() {
         print lno":mermaid-classdef-hex:classDef "cls" sem "prop" (esperado "want", ver mermaid-classdefs.txt)"
       }
     }
-    BEGIN { need["person"]=1; need["sys"]=1; need["ext"]=1; need["extAsync"]=1; loadsot() }
-    /<script[^>]*text\/mermaid/ {
-      inm=1; line=NR; isflow=0;
-      for (c in need) found[c]=0;
-      next
-    }
-    /<\/script>/ {
-      if (inm && isflow) {
-        for (c in need) if (!found[c]) print line":mermaid-classdef:falta classDef "c" no bloco (ver mermaid-classdefs.txt)"
-      }
-      inm=0; next
-    }
+    BEGIN { loadsot() }
+    /<script[^>]*text\/mermaid/ { inm=1; isflow=0; next }
+    /<\/script>/                { inm=0; next }
     inm && /^[[:space:]]*flowchart/ { isflow=1; next }
     inm && isflow && /^[[:space:]]*classDef[[:space:]]+/ {
       cls = $0
       sub(/^[[:space:]]*classDef[[:space:]]+/, "", cls)
       sub(/[[:space:]].*/, "", cls)
-      found[cls]=1
       if (cls in exp_fill) {
         chk(NR, $0, cls, "fill",   exp_fill[cls])
         chk(NR, $0, cls, "stroke", exp_stroke[cls])

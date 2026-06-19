@@ -17,10 +17,10 @@ jobs:
       - name: Suite TDD (validar-doc + seed-gitignore + check-counts)
         run: bash ia/tools/tests/run-tests.sh
 
-      # NB: não rodamos `validar-doc ia/templates` aqui — os templates SÃO o exemplo fictício
-      # (forbidden-terms dispara por design) e têm não-conformidade Mermaid pré-existente.
-      # O validador é exercitado pelas fixtures em run-tests.sh; linar as páginas de exemplo
-      # exige primeiro conformá-las (task à parte).
+      # Lint Mermaid dos diagramas de exemplo (estrutural, bash puro — sem node). Só --mermaid:
+      # --front fica de fora por design (os exemplos são fictícios → forbidden-terms dispara).
+      - name: Lint Mermaid das páginas de exemplo
+        run: bash ia/tools/validar-doc.sh ia/templates --mermaid
 
       - name: Anti-drift — Copilot (.github)
         run: bash ia/tools/sync-copilot.sh --check

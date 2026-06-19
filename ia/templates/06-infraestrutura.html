@@ -264,7 +264,7 @@ flowchart TB
     classDef edge   fill:#ffffff,stroke:#1f2937,color:#0a0c12,stroke-width:1.5px
     classDef compute fill:#4a8fe7,stroke:#0a0c12,color:#ffffff,stroke-width:2px
     classDef data   fill:#1c4e93,stroke:#0a0c12,color:#ffffff,stroke-width:2.5px
-    classDef ext    fill:#f9fafb,stroke:#6b7280,color:#0a0c12,stroke-width:1.5px,stroke-dasharray:5 3
+    classDef external fill:#f9fafb,stroke:#6b7280,color:#0a0c12,stroke-width:1.5px,stroke-dasharray:5 3
 
     Net[("Internet")]
     R53["Route 53"]
@@ -309,7 +309,7 @@ flowchart TB
     API -.->|logs + metrics| CW
     API -.->|traces| XR
 
-    class Net,AntF,Sal ext
+    class Net,AntF,Sal external
     class R53,WAF,ALB edge
     class API,Worker,Relay compute
     class RDS,Redis,SNS,SQS data
