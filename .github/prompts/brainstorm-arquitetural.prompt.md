@@ -1,5 +1,5 @@
 ---
-description: "Parceiro de pensamento pre-ADR: reformula o problema, gera opcoes e converge com trade-offs"
+description: "Complementar (fora da trilha 1-7): parceiro de pensamento pre-ADR. Reformula o problema, gera opcoes e converge com trade-offs"
 ---
 
 Siga TODO o processo descrito em `ia/prompts/arquitetura/brainstorm-arquitetural.md` (na raiz deste repositorio), fase por

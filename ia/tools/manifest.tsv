@@ -1,10 +1,10 @@
 analisador-de-projeto	arquitetura	Etapa 1/7 (sessao 1a): analisa o repositorio e gera project-context.md em 3 destinos de rules (Amazon Q/Copilot/Kiro). Pre-requisito de toda a trilha; cada prompt em sessao propria
 arquiteto-de-sistema	arquitetura	Etapa 2/7: arquitetura/espinha (5 perguntas-ancora + grill + paginas-nucleo). Cada pagina criada em doc/arquitetura/ + entry no NAV de sidebar.js no mesmo passo
-gerador-adr	arquitetura	Gera ADRs em formato MADR com trade-offs explicitos e metrica de validacao (destino: doc/adr/)
+gerador-adr	arquitetura	Complementar (fora da trilha 1-7): gera ADRs em formato MADR com trade-offs explicitos e metrica de validacao (destino: doc/adr/)
 gerador-runbook	arquitetura	Etapa 4/7: doc/arquitetura/runbook.html (4 campos obrigatorios por failure mode, nada inventado). Apenda entry no NAV de sidebar.js
 documentador-fluxo	arquitetura	Etapa 3/7: pagina(s) de fluxo critico em doc/arquitetura/ (sequenceDiagram com autonumber). Apenda entry no NAV de sidebar.js
-grill-doc	arquitetura	Revisor cetico de documentacao: procura furos, inconsistencias e garantias nao implementadas
-brainstorm-arquitetural	arquitetura	Parceiro de pensamento pre-ADR: reformula o problema, gera opcoes e converge com trade-offs
+grill-doc	arquitetura	Complementar (fora da trilha 1-7): revisor cetico de UMA pagina por 7 lentes (diferente da Etapa 5/7 grill-arquitetura, que cobre TODA a doc). Procura furos, inconsistencias e garantias nao implementadas
+brainstorm-arquitetural	arquitetura	Complementar (fora da trilha 1-7): parceiro de pensamento pre-ADR. Reformula o problema, gera opcoes e converge com trade-offs
 designer-ux-controlado	frontend	Decisoes visuais propostas antes de aplicadas, uma por vez
 designer-ui-pro-max	frontend	Catalogo de estilos, paletas e padroes visuais para escolher direcao
 design-system-arquitetura	frontend	Extensao e auditoria do design system do pack
@@ -26,7 +26,7 @@ estrategista-de-testes	engenharia	Desenha a estrategia de testes alem do TDD uni
 revisor-de-codigo	engenharia	Conduz a revisao de codigo por dimensoes (correcao, seguranca, simplicidade/reuso, testes) com achados por severidade e evidencia arquivo:linha
 documentar-servico	arquitetura	Indice da trilha de 7 etapas (8 sessoes — Etapa 1 = 2 sessoes). Aponta as etapas 1-7 em sequencia; cada prompt em sessao propria; NAO orquestra (deprecado o atalho anterior)
 grill-arquitetura	arquitetura	Etapa 5/7: grill intenso codigo-primeiro sobre a doc gerada — cada incerteza resolvida pelo codigo (com nivel de certeza) ou perguntada ao humano; respostas apendadas no QA.md no mesmo turno
-sincronizar-doc-codigo	arquitetura	Atualiza a doc a partir do diff da branch: analisa o codigo, grilla o porque (grill-me + human-architect-mindset) e registra ADR quando a mudanca nao partiu de uma ADR existente (destino: doc/arquitetura/, ADRs em doc/adr/)
+sincronizar-doc-codigo	arquitetura	Complementar (fora da trilha 1-7, gatilho 'mudanca de codigo'): atualiza a doc a partir do diff da branch. Analisa o codigo, grilla o porque (grill-me + human-architect-mindset) e registra ADR quando a mudanca nao partiu de uma ADR existente (destino: doc/arquitetura/, ADRs em doc/adr/)
 validador-visual	arquitetura	Etapa 6/7: validador visual/template (so reporta; checklist canonico + ia/tools/validar-doc.sh --front opcional). Verifica navegabilidade, esqueleto, vocabulario fechado de classes, cores via var(--color-*), forbidden-terms
 validador-sintaxe-mermaid	arquitetura	Etapa 7/7: validador sintaxe + Mermaid (so reporta; checklist canonico + ia/tools/validar-doc.sh --mermaid opcional). Pareamento data-id, tipo valido, 4 classDef, autonumber sempre em sequence
 atualizador-arquitetura	arquitetura	Complementar (fora da trilha 1-7): conforma doc ja existente em doc/arquitetura/ as regras v2. Diagnostica, ramifica (front->plano+aplica; logico->grill+QA.md), 1 task de controle por execucao
