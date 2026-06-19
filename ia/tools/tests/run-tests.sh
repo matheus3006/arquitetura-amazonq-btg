@@ -70,6 +70,13 @@ else
   echo "FAIL: seed-gitignore"; echo "$out" | sed 's/^/      /'; FAIL=$((FAIL+1))
 fi
 
+# === check-counts.sh (guard de contagens) ===
+if out=$(bash ia/tools/check-counts.sh 2>&1); then
+  echo "PASS: check-counts (contagens consistentes)"; PASS=$((PASS+1))
+else
+  echo "FAIL: check-counts"; echo "$out" | sed 's/^/      /'; FAIL=$((FAIL+1))
+fi
+
 echo
 echo "Total: PASS=$PASS FAIL=$FAIL"
 [ "$FAIL" -eq 0 ]

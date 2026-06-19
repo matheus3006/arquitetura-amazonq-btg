@@ -1,0 +1,55 @@
+name: CI
+
+# Gate de qualidade do REPO DO PACK (não é instalado nos repos dos serviços).
+# Roda os validadores que antes eram manuais — princípio nº4: alternativa verificável > disciplina.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  checks:
+    name: Validadores + anti-drift (Linux)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Suite TDD (validar-doc + seed-gitignore + check-counts)
+        run: bash ia/tools/tests/run-tests.sh
+
+      # NB: não rodamos `validar-doc ia/templates` aqui — os templates SÃO o exemplo fictício
+      # (forbidden-terms dispara por design) e têm não-conformidade Mermaid pré-existente.
+      # O validador é exercitado pelas fixtures em run-tests.sh; linar as páginas de exemplo
+      # exige primeiro conformá-las (task à parte).
+
+      - name: Anti-drift — Copilot (.github)
+        run: bash ia/tools/sync-copilot.sh --check
+
+      - name: Anti-drift — Kiro (.kiro)
+        run: bash ia/tools/sync-kiro.sh --check
+
+      - name: Anti-drift — COMO-USAR
+        run: bash ia/tools/sync-como-usar.sh --check
+
+      - name: Guard de contagens (docs vs realidade)
+        run: bash ia/tools/check-counts.sh
+
+  windows-install:
+    name: Smoke-test install.ps1 (Windows)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instala 2× e checa idempotência (.gitignore + sem aninhamento)
+        shell: pwsh
+        run: |
+          $t = Join-Path $env:RUNNER_TEMP 'svc'
+          New-Item -ItemType Directory -Force -Path $t | Out-Null
+          ./install.ps1 -Target $t
+          ./install.ps1 -Target $t
+          $gi = Get-Content (Join-Path $t '.gitignore')
+          $n = ($gi | Select-String -SimpleMatch '# >>> arquitetura-pack').Count
+          if ($n -ne 1) { Write-Error "esperava 1 bloco no .gitignore, achei $n"; exit 1 }
+          if (Test-Path (Join-Path $t 'ia/prompts/arquitetura/arquitetura')) { Write-Error 'aninhamento ia/prompts/<t>/<t>'; exit 1 }
+          if (-not (Test-Path (Join-Path $t '.amazonq/rules/architecture-style.md'))) { Write-Error 'rules nao instaladas'; exit 1 }
+          Write-Host 'OK: install.ps1 idempotente; 1 bloco .gitignore; sem aninhamento'
