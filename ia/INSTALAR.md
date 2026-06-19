@@ -94,9 +94,9 @@ Confira que TODOS estes paths existem no repo alvo (via shell ou listagem de arq
 - `.amazonq/rules/` com as 5 rules de estilo (mais os arquivos de contexto, se já gerados)
 - `.amazonq/cli-agents/arquitetura.json` + `.amazonq/hooks/controle-hook.sh` + `.kiro/hooks/controle-prompt.kiro.hook` (hooks de início de interação do controle; **sem** git hook — o commit não é mais bloqueado)
 - `.github/copilot-instructions.md` + `.github/instructions/` com 5 arquivos `*-style.instructions.md` (mais os de contexto, se os analisadores já rodaram neste repo)
-- `.github/prompts/` com 30 arquivos `.prompt.md` e `.github/skills/` com 62 subpastas (30 wrappers + 32 importadas)
-- `.kiro/steering/` com as 5 rules de estilo e `.kiro/skills/` com 62 subpastas
-- `ia/prompts/` com as 4 trilhas (arquitetura 10, frontend 4, negocio 5, engenharia 10 — 30 arquivos `.md`)
+- `.github/prompts/` com 32 arquivos `.prompt.md` e `.github/skills/` com 64 subpastas (32 wrappers + 32 importadas)
+- `.kiro/steering/` com as 5 rules de estilo e `.kiro/skills/` com 64 subpastas
+- `ia/prompts/` com as 4 trilhas (arquitetura 13, frontend 4, negocio 5, engenharia 10 — 32 arquivos `.md`)
 - `ia/skills/` com 14 categorias e 32 subpastas com `SKILL.md` (biblioteca importada)
 - `ia/design-system/` com 2 `.css`; `ia/templates/` com os 2 `.js`; `ia/COMO-USAR.html` e `ia/COMO-USAR.md` em ia/, no repo
 - `ia/templates/` com as páginas de exemplo (`01-visao-geral.html`, `index.html`, etc.) — exceto se a instalação usou `--no-examples`
