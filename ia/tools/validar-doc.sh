@@ -34,8 +34,41 @@ esac
 VIOLATIONS=0
 violation() { echo "$1:$2:$3: $4"; VIOLATIONS=$((VIOLATIONS+1)); }
 
-# Hooks por flag (preenchidos nas tasks B2-B10)
-run_front()   { :; }
+# ============================================================================
+# Helpers
+# ============================================================================
+
+# Aceita arquivo unico OU pasta (varre *.html).
+_iter_html() {
+  if [ -f "$1" ]; then echo "$1"
+  else find "$1" -name '*.html' -type f 2>/dev/null
+  fi
+}
+
+# ============================================================================
+# Regras --front
+# ============================================================================
+
+# Regra head-order: prefs.js DEVE aparecer ANTES do primeiro <link ... .css>.
+_rule_head_order() {
+  local file="$1" prefs_line css_line
+  prefs_line=$(grep -nE 'src="[^"]*prefs\.js"' "$file" | head -1 | cut -d: -f1)
+  css_line=$(grep -nE '<link[^>]*rel="stylesheet"' "$file" | head -1 | cut -d: -f1)
+  [ -z "$prefs_line" ] && return 0
+  [ -z "$css_line" ] && return 0
+  if [ "$prefs_line" -gt "$css_line" ]; then
+    violation "$file" "$prefs_line" "head-order" "prefs.js deve vir ANTES dos links de CSS"
+  fi
+}
+
+run_front() {
+  local target="$1" file
+  while IFS= read -r file; do
+    [ -z "$file" ] && continue
+    _rule_head_order "$file"
+  done < <(_iter_html "$target")
+}
+
 run_mermaid() { :; }
 
 case "$FLAG" in

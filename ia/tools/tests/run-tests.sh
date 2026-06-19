@@ -28,6 +28,10 @@ run_case "cli: sem args = exit 2" "" "" 2 "Uso:"
 run_case "cli: flag invalida = exit 2" "ia/tools/tests/fixtures" "--xxx" 2 "Flag invalida"
 run_case "cli: pasta inexistente = exit 2" "/nao/existe/abc" "--front" 2 "pasta"
 
+# === Regra: ordem do <head> (front) ===
+run_case "front: head correto"                  "ia/tools/tests/fixtures/front/head-ok.html"        "--front" 0 ""
+run_case "front: prefs.js depois de CSS = FAIL" "ia/tools/tests/fixtures/front/head-bad-order.html" "--front" 1 "head-order"
+
 echo
 echo "Total: PASS=$PASS FAIL=$FAIL"
 [ "$FAIL" -eq 0 ]
