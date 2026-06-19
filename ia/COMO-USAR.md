@@ -26,47 +26,105 @@ Cards com rodapé Skill: vêm da biblioteca de skills importadas (cópias verbat
 
 A prioridade nº 1 do pack: documentar o serviço fiel ao código (visão geral, fluxos, runbook), explorar e registrar decisões (brainstorm, ADR, stress-test) e pensar como arquiteto — modelo de domínio antes de tecnologia.
 
-### Documentar serviço do zero (Etapa 1/3)
+### Etapa 1/7 (2 sessões) — Fundação: contexto + domínio
 
-**Quando:** Repo sem doc — gera contexto + domínio + a arquitetura (espinha) num fluxo só. Também é o refresh do contexto técnico: pare no gate após a Fase A quando só o código mudou.
+**Quando:** Início da trilha. Esta etapa tem 2 sessões consecutivas — rode analisador-de-projeto primeiro e analisador-de-dominio em seguida, ambas em sessão própria, antes de ir para Etapa 2/7.
 
 ```text
-Objetivo: documentar do zero a aplicação [NOME_DA_APLICACAO] — contexto, domínio e a arquitetura (espinha), num fluxo só com checkpoint meu entre as fases.
+Objetivo (Etapa 1/7 da trilha de arquitetura, sessão 1a): preparar o contexto técnico da aplicação [NOME_DA_APLICACAO] em três destinos de rules.
 
-Siga todo o processo de ia/prompts/arquitetura/documentar-servico.md (Etapa 1 de 3): Fase A contexto (analisador-de-projeto, três destinos), Fase B domínio (analisador-de-dominio, três destinos), Fase C arquitetura (arquiteto-de-sistema: 5 âncoras + grill de 1ª passada) — gate e meu OK entre cada fase.
+Antes: abra a task de controle em doc/controle/<AAAA-MM-DD-slug>/ com TASK.md + QA.md (template em controle-de-tarefa.md) + LEDGER.md.
 
-Pronto quando: contexto + domínio + páginas de arquitetura geradas, e o handoff pra Etapa 2.
+Siga todo o processo de ia/prompts/arquitetura/analisador-de-projeto.md. Para cada pergunta-âncora respondida por mim, APENDE no QA.md no mesmo turno (status vivo; verbatim em decisão).
+
+Pronto quando: project-context.md gerado nos três destinos + QA.md com todas as perguntas. Próximo passo: sessão 1b (analisador-de-dominio) em sessão NOVA.
 ```
 
-_Copilot IDE: /documentar-servico_
+_Copilot IDE: /analisador-de-projeto (depois /analisador-de-dominio em sessão nova)_
 
-### Completar a documentação (Etapa 2/3)
+### Etapa 2/7 — Arquitetura/espinha
 
-**Quando:** Depois da Etapa 1 — os fluxos críticos e o runbook operacional.
+**Quando:** Após Etapa 1 fechada — geração da espinha da doc. NAV editor obrigatório.
 
 ```text
-Objetivo: completar a doc técnica de [NOME_DA_APLICACAO] — os fluxos críticos e o runbook operacional, confirmados no código.
+Objetivo (Etapa 2/7): gerar a espinha de arquitetura de [NOME_DA_APLICACAO] em doc/arquitetura/.
 
-Siga todo o processo de ia/prompts/arquitetura/completar-documentacao.md (Etapa 2 de 3): Fase A fluxo(s) crítico(s) (documentador-fluxo, com os caminhos de falha), Fase B runbook (gerador-runbook, 4 campos por failure mode, nada inventado) — meu OK entre as fases.
+Siga todo o processo de ia/prompts/arquitetura/arquiteto-de-sistema.md. Para cada página .html criada em doc/arquitetura/, APENDE no mesmo passo a entry {label, href} na seção certa do NAV em sidebar.js (página órfã = rejeitada pelo validador #6). Para cada pergunta de grilling respondida, APENDE no QA.md no mesmo turno.
 
-Pronto quando: fluxos + runbook gerados, e o handoff pra Etapa 3 (sessão nova).
+Pronto quando: páginas-núcleo em doc/arquitetura/ + entries no NAV + Q&A no QA.md. Próxima sessão: Etapa 3/7 (documentador-fluxo) em sessão NOVA.
 ```
 
-_Copilot IDE: /completar-documentacao_
+_Copilot IDE: /arquiteto-de-sistema_
 
-### Grill intenso de arquitetura (Etapa 3/3)
+### Etapa 3/7 — Fluxos transacionais
 
-**Quando:** Sessão NOVA sobre a doc gerada — atacar as incertezas, código-primeiro.
+**Quando:** Após Etapa 2 — páginas dos fluxos críticos (sequence diagrams). NAV editor + autonumber sempre.
 
 ```text
-Objetivo: atacar as incertezas da documentação gerada de [NOME_DA_APLICACAO] — cada ponto vago resolvido pelo código (com nível de certeza) ou perguntado a mim.
+Objetivo (Etapa 3/7): documentar os fluxos críticos de [NOME_DA_APLICACAO] em doc/arquitetura/.
 
-Siga todo o processo de ia/prompts/arquitetura/grill-arquitetura.md (Etapa 3 de 3, em sessão nova): monte o inventário das incertezas (ledger) e, pra cada uma, RE-ANALISE o código primeiro — achou: corrige inline + nível de certeza (alta/média/baixa + arquivo:linha); não achou: me pergunta (uma por vez). Atualize a doc inline.
+Siga todo o processo de ia/prompts/arquitetura/documentador-fluxo.md. Use sequenceDiagram com autonumber (regra binária — sempre); 4 classDef obrigatórios em flowchart; labels entre aspas; sem < > crus. APENDE entry no NAV de sidebar.js no mesmo passo da criação da página.
 
-Pronto quando: ledger zerado e a tabela de certezas (incerteza → resolução → nível + evidência), com as pendências [a confirmar] explícitas.
+Pronto quando: página(s) de fluxo crítico + entries no NAV. Próxima sessão: Etapa 4/7 (gerador-runbook) em sessão NOVA.
+```
+
+_Copilot IDE: /documentador-fluxo_
+
+### Etapa 4/7 — Runbook operacional
+
+**Quando:** Após Etapa 3 — o runbook que funciona às 3h da manhã. NAV editor obrigatório.
+
+```text
+Objetivo (Etapa 4/7): gerar doc/arquitetura/runbook.html de [NOME_DA_APLICACAO] — 4 campos por failure mode, nada inventado.
+
+Siga todo o processo de ia/prompts/arquitetura/gerador-runbook.md. APENDE entry no NAV de sidebar.js no mesmo passo.
+
+Pronto quando: runbook.html + entry no NAV. Próxima sessão: Etapa 5/7 (grill-arquitetura) em sessão NOVA.
+```
+
+_Copilot IDE: /gerador-runbook_
+
+### Etapa 5/7 — Grill lógico (1ª validação)
+
+**Quando:** Após Etapa 4 — auditoria de incertezas código-primeiro. Única validação que APLICA correções inline.
+
+```text
+Objetivo (Etapa 5/7): atacar as incertezas da doc gerada de [NOME_DA_APLICACAO] — cada ponto vago resolvido pelo código (com nível de certeza) ou perguntado a mim.
+
+Siga todo o processo de ia/prompts/arquitetura/grill-arquitetura.md em sessão nova. Monte o ledger das incertezas e, pra cada uma, RE-ANALISE o código primeiro — achou: corrige inline + nível de certeza (alta/média/baixa + arquivo:linha); não achou: me pergunta (uma por vez). Para CADA par P→R, APENDE no QA.md no mesmo turno (verbatim em decisão).
+
+Pronto quando: ledger zerado + tabela de certezas + Q&A no QA.md. Próxima sessão: Etapa 6/7 (validador-visual) em sessão NOVA.
 ```
 
 _Copilot IDE: /grill-arquitetura_
+
+### Etapa 6/7 — Validador visual (template + UI/UX)
+
+**Quando:** Após Etapa 5 — front/template; SÓ REPORTA (não edita).
+
+```text
+Objetivo (Etapa 6/7): validar visualmente toda a doc em doc/arquitetura/ contra o padrão do template.
+
+Siga ia/prompts/arquitetura/validador-visual.md. Comece com o checklist canônico (ia/templates/checklist-validador.md) preenchido com PASS/FAIL/N-A + evidência arquivo:linha. Tente uma vez: bash ia/tools/validar-doc.sh doc/arquitetura/ --front (fallback gracioso se indisponível). NÃO edite arquivos — aponte qual etapa ou o atualizador-arquitetura deve aplicar.
+
+Pronto quando: veredito PASS ou FAIL com lista de violações arquivo:linha. Próxima sessão: Etapa 7/7 (validador-sintaxe-mermaid) em sessão NOVA.
+```
+
+_Copilot IDE: /validador-visual_
+
+### Etapa 7/7 — Validador sintaxe + Mermaid
+
+**Quando:** Última etapa — sintaxe HTML + estrutura Mermaid; SÓ REPORTA.
+
+```text
+Objetivo (Etapa 7/7): validar sintaxe e Mermaid de toda a doc em doc/arquitetura/.
+
+Siga ia/prompts/arquitetura/validador-sintaxe-mermaid.md. Comece com o checklist canônico preenchido com evidência. Tente uma vez: bash ia/tools/validar-doc.sh doc/arquitetura/ --mermaid (fallback gracioso). Verifica pareamento data-diagram↔data-id, tipo válido na 1ª linha, 4 classDef com hex exatos, labels entre aspas, autonumber sempre em sequenceDiagram. NÃO edite — aponte gerador (Etapas 2/3/4) ou atualizador-arquitetura.
+
+Pronto quando: veredito PASS (fim da trilha) ou FAIL com violações arquivo:linha.
+```
+
+_Copilot IDE: /validador-sintaxe-mermaid_
 
 ### Sincronizar doc com o código
 
@@ -1007,23 +1065,6 @@ Pronto quando: ADR numerada salva, que sobreviveu ao stress-test e ao grill, com
 ```
 
 _Combo: brainstorm → stress-test de premissas → ADR → grill da doc_
-
-### Combo: documentar um serviço do zero (fluxo de 3 etapas)
-
-**Quando:** Repo sem doc nenhuma — o fluxo canônico de 3 etapas, da fonte de verdade ao grill intenso.
-
-```text
-Objetivo: gerar a documentação técnica completa da aplicação [NOME_DA_APLICACAO] — do zero ao grill intenso — pelo fluxo canônico de 3 etapas obrigatórias, fiel ao código real.
-
-Encadeie NESTA ordem (cada etapa termina apontando a próxima; a Etapa 3 roda em sessão NOVA):
-1. FUNDAÇÃO + ARQUITETURA — siga ia/prompts/arquitetura/documentar-servico.md (Etapa 1): contexto (3 destinos) + domínio (3 destinos) + visão geral e páginas-núcleo, com checkpoint meu entre as fases.
-2. FLUXOS + OPERAÇÃO — siga ia/prompts/arquitetura/completar-documentacao.md (Etapa 2): fluxo(s) crítico(s) + runbook, confirmados no código.
-3. GRILL INTENSO — em sessão NOVA, siga ia/prompts/arquitetura/grill-arquitetura.md (Etapa 3): ataque as incertezas código-primeiro, com níveis de certeza, atualizando a doc inline.
-
-Pronto quando: contexto + domínio + arquitetura + fluxos + runbook publicados, e toda incerteza resolvida (pelo código com nível de certeza, ou por mim) — sem ⚠ aberto que eu não tenha aceitado.
-```
-
-_Combo: documentar serviço (Etapa 1) → completar (Etapa 2) → grill intenso (Etapa 3)_
 
 ### Combo: mapear o negócio do zero (domínio + regras + glossário + fluxo)
 
