@@ -1,0 +1,7 @@
+# Termos do exemplo ficticio do pack que NUNCA podem vazar para doc real.
+# Validado por: validador-visual.md (prompt) e ia/tools/validar-doc.sh --front.
+# Match: substring case-insensitive em texto visivel (fora de tags <script>).
+# Adicionar termos: uma string por linha (comentarios com #).
+Liquidação Transacional
+Liquidacao Transacional
+FICO Falcon
