@@ -38,6 +38,9 @@ run_case "front: class fora do lib = FAIL" "ia/tools/tests/fixtures/front/class-
 # === Regra: zero hex hardcoded fora dos classDef Mermaid (front) ===
 run_case "front: hex inline = FAIL" "ia/tools/tests/fixtures/front/hex-bad.html" "--front" 1 "hex-hardcoded"
 
+# === Regra: forbidden-terms (front) ===
+run_case "front: forbidden term = FAIL" "ia/tools/tests/fixtures/front/forbidden-bad.html" "--front" 1 "forbidden-term.*Liquida"
+
 echo
 echo "Total: PASS=$PASS FAIL=$FAIL"
 [ "$FAIL" -eq 0 ]

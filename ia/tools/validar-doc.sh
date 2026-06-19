@@ -68,6 +68,21 @@ _rule_known_classes() {
   done < <(grep -nE 'class="[^"]*"' "$file")
 }
 
+# Regra forbidden-terms: zero residuo do exemplo ficticio (case-insensitive substring).
+_rule_forbidden_terms() {
+  local file="$1" term line content
+  [ -f "$LIB_DIR/forbidden-terms.txt" ] || return 0
+  while IFS= read -r term; do
+    [ -z "$term" ] && continue
+    [[ "$term" =~ ^# ]] && continue
+    while IFS=: read -r line content; do
+      # ignora linhas dentro de <script>
+      echo "$content" | grep -qE '<script' && continue
+      violation "$file" "$line" "forbidden-term" "encontrou '$term' (lista: forbidden-terms.txt)"
+    done < <(grep -niF -- "$term" "$file" 2>/dev/null)
+  done < <(grep -vE '^(#|$)' "$LIB_DIR/forbidden-terms.txt")
+}
+
 # Regra no-hex: zero cor hex hardcoded fora dos classDef Mermaid.
 _rule_no_hex() {
   local file="$1" ln rule rest
@@ -101,6 +116,7 @@ run_front() {
     _rule_head_order "$file"
     _rule_known_classes "$file"
     _rule_no_hex "$file"
+    _rule_forbidden_terms "$file"
   done < <(_iter_html "$target")
 }
 
