@@ -15,6 +15,8 @@
            nunca sobrescreve arquivo ja existente no alvo)
          + doc/templates/ + doc/design-system/ (assets de runtime semeados de ia/ pros
            docs gerados em doc/arquitetura/) + ia/tools/seed-doc-assets.sh (re-semear)
+         + ia/tools/validar-doc.sh + ia/tools/lib/ (3 SoT) - validacao determinista que os
+           prompts validadores (etapas 6/7 da trilha) rodam no "done" da geracao
          + hooks de inicio de interacao do protocolo de controle (.amazonq/cli-agents/
            + .amazonq/hooks/ + .kiro/hooks/) — orientam o agente a abrir a task; NAO bloqueiam commit
   NAO copia: arquivos de contexto por-servico (project/business-context nos tres lados)
@@ -155,6 +157,17 @@ foreach ($j in 'prefs.js','sidebar.js','diagram-viewer.js') {
 }
 Copy-Item (Join-Path $dsDst '*.css') $docDs -Force
 Write-Host "  + doc/templates/ + doc/design-system/ semeados de ia/ (artefato de build)"
+
+# 5d) Validador de doc - roda NO CLIENTE nas etapas 6/7 da trilha. Sem o script + os 3 SoT em
+#     lib/, os prompts validadores caem no fallback textual. Bash puro: o cliente nao precisa
+#     de node. Mesmos arquivos que o install.sh leva (sem drift entre os instaladores).
+$libDst = Join-Path $Target 'ia/tools/lib'
+New-Item -ItemType Directory -Force -Path $libDst | Out-Null
+Copy-Item (Join-Path $PackDir 'ia/tools/validar-doc.sh') $toolsDst -Force
+foreach ($sot in 'design-system-classes.txt','forbidden-terms.txt','mermaid-classdefs.txt') {
+  Copy-Item (Join-Path $PackDir "ia/tools/lib/$sot") (Join-Path $libDst $sot) -Force
+}
+Write-Host "  + ia/tools/validar-doc.sh + lib/ (3 SoT) - validacao roda no done da trilha"
 
 # 6) Guia de uso (mensagens prontas - fica em ia/; abra no navegador)
 $comoSrc = Join-Path $PackDir 'ia/COMO-USAR.html'

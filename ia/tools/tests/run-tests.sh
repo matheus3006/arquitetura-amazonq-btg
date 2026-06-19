@@ -77,6 +77,13 @@ else
   echo "FAIL: check-counts"; echo "$out" | sed 's/^/      /'; FAIL=$((FAIL+1))
 fi
 
+# === install leva o validador pro cliente (B1: guarda funcional, arquivo dedicado) ===
+if out=$(bash ia/tools/tests/test-install-validador.sh 2>&1); then
+  echo "PASS: install-validador (validar-doc + 3 SoT seedados e rodando no cliente)"; PASS=$((PASS+1))
+else
+  echo "FAIL: install-validador"; echo "$out" | sed 's/^/      /'; FAIL=$((FAIL+1))
+fi
+
 echo
 echo "Total: PASS=$PASS FAIL=$FAIL"
 [ "$FAIL" -eq 0 ]

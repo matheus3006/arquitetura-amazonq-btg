@@ -15,6 +15,8 @@
 #        nunca sobrescreve arquivo ja existente no alvo)
 #        + doc/templates/ + doc/design-system/ (assets de runtime semeados de ia/ pros
 #        docs gerados em doc/arquitetura/) + ia/tools/seed-doc-assets.sh (re-semear)
+#        + ia/tools/validar-doc.sh + ia/tools/lib/ (3 SoT) — validacao determinista que os
+#        prompts validadores (etapas 6/7 da trilha) rodam no "done" da geracao
 #        + hooks de inicio de interacao do protocolo de controle (.amazonq/cli-agents/
 #        + .amazonq/hooks/ + .kiro/hooks/) — orientam o agente a abrir a task; NAO bloqueiam commit
 # NAO copia: arquivos de contexto por-servico (project/business-context nos
@@ -142,6 +144,19 @@ mkdir -p "$TARGET/ia/tools"
 cp "$PACK_DIR/ia/tools/seed-doc-assets.sh" "$TARGET/ia/tools/seed-doc-assets.sh"
 chmod +x "$TARGET/ia/tools/seed-doc-assets.sh" 2>/dev/null || true
 bash "$PACK_DIR/ia/tools/seed-doc-assets.sh" "$TARGET"
+
+# 5d) Validador de doc — roda NO CLIENTE nas etapas 6/7 da trilha (validador-visual --front e
+#     validador-sintaxe-mermaid --mermaid). Sem o script + os 3 SoT em lib/, aqueles prompts
+#     caem no fallback textual: a camada deterministica (principio nº4) so existe se o
+#     instalador a levar. Bash puro — o cliente NAO precisa de node. lib/ resolve relativo ao
+#     script (validar-doc.sh:11), entao basta colocar script e SoT lado a lado.
+mkdir -p "$TARGET/ia/tools/lib"
+cp "$PACK_DIR/ia/tools/validar-doc.sh" "$TARGET/ia/tools/validar-doc.sh"
+chmod +x "$TARGET/ia/tools/validar-doc.sh" 2>/dev/null || true
+for sot in design-system-classes.txt forbidden-terms.txt mermaid-classdefs.txt; do
+  cp "$PACK_DIR/ia/tools/lib/$sot" "$TARGET/ia/tools/lib/$sot"
+done
+echo "  ✓ ia/tools/validar-doc.sh + lib/ (3 SoT) — validacao roda no done da trilha"
 
 # 6) Guia de uso (mensagens prontas — fica em ia/; abra no navegador)
 if [ ! -f "$PACK_DIR/ia/COMO-USAR.html" ]; then
