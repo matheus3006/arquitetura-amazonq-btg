@@ -173,15 +173,38 @@ _rule_mermaid_type() {
   ' "$file")
 }
 
-# Regra mermaid-classdef: flowchart precisa dos 4 classDef (person/sys/ext/extAsync).
+# Regra mermaid-classdef: flowchart precisa dos 4 classDef (person/sys/ext/extAsync) E
+# cada um com os hex EXATOS do SoT (ia/tools/lib/mermaid-classdefs.txt: fill/stroke/color).
 # awk faz a checagem por bloco e emite as violacoes direto (evita problemas de multiline em read).
+# Se o SoT nao for encontrado, degrada para checar apenas a presenca (fallback gracioso).
 _rule_mermaid_classdefs() {
   local file="$1" ln rule rest
   while IFS=: read -r ln rule rest; do
     [ -z "$ln" ] && continue
     violation "$file" "$ln" "$rule" "$rest"
-  done < <(awk '
-    BEGIN { need["person"]=1; need["sys"]=1; need["ext"]=1; need["extAsync"]=1 }
+  done < <(awk -v lib="$LIB_DIR/mermaid-classdefs.txt" '
+    function loadsot(   l,n,a,cls,f,s,c) {
+      while ((getline l < lib) > 0) {
+        if (l ~ /^[[:space:]]*#/ || l ~ /^[[:space:]]*$/) continue
+        n = split(l, a, "|"); if (n < 4) continue
+        cls = a[1]; gsub(/[[:space:]]/, "", cls)
+        f = a[2]; gsub(/[[:space:]]/, "", f); exp_fill[cls]   = tolower(f)
+        s = a[3]; gsub(/[[:space:]]/, "", s); exp_stroke[cls] = tolower(s)
+        c = a[4]; gsub(/[[:space:]]/, "", c); exp_color[cls]  = tolower(c)
+      }
+      close(lib)
+    }
+    function chk(lno, text, cls, prop, want,   val) {
+      if (want == "") return
+      if (match(text, prop ":[[:space:]]*#[0-9a-fA-F]+")) {
+        val = substr(text, RSTART, RLENGTH); sub(/^[^#]*#/, "#", val); val = tolower(val)
+        if (val != want)
+          print lno":mermaid-classdef-hex:classDef "cls" "prop" "val" diverge do SoT (esperado "want", ver mermaid-classdefs.txt)"
+      } else {
+        print lno":mermaid-classdef-hex:classDef "cls" sem "prop" (esperado "want", ver mermaid-classdefs.txt)"
+      }
+    }
+    BEGIN { need["person"]=1; need["sys"]=1; need["ext"]=1; need["extAsync"]=1; loadsot() }
     /<script[^>]*text\/mermaid/ {
       inm=1; line=NR; isflow=0;
       for (c in need) found[c]=0;
@@ -195,10 +218,15 @@ _rule_mermaid_classdefs() {
     }
     inm && /^[[:space:]]*flowchart/ { isflow=1; next }
     inm && isflow && /^[[:space:]]*classDef[[:space:]]+/ {
-      s = $0
-      sub(/^[[:space:]]*classDef[[:space:]]+/, "", s)
-      sub(/[[:space:]].*/, "", s)
-      found[s]=1
+      cls = $0
+      sub(/^[[:space:]]*classDef[[:space:]]+/, "", cls)
+      sub(/[[:space:]].*/, "", cls)
+      found[cls]=1
+      if (cls in exp_fill) {
+        chk(NR, $0, cls, "fill",   exp_fill[cls])
+        chk(NR, $0, cls, "stroke", exp_stroke[cls])
+        chk(NR, $0, cls, "color",  exp_color[cls])
+      }
     }
   ' "$file")
 }
