@@ -1,0 +1,7 @@
+# Os 4 classDef obrigatorios em todo diagrama de relacao (architecture-style.md §1.4).
+# Cada linha: <classe> | <fill> | <stroke> | <color> | <stroke-width> | [stroke-dasharray]
+# Validado por: validador-sintaxe-mermaid.md (prompt) e ia/tools/validar-doc.sh --mermaid.
+person   | #1c4e93 | #0a0c12 | #ffffff | 2px
+sys      | #4a8fe7 | #0a0c12 | #ffffff | 2.5px
+ext      | #ffffff | #1f2937 | #0a0c12 | 1.5px
+extAsync | #f9fafb | #6b7280 | #0a0c12 | 1.5px | 5 3
