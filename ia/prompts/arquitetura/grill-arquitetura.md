@@ -1,16 +1,11 @@
-# Prompt — Grill Intenso de Arquitetura (Etapa 3 de 3 · código-primeiro)
+# Prompt — Grill Intenso de Arquitetura (Etapa 5/7 · código-primeiro)
 
-> ## STATUS
+> ## STATUS (rev 2026-06-19 — v2)
 >
-> Este prompt é referenciado pela rule da trilha `arquitetura` § 2 (`.amazonq/rules/architecture-style.md` ou `.github/instructions/architecture-style.instructions.md`, conforme a ferramenta).
->
-> É a **Etapa 3 do fluxo canônico de documentação do zero** (3 etapas obrigatórias):
-> 1. `documentar-servico` → 2. `completar-documentacao` → **3. `grill-arquitetura` (este)**.
-> Rode-o em **sessão nova**, com olhos frescos sobre a doc já gerada.
->
-> Diferente do `grill-doc.md` (revisão geral de UMA página pelas 7 lentes): aqui o alvo é
-> **toda a documentação gerada** e o foco são os **pontos de incerteza** — atacados
-> **código-primeiro**, com **nível de certeza** explícito em cada resolução.
+> - Esta é a **Etapa 5/7** da trilha de doc de arquitetura — **1ª das 3 validações**, a única que **APLICA** correções inline após confirmação no grill (Etapas 6/7 só reportam). Roda em **sessão própria** (regra master).
+> - Para CADA par pergunta→resposta do grilling, **apenda no `QA.md` da task NO MESMO TURNO** (status vivo). Regra binária: **verbatim** quando houver decisão (escolha entre opções, nome de tecnologia, restrição numérica); **normalizada** caso contrário.
+> - Próximo passo (handoff): **Etapa 6/7 — `validador-visual`** (sessão NOVA).
+> - Diferente do `grill-doc.md` (revisão geral de UMA página pelas 7 lentes): aqui o alvo é **toda a documentação gerada** e o foco são os **pontos de incerteza** — atacados **código-primeiro**, com **nível de certeza** explícito em cada resolução.
 
 ## Quando usar
 - Depois das Etapas 1 e 2, sobre o conjunto da doc gerada (visão geral, padrões, dados, infra, fluxos, runbook).
@@ -97,7 +92,12 @@ espelhe no `project-context.md` / `business-context` (nos três destinos). Item 
 | Kiro (IDE / CLI) | Descreva o pedido — a Agent Skill ativa por descrição |
 
 ## Referências
-- Etapas anteriores: `ia/prompts/arquitetura/documentar-servico.md` (1) · `ia/prompts/arquitetura/completar-documentacao.md` (2).
+- Etapas anteriores: `ia/prompts/arquitetura/documentar-servico.md` (índice da trilha) · `ia/prompts/arquitetura/arquiteto-de-sistema.md` (Etapa 2/7) · `ia/prompts/arquitetura/documentador-fluxo.md` (Etapa 3/7) · `ia/prompts/arquitetura/gerador-runbook.md` (Etapa 4/7).
+- Próximas etapas (validadores): `ia/prompts/arquitetura/validador-visual.md` (Etapa 6/7) · `ia/prompts/arquitetura/validador-sintaxe-mermaid.md` (Etapa 7/7).
 - Revisão geral por lentes (complementar, página a página): `ia/prompts/arquitetura/grill-doc.md`.
 - Andaime do protocolo de grilling (ledger, rodada, anti-padrões): `ia/prompts/engenharia/grill-plano.md` / `ia/prompts/negocio/grill-negocio.md`.
 - Disciplina de conclusão: `engenharia-style.md` § 2.
+
+## Handoff
+
+> Etapa 5/7 concluída. Próxima sessão: **`validador-visual`** (Etapa 6/7) em **sessão NOVA**.

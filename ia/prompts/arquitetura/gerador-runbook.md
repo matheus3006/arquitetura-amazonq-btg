@@ -1,16 +1,12 @@
-# Prompt — Gerador de Runbook Operacional
+# Prompt — Gerador de Runbook Operacional (Etapa 4/7)
 
-> ## STATUS
+> ## STATUS (rev 2026-06-19 — v2)
 >
-> Este prompt é referenciado pela rule da trilha `arquitetura` § 2 (`.amazonq/rules/architecture-style.md` ou `.github/instructions/architecture-style.instructions.md`, conforme a ferramenta).
->
-> **Conteúdo das páginas em `ia/templates/`** (exemplos do serviço fictício
-> "Liquidação Transacional") é **EXEMPLO**. Runbooks reais que você gerar devem seguir o
-> esqueleto HTML padrão da rule da trilha `frontend` § 1 (`.amazonq/rules/frontend-style.md` ou `.github/instructions/frontend-style.instructions.md`, conforme a ferramenta) com sidebar + main +
-> hero + sections.
->
-> A **única regra rígida de visual** é a convenção de diagramas em
-> `architecture-style.md` § 1 — quando o runbook contiver fluxos.
+> - Esta é a **Etapa 4/7** da trilha de doc de arquitetura. Roda em **sessão própria** (regra master).
+> - **Destino canônico:** `doc/arquitetura/runbook.html`.
+> - **NAV editor (regra obrigatória):** ao criar o `runbook.html`, **apenda no mesmo passo** a entry no `NAV` em `sidebar.js`. Página órfã = rejeitada pelo validador #6.
+> - Próximo passo (handoff): **Etapa 5/7 — `grill-arquitetura`** (sessão NOVA).
+> - **Conteúdo das páginas em `ia/templates/`** (exemplos do serviço fictício "Liquidação Transacional") é **EXEMPLO**. Runbooks reais devem seguir o esqueleto HTML padrão de `frontend-style.md` § 1 (sidebar + main + hero + sections); a convenção de diagramas de `architecture-style.md` § 1 quando o runbook contiver fluxos.
 
 Clona o comportamento da skill `operations:runbook`.
 Produz runbooks que **funcionam às 3h da manhã** durante incidente.
@@ -128,3 +124,7 @@ Para failure modes complexos com decisão ramificada, adicione um diagrama segui
 - Comportamento esperado em runbook: `architecture-style.md` § 6 ("Ao gerar Runbook").
 - Página de exemplo com estrutura mais próxima de runbook (failure modes e ações de contingência — referência de FORMA): `ia/templates/09-fluxo-contingencia.html`.
 - Prompt complementar para sequence diagrams: `documentador-fluxo.md`.
+
+## Handoff
+
+> Etapa 4/7 concluída. Próxima sessão: **`grill-arquitetura`** (Etapa 5/7) em **sessão NOVA**.

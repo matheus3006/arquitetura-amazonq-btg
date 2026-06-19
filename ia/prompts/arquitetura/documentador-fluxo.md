@@ -1,17 +1,13 @@
-# Prompt — Documentador de Fluxo Transacional
+# Prompt — Documentador de Fluxo Transacional (Etapa 3/7)
 
-> ## STATUS
+> ## STATUS (rev 2026-06-19 — v2)
 >
-> Este prompt é referenciado pela rule da trilha `arquitetura` § 2 (`.amazonq/rules/architecture-style.md` ou `.github/instructions/architecture-style.instructions.md`, conforme a ferramenta).
->
-> **Conteúdo dos exemplos** (Liquidação Transacional, fluxos de autorização/estorno/contingência,
-> Outbox, FICO Falcon, etc.) é **EXEMPLO**. Fluxos reais devem usar o vocabulário, atores e
-> sistemas do domínio do usuário.
->
-> A **única regra rígida de visual** é a convenção de diagramas em
-> `architecture-style.md` § 1 — Mermaid via `diagram-viewer.js`,
-> `sequenceDiagram` para fluxos temporais, `flowchart` com classDefs `person/sys/ext/extAsync`
-> para diagramas de relação.
+> - Esta é a **Etapa 3/7** da trilha de doc de arquitetura. Roda em **sessão própria** (regra master).
+> - **Destino canônico:** `doc/arquitetura/` (páginas de fluxo) — `ia/templates/` é só gabarito de FORMA.
+> - **NAV editor (regra obrigatória):** ao criar cada página de fluxo, **apenda no mesmo passo** entry `{label, href}` na seção certa do `NAV` em `sidebar.js`. Página órfã = rejeitada pelo validador #6.
+> - **Mermaid:** `sequenceDiagram` com `autonumber` (regra binária — sempre); 4 `classDef` obrigatórios em `flowchart`; labels entre aspas; sem `<` `>` crus. O validador #7 (Etapa 7/7) aplica esses checks.
+> - Próximo passo (handoff): **Etapa 4/7 — `gerador-runbook`** (sessão NOVA).
+> - **Conteúdo dos exemplos** (Liquidação Transacional, fluxos de autorização/estorno/contingência, Outbox, FICO Falcon, etc.) é **EXEMPLO**. Fluxos reais devem usar o vocabulário, atores e sistemas do domínio do usuário.
 
 Clona o comportamento das skills `operations:process-doc` + `engineering:system-design` (foco em runtime view).
 
@@ -159,3 +155,7 @@ Seções típicas (cada uma como `<h2 class="section-eyebrow">`):
 - Terminologia transacional: `architecture-style.md` § 5.
 - Página exemplo de fluxo: `ia/templates/07-fluxo-autorizacao.html` (use como referência de FORMA).
 - Prompt complementar: `gerador-adr.md` para decisões que emergem da análise do fluxo.
+
+## Handoff
+
+> Etapa 3/7 concluída. Próxima sessão: **`gerador-runbook`** (Etapa 4/7) em **sessão NOVA**.
