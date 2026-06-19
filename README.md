@@ -136,7 +136,7 @@ Dev: "ok, agora gera a visão geral"
        ↓
 Q lê architecture-style.md + project-context.md + arquiteto-de-sistema.md
        ↓
-Q gera HTML em ia/templates/ usando dados do projeto REAL (não do exemplo)
+Q gera HTML em doc/arquitetura/ do alvo, usando dados do projeto REAL (não do exemplo)
   • Sidebar via sidebar.js
   • Hero com nome real do serviço
   • Diagramas seguindo a convenção rígida (cores fixas)
@@ -169,36 +169,41 @@ arquitetura/
 ├── .github/                                     ← gerado por ia/tools/sync-copilot.sh — não editar
 │   ├── copilot-instructions.md
 │   ├── instructions/                            ← 5 rules (.instructions.md); contexto por-projeto é gerado aqui pelos analisadores
-│   ├── ia/prompts/                                 ← slash commands (29 arquivos .prompt.md)
-│   └── ia/skills/                                  ← Agent Skills (64: 32 wrappers + 32 importadas)
+│   ├── prompts/                                 ← slash commands (32 arquivos .prompt.md)
+│   └── skills/                                  ← Agent Skills (64: 32 wrappers + 32 importadas)
 ├── .kiro/
 │   ├── steering/                                ← gerado por sync-kiro.sh — 5 rules (inclusion: always); contexto por-projeto e foundation files são gerados aqui por-serviço
-│   ├── ia/skills/                                  ← gerado por sync-kiro.sh — Agent Skills (64: 32 wrappers + 32 importadas)
+│   ├── skills/                                  ← gerado por sync-kiro.sh — Agent Skills (64: 32 wrappers + 32 importadas)
 │   └── hooks/                                   ← canônico (não gerado): controle-prompt.kiro.hook (promptSubmit do controle)
-├── ia/skills/                                      ← biblioteca importada (FONTE das cópias verbatim — 14 categorias, 32 skills; ver ia/skills/README.md)
-├── ia/prompts/
-│   ├── arquitetura/                             ← 10 prompts (analisador, arquiteto, ADR, runbook, fluxo, grill, brainstorm + pipeline: documentar-servico, completar-documentacao, grill-arquitetura)
-│   ├── frontend/                                ← 4 prompts (ux-controlado, ui-pro-max, design-system, polidor)
-│   ├── negocio/                                 ← 5 prompts (analisador-dominio, catalogo, glossario, grill, mapeador)
-│   └── engenharia/                              ← 10 prompts (especificador, planejador, grill-plano, executor, tdd, depurador, controle-de-tarefa, refatorador-incremental, estrategista-de-testes, revisor-de-codigo)
-├── ia/tools/
-│   ├── manifest.tsv                             ← slug → trilha → descrição (gera os 87 wrappers)
-│   ├── sync-copilot.sh                          ← gera/valida a camada .github/
-│   ├── sync-kiro.sh                             ← gera/valida a camada .kiro/
-│   └── sync-como-usar.sh                        ← gera/valida o COMO-USAR.md a partir do .html
-├── COMO-USAR.html                               ← mensagens prontas para cada gatilho (raiz, no pack e nos alvos)
-├── COMO-USAR.md                                 ← versão markdown — GERADA por ia/tools/sync-como-usar.sh, não editar
-└── docs/
-    ├── arquitetura/                             ← espelha o layout do repo alvo
-    │   ├── design-system/
-    │   │   ├── tokens.css                       ← cores, espaço, tipografia, raios, sombras, motion
-    │   │   └── components.css                   ← componentes prontos (callouts, badges, cards, tables, etc.)
-    │   └── templates/                           ← runtime + exemplos + páginas geradas
-    │       ├── index.html                       ← portal de exemplo
-    │       ├── 01-visao-geral.html … 14-enums.html ← 11 páginas de exemplo (serviço fictício)
-    │       ├── sidebar.js                       ← navegação compartilhada
-    │       └── diagram-viewer.js                ← leitor Mermaid + pan/zoom
-    └── superpowers/                             ← specs e planos de desenvolvimento do pack
+├── ia/                                          ← MÁQUINA do pack (prompts, skills, tools, templates, design-system)
+│   ├── skills/                                  ← biblioteca importada (FONTE das cópias verbatim — 14 categorias, 32 skills; ver ia/skills/README.md)
+│   ├── prompts/
+│   │   ├── arquitetura/                         ← 13 prompts: analisador-de-projeto, arquiteto-de-sistema, gerador-adr, gerador-runbook, documentador-fluxo, grill-arquitetura, grill-doc, brainstorm-arquitetural, documentar-servico (índice), sincronizar-doc-codigo, validador-visual, validador-sintaxe-mermaid, atualizador-arquitetura
+│   │   ├── frontend/                            ← 4 prompts (ux-controlado, ui-pro-max, design-system, polidor)
+│   │   ├── negocio/                             ← 5 prompts (analisador-dominio, catalogo, glossario, grill, mapeador)
+│   │   └── engenharia/                          ← 10 prompts (especificador, planejador, grill-plano, executor, tdd, depurador, controle-de-tarefa, refatorador-incremental, estrategista-de-testes, revisor-de-codigo)
+│   ├── tools/
+│   │   ├── manifest.tsv                         ← slug → trilha → descrição (gera 32 wrappers Copilot + 32 wrappers Kiro = 64 wrappers)
+│   │   ├── sync-copilot.sh                      ← gera/valida a camada .github/
+│   │   ├── sync-kiro.sh                         ← gera/valida a camada .kiro/
+│   │   ├── sync-como-usar.sh                    ← gera/valida ia/COMO-USAR.md a partir do .html
+│   │   ├── validar-doc.sh                       ← lint estrutural opcional dos validadores #6/#7 (--front | --mermaid | --all)
+│   │   ├── lib/                                 ← Source of Truth dos validadores (design-system-classes, mermaid-classdefs, forbidden-terms)
+│   │   └── tests/                               ← suite TDD do validar-doc.sh (17 casos + fixtures)
+│   ├── design-system/                           ← CSS reutilizável (tokens, components)
+│   ├── templates/                               ← runtime (sidebar.js, diagram-viewer.js, prefs.js) + páginas de EXEMPLO (gabarito de FORMA — referência, nunca destino)
+│   │   ├── index.html                           ← portal de exemplo
+│   │   ├── 01-visao-geral.html … 14-enums.html  ← 11 páginas de exemplo (serviço fictício)
+│   │   └── checklist-validador.md               ← template canônico do checklist embutido pelos validadores #6/#7
+│   ├── COMO-USAR.html                           ← mensagens prontas por trilha/etapa (canônico — editado à mão)
+│   ├── COMO-USAR.md                             ← versão markdown — GERADA por sync-como-usar.sh, não editar
+│   └── INSTALAR.md                              ← guia escrito para o assistente do usuário executar (runbook do instalador)
+└── doc/                                         ← OUTPUTS do pack (specs, planos, ADRs, controle, arquitetura)
+    ├── arquitetura/                             ← destino canônico das páginas geradas pela trilha v2 (1→7)
+    ├── adr/                                     ← destino canônico das ADRs (gerador-adr.md)
+    ├── controle/                                ← tasks de controle (TASK.md + LEDGER.md + QA.md por task — protocolo)
+    ├── specs/                                   ← specs do pack (design docs)
+    └── planos/                                  ← planos de implementação do pack
 ```
 
 ## A convenção de diagrama — única regra rígida de visual
