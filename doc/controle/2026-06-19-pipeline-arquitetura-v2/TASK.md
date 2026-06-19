@@ -1,6 +1,6 @@
 # TASK — 2026-06-19-pipeline-arquitetura-v2
 
-- **fase:** plano (brainstorming → spec; aguarda revisão do spec antes da implementação)
+- **fase:** concluida
 - **tipo:** design + spec (esforço de implementação grande, será decomposto no plano)
 - **pedido:** redesenhar o pipeline de arquitetura do pack para ser rígido e granular — doc gerada
   não seguia o template. Brainstorming conduzido com superpowers:brainstorming + human-architect-mindset.
@@ -32,4 +32,4 @@
 - [x] aplicar correções: spec v1.1 (ver §13 do spec — resumo dos 28 findings resolvidos)
 - [x] revisão do spec v1.1 pelo usuário (aprovado; Decisão #10 confirmada)
 - [x] writing-plans (plano de implementação em doc/planos/2026-06-19-pipeline-arquitetura-v2.md)
-- [ ] execução do plano (próximo turno — modo a escolher: subagent-driven / inline)
+- [x] execução do plano (modo inline com executing-plans; 9 fases A-I, ~40 commits, suite 17/17 PASS, 3× --check exit 0, contagens finais corretas)
