@@ -142,28 +142,38 @@ Antes de responder, identifique se a intenção do usuário casa com algum gatil
 
 | Quando o usuário pedir / mencionar | Carregue este prompt |
 |---|---|
-| **Primeira invocação em um repositório** OU "analisa o projeto", "refresh project context", "atualiza contexto" OU par de contexto do projeto ausente/incompleto (ver gate) | `ia/prompts/arquitetura/analisador-de-projeto.md` (sempre antes de qualquer outro prompt) |
-| "documentar o serviço do zero", "documentação técnica completa", "começar a documentação do repo" | `ia/prompts/arquitetura/documentar-servico.md` (**Etapa 1/3** — orquestra contexto + domínio + arquitetura) |
-| "completar a documentação", "documentar os fluxos e o runbook" (após a Etapa 1) | `ia/prompts/arquitetura/completar-documentacao.md` (**Etapa 2/3** — fluxos + runbook) |
-| "grill intenso de arquitetura", "questionar as incertezas da doc", "aprofundar a doc gerada" | `ia/prompts/arquitetura/grill-arquitetura.md` (**Etapa 3/3** — código-primeiro, sessão nova) |
+| **Primeira invocação em um repositório** OU "analisa o projeto", "refresh project context", "atualiza contexto" OU par de contexto do projeto ausente/incompleto (ver gate) | `ia/prompts/arquitetura/analisador-de-projeto.md` (**Etapa 1/7 sessão 1a** — sempre antes de qualquer outro prompt) |
+| "documentar o serviço do zero", "documentação técnica completa", "começar a documentação do repo" | `ia/prompts/arquitetura/documentar-servico.md` (**ÍNDICE da trilha** — aponta as 7 etapas; cada prompt em sessão própria; NÃO orquestra) |
+| "analisar o domínio", "mapear o negócio", "preparar o business-context" (Etapa 1 sessão 1b) | `ia/prompts/negocio/analisador-de-dominio.md` (**Etapa 1/7 sessão 1b** — reusado pela trilha arquitetura) |
+| "arquitetura/espinha", "visão geral do serviço", "system/container/sequence diagram" (geração) | `ia/prompts/arquitetura/arquiteto-de-sistema.md` (**Etapa 2/7** — geração; NAV editor obrigatório) |
+| "documentar fluxo", "sequência transacional", "fluxograma de processo", "saga", "fluxo de autorização" | `ia/prompts/arquitetura/documentador-fluxo.md` (**Etapa 3/7** — geração; NAV editor obrigatório) |
+| "runbook", "documentação operacional", "failure mode", "on-call", "SLO" | `ia/prompts/arquitetura/gerador-runbook.md` (**Etapa 4/7** — geração; NAV editor obrigatório) |
+| "grill intenso de arquitetura", "questionar as incertezas da doc", "aprofundar a doc gerada" | `ia/prompts/arquitetura/grill-arquitetura.md` (**Etapa 5/7** — validação lógica; aplica inline; Q&A no QA.md no mesmo turno) |
+| "valida visual", "valida template", "verifica padrão visual da doc" | `ia/prompts/arquitetura/validador-visual.md` (**Etapa 6/7** — front/template; SÓ REPORTA; checklist canônico + `ia/tools/validar-doc.sh --front`) |
+| "valida sintaxe", "valida mermaid", "verifica diagramas" | `ia/prompts/arquitetura/validador-sintaxe-mermaid.md` (**Etapa 7/7** — sintaxe/Mermaid; SÓ REPORTA; checklist canônico + `ia/tools/validar-doc.sh --mermaid`) |
+| "atualizar a doc existente", "conformar doc antiga", "ajustar doc gerada para v2" | `ia/prompts/arquitetura/atualizador-arquitetura.md` (**Complementar — fora da trilha**; doc já existente; 1 task de controle por execução) |
 | "sincronizar a doc com o código", "atualizar a doc depois da mudança/merge", "documentar o que mudou na branch" | `ia/prompts/arquitetura/sincronizar-doc-codigo.md` (diff `main...HEAD` → grill do porquê com grill-me + human-architect-mindset → atualiza doc → ADR) |
-| "atualizar a visão geral", "só a página de arquitetura", "system context"/"container diagram" avulso | `ia/prompts/arquitetura/arquiteto-de-sistema.md` (página única; o fluxo completo do zero é `documentar-servico`) |
-| "criar ADR", "registrar decisão", "decisão arquitetural", "MADR", "trade-off" | `ia/prompts/arquitetura/gerador-adr.md` |
-| "runbook", "documentação operacional", "failure mode", "on-call", "SLO" | `ia/prompts/arquitetura/gerador-runbook.md` |
-| "documentar fluxo", "sequência transacional", "fluxograma de processo", "saga", "fluxo de autorização" | `ia/prompts/arquitetura/documentador-fluxo.md` |
-| "revisar documentação", "validar ADR", "achar furo na doc", "consistência", "auditoria de doc" | `ia/prompts/arquitetura/grill-doc.md` |
+| "criar ADR", "registrar decisão", "decisão arquitetural", "MADR", "trade-off" | `ia/prompts/arquitetura/gerador-adr.md` (destino: `doc/adr/`) |
+| "revisar documentação", "validar ADR", "achar furo na doc", "consistência", "auditoria de doc" | `ia/prompts/arquitetura/grill-doc.md` (revisão geral por 7 lentes, UMA página) |
 | "brainstorm", "explorar opções", "ainda não decidi", "ajuda a pensar", "discutir abordagem" | `ia/prompts/arquitetura/brainstorm-arquitetural.md` |
 | "design", "cor", "tipografia", "visual", "layout", "como ficar bonito" | `ia/prompts/frontend/designer-ux-controlado.md` |
 | "estilo", "paleta", "componente UI", "padrão visual catálogo" | `ia/prompts/frontend/designer-ui-pro-max.md` |
 | "design system", "tokens", "padronizar componentes" | `ia/prompts/frontend/design-system-arquitetura.md` |
 | "polir", "animação", "micro-interação", "detalhe", "acabamento" | `ia/prompts/frontend/polidor-ui.md` |
 
-**Fluxo canônico de documentação do zero — 3 etapas obrigatórias:**
-`documentar-servico` (Etapa 1: contexto + domínio + arquitetura) → `completar-documentacao`
-(Etapa 2: fluxos + runbook) → `grill-arquitetura` (Etapa 3: grill intenso código-primeiro, em
-sessão nova). Cada etapa termina apontando a próxima. Os prompts-base (`analisador-de-projeto`,
-`analisador-de-dominio`, `arquiteto-de-sistema`, `documentador-fluxo`, `gerador-runbook`,
-`grill-doc`) seguem disponíveis para refresh pontual de um artefato só.
+**Fluxo canônico de documentação do zero (rev v2 — 2026-06-19) — 7 etapas conceituais / 8 sessões. REGRA MASTER: cada PROMPT em sessão própria. RODE TODAS na ordem 1→7:**
+
+```
+1a analisador-de-projeto  →  1b analisador-de-dominio  →  2 arquiteto-de-sistema
+→  3 documentador-fluxo  →  4 gerador-runbook  →  5 grill-arquitetura
+→  6 validador-visual  →  7 validador-sintaxe-mermaid  →  FIM
+```
+
+- Antes da Etapa 1, abra a task de controle em `doc/controle/<AAAA-MM-DD-slug>/` com `TASK.md` + `QA.md` + `LEDGER.md`.
+- Para doc **JÁ existente**, use o `atualizador-arquitetura` (complementar, fora da trilha numerada).
+- `documentar-servico` deixa de orquestrar — vira o **índice** da trilha.
+- `completar-documentacao` **foi aposentado**: os prompts-base (`documentador-fluxo`, `gerador-runbook`) agora são as Etapas 3/7 e 4/7 diretamente.
+- O índice e cada prompt seguem disponíveis para refresh pontual de um artefato só.
 
 Quando gerar HTML final, **sempre** aplique também `.github/instructions/frontend-style.instructions.md`.
 
@@ -173,7 +183,7 @@ Quando gerar HTML final, **sempre** aplique também `.github/instructions/fronte
 
 Todo HTML novo segue este esqueleto (demonstrado em `ia/templates/01-visao-geral.html` — os instaladores copiam as páginas de exemplo por padrão; numa instalação com `--no-examples`, o esqueleto abaixo é a referência completa). Detalhamento em `frontend-style.md`.
 
-As páginas geradas vivem em `ia/templates/` no repositório (junto de `sidebar.js`/`diagram-viewer.js`). **Crie `doc/arquitetura/` e subpastas se não existirem** antes de gravar.
+**Destino canônico (rev v2):** páginas geradas vivem em **`doc/arquitetura/`** (criada se não existir); ADRs vivem em **`doc/adr/`**. `ia/templates/` é **apenas gabarito de FORMA** (referência), nunca destino de gravação. Detalhes em `frontend-style.md`.
 
 ```html
 <!DOCTYPE html>
@@ -248,7 +258,9 @@ Os termos abaixo são definição operacional **no exemplo fictício** "Liquida�
 
 ## 6. Comportamento de geração
 
-Toda página HTML gerada é gravada em `ia/templates/` (crie os diretórios se não existirem).
+Toda página HTML gerada é gravada em **`doc/arquitetura/`** (crie os diretórios se não existirem). `ia/templates/` é só referência de FORMA.
+
+**NAV editor (regra obrigatória — rev v2):** cada etapa de geração (2/7, 3/7, 4/7) que cria um `.html` **apenda no mesmo passo** a entry `{label, href}` na seção certa do `NAV` em `sidebar.js`. Página sem entry = órfã = rejeitada pelo validador #6 (Etapa 6/7).
 
 ### Ao gerar ADR
 - Mínimo 3 decision drivers. Mínimo 2 opções consideradas.
@@ -281,12 +293,17 @@ Toda página HTML gerada é gravada em `ia/templates/` (crie os diretórios se n
 
 ## 8. Auto-checklist antes de entregar
 
-Antes de fornecer uma resposta com HTML gerado, verifique mentalmente:
+> **Rev v2 (2026-06-19):** o enforcement do template **não é mais mental**. As Etapas 6/7 (`validador-visual` + `validador-sintaxe-mermaid`) e o `atualizador-arquitetura` aplicam o **checklist canônico** (`ia/templates/checklist-validador.md`) com evidência `arquivo:linha`, opcionalmente assistidos por `ia/tools/validar-doc.sh`. Cada etapa de geração (2/3/4) é responsável por apendar entry no NAV de `sidebar.js` no mesmo passo da criação do `.html`.
+
+Para geração (Etapas 2-4) e refresh pontual, antes de entregar verifique:
 
 - [ ] Carreguei o(s) prompt(s) correto(s) da tabela § 2?
 - [ ] Apliquei `.github/instructions/frontend-style.instructions.md`?
 - [ ] Estrutura HTML segue o esqueleto § 3?
 - [ ] **Todo diagrama segue § 1 (Mermaid + diagram-viewer + classDef person/sys/ext/extAsync)?**
+- [ ] Gravei em `doc/arquitetura/` (e ADRs em `doc/adr/`)?
+- [ ] **Apendei a entry no `NAV` em `sidebar.js` no mesmo passo?** (regra v2)
+- [ ] Apendei Q&A no `QA.md` da task no mesmo turno em que o usuário respondeu? (status vivo, regra v2)
 - [ ] Linguagem em PT-BR, voz ativa, sem qualificadores vagos?
 - [ ] Trade-offs explícitos onde decisão aparece?
 - [ ] Métricas concretas, sem aspiracionalismo?

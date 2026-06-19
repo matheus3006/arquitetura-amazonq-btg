@@ -301,7 +301,9 @@ Para gerar PDF: `Cmd+P` → Salvar como PDF, marcar "Gráficos de fundo".
 
 ## 12. Verificação final do HTML gerado
 
-Antes de entregar, mentalmente cheque:
+> **Rev v2 (2026-06-19):** o enforcement do template e da tipografia é executado pela **Etapa 6/7 — `validador-visual`** (checklist canônico em `ia/templates/checklist-validador.md` + `ia/tools/validar-doc.sh --front`). As regras desta página são **gate dele** — qualquer FAIL volta para o prompt gerador ou para o `atualizador-arquitetura`.
+
+Para refresh pontual (sem rodar a trilha completa), antes de entregar verifique:
 
 - [ ] `<html lang="pt-BR">`.
 - [ ] Title descritivo + meta description.
