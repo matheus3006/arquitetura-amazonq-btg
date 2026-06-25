@@ -66,6 +66,14 @@ disciplinas de engenharia), o mesmo pack usado por Amazon Q, Copilot e Kiro.
 - `engenharia-style.md` — disciplinas de engenharia (debug sistematico, plano, TDD, revisao).
 - `controle-style.md` — protocolo de controle de tarefas (resumo na secao final).
 
+## Contexto do servico (SEMPRE leia antes de gerar/editar doc)
+
+- `.amazonq/rules/project-context.md` — o contexto REAL do servico (nome, stack, lista
+  negativa), gerado pelo `analisador-de-projeto`. Se NAO existir, rode-o primeiro
+  (`ia/prompts/arquitetura/analisador-de-projeto.md`) — sem ele, NAO gere documentacao.
+- `.amazonq/rules/business-context.md` — regras/atores/eventos do dominio (gerado pelo
+  `analisador-de-dominio`), exigido para doc de negocio.
+
 ## Gatilhos -> metodologia (quando a intencao casar, LEIA o arquivo e siga TODO o processo, fase por fase)
 
 | Quando o pedido for | Abra e siga |

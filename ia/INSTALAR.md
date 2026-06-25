@@ -90,9 +90,10 @@ Ao terminar, diga ao usuário, nas suas palavras:
    doc anterior à trilha v2 (7 etapas / 8 sessões), apresente aqui o **plano de migração** (o que já
    existe, o que falta e a ordem das ações a rodar) — sem executá-lo; quem dispara é o usuário.
 2. O primeiro passo de uso é gerar o contexto do projeto: mensagem "analisa o projeto"
-   (Amazon Q e Kiro — no Kiro a skill `analisador-de-projeto` ativa por descrição) ou
-   `/analisador-de-projeto` (Copilot IDE). Sem isso, o pack bloqueia gerações de
-   documentação de propósito. O contexto é gravado em TRÊS destinos (Q, Copilot e Kiro).
+   (Amazon Q, Kiro e Junie — no Kiro a skill `analisador-de-projeto` ativa por descrição;
+   no Junie, o gatilho no `.junie/guidelines.md` aponta o prompt) ou `/analisador-de-projeto`
+   (Copilot IDE). Sem isso, o pack bloqueia gerações de documentação de propósito. O contexto
+   é gravado em TRÊS destinos (Q, Copilot e Kiro); o Junie lê o do `.amazonq/rules/`.
 3. Para mudanças de código com controle de contexto: basta descrever o pedido como
    mensagem normal — o assistente deriva o slug e abre a task sozinho (protocolo de 2
    turnos: plano → aprovação → execução com ledger). `nova tarefa: <slug> — …` é override
