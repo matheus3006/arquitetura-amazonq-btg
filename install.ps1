@@ -51,7 +51,7 @@ if ($Target -eq $PackDir) {
   exit 1
 }
 
-Write-Host "[pack] arquitetura (Amazon Q + Copilot + Kiro) -> $Target`n"
+Write-Host "[pack] arquitetura (Amazon Q + Copilot + Kiro + Junie) -> $Target`n"
 
 # 1) Rules Amazon Q (nunca tocamos *-context.md)
 $rulesDst = Join-Path $Target '.amazonq/rules'
@@ -92,6 +92,13 @@ foreach ($f in 'architecture-style','frontend-style','negocio-style','engenharia
 Write-Host "  + .kiro/steering/ (5 rules)"
 Copy-Item (Join-Path $PackDir '.kiro/skills/*') (Join-Path $kiroDst 'skills') -Recurse -Force
 Write-Host "  + .kiro/skills/ (64 Agent Skills: 32 wrappers + 32 importadas)"
+
+# 2c) Camada Junie (JetBrains) — arquivo unico de guidelines (Junie NAO tem skills/prompts;
+#     le .junie/guidelines.md e injeta em toda task). Gerado por sync-junie.sh (pack-only).
+$junieDst = Join-Path $Target '.junie'
+New-Item -ItemType Directory -Force -Path $junieDst | Out-Null
+Copy-Item (Join-Path $PackDir '.junie/guidelines.md') (Join-Path $junieDst 'guidelines.md') -Force
+Write-Host "  + .junie/guidelines.md (Junie le automaticamente)"
 
 # 3) Prompts (4 trilhas) — copia o CONTEUDO de cada trilha (glob /*) pra um dir criado,
 #    como as demais copias recursivas: evita aninhar ia/prompts/<t>/<t>/ em re-run no Windows.
@@ -318,7 +325,7 @@ if (-not (Test-Path -PathType Leaf $giFile)) {
 }
 Write-Host "  + .gitignore (bloco do pack)"
 
-Write-Host "`n[ok] Instalado. O Amazon Q le .amazonq/rules/, o Copilot le .github/ e o Kiro le .kiro/ automaticamente.`n"
+Write-Host "`n[ok] Instalado. O Amazon Q le .amazonq/rules/, o Copilot le .github/, o Kiro le .kiro/ e o Junie le .junie/guidelines.md.`n"
 Write-Host 'Comece:'
 Write-Host '   Tecnica:    "documenta esse servico"   (Copilot IDE: /analisador-de-projeto na 1a vez)'
 Write-Host '   Negocio:    "analisa o dominio" -> "grilla o negocio"'

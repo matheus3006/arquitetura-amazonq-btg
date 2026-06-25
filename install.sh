@@ -55,7 +55,7 @@ if [ "$TARGET" -ef "$PACK_DIR" ]; then
   exit 1
 fi
 
-echo "📦 arquitetura (Amazon Q + Copilot + Kiro)  →  $TARGET"
+echo "📦 arquitetura (Amazon Q + Copilot + Kiro + Junie)  →  $TARGET"
 echo ""
 
 # 1) Rules Amazon Q (nunca tocamos *-context.md, que sao por-servico)
@@ -89,6 +89,12 @@ done
 echo "  ✓ .kiro/steering/ (5 rules)"
 cp -R "$PACK_DIR/.kiro/skills/." "$TARGET/.kiro/skills/"
 echo "  ✓ .kiro/skills/ (64 Agent Skills: 32 wrappers + 32 importadas)"
+
+# 2c) Camada Junie (JetBrains) — arquivo unico de guidelines. Junie NAO tem skills/prompts:
+#     le .junie/guidelines.md e injeta o conteudo em toda task. Gerado por sync-junie.sh (pack-only).
+mkdir -p "$TARGET/.junie"
+cp "$PACK_DIR/.junie/guidelines.md" "$TARGET/.junie/guidelines.md"
+echo "  ✓ .junie/guidelines.md (Junie le automaticamente)"
 
 # 3) Prompts (4 trilhas)
 mkdir -p "$TARGET/ia/prompts"
@@ -273,7 +279,7 @@ chmod +x "$TARGET/ia/tools/seed-gitignore.sh" 2>/dev/null || true
 bash "$PACK_DIR/ia/tools/seed-gitignore.sh" "$TARGET"
 
 echo ""
-echo "✅ Instalado. O Amazon Q le .amazonq/rules/, o Copilot le .github/ e o Kiro le .kiro/ automaticamente."
+echo "✅ Instalado. O Amazon Q le .amazonq/rules/, o Copilot le .github/, o Kiro le .kiro/ e o Junie le .junie/guidelines.md."
 echo ""
 echo "Comece:"
 echo "   Tecnica:    \"documenta esse servico\"   (Copilot IDE: /analisador-de-projeto na 1a vez)"

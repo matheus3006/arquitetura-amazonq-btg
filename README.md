@@ -1,8 +1,8 @@
-# arquitetura — pack de documentação para Amazon Q, GitHub Copilot e Kiro
+# arquitetura — pack de documentação para Amazon Q, GitHub Copilot, Kiro e Junie
 
 Starter pack de documentação arquitetural para serviços **.NET transacionais**, usando
-**Amazon Q Developer**, **GitHub Copilot** (VS Code, Visual Studio, JetBrains, CLI) ou
-**Kiro** (IDE/CLI) como assistente.
+**Amazon Q Developer**, **GitHub Copilot** (VS Code, Visual Studio, JetBrains, CLI),
+**Kiro** (IDE/CLI) ou **Junie** (JetBrains: plugin do IDE ou CLI) como assistente.
 
 Transforma o assistente em um especialista que entende seu projeto antes de gerar documentação,
 produz HTML semântico com pan/zoom em diagramas, e segue convenções verificáveis.
@@ -14,6 +14,7 @@ Um pacote pronto para clonar dentro de cada serviço .NET do seu time. Inclui:
 - **Rules** lidas automaticamente pelo Amazon Q (`.amazonq/rules/`)
 - **Camada Copilot gerada** (`.github/`): instructions auto-aplicadas, slash commands (`/gerador-adr`, ...) e Agent Skills — gerada de `.amazonq/rules/` por `ia/tools/sync-copilot.sh`, nunca editada à mão
 - **Camada Kiro gerada** (`.kiro/`): steering auto-carregado (`inclusion: always`) + Agent Skills com ativação por descrição — gerada de `.amazonq/rules/` por `ia/tools/sync-kiro.sh`, nunca editada à mão
+- **Camada Junie gerada** (`.junie/`): arquivo único `guidelines.md` que o Junie lê e injeta em toda task (Junie não tem superfície de skills/prompts) — gerada de `.amazonq/rules/` + `manifest.tsv` por `ia/tools/sync-junie.sh`, nunca editada à mão
 - **Prompts** que clonam comportamento de skills especializadas — 4 trilhas (arquitetura, frontend, negocio, engenharia)
 - **Trilha de engenharia**: debugging sistemático, planejamento de implementação e disciplina de verificação (portes do superpowers)
 - **Protocolo de controle de contexto** (`controle-style`): toda edição nasce de uma task em `doc/controle/<task-id>/` — ciclo de 2 turnos otimizado para cota de requests, com hook de início de interação (Amazon Q + Kiro) que abre a task sozinho — sem trava no commit
@@ -56,7 +57,7 @@ triviais que você declarar. O detalhe do protocolo e os templates estão em
 
 ## Instalação rápida
 
-"Instalar" = colocar os arquivos do pack na **raiz** do repo do serviço. O Amazon Q lê `.amazonq/rules/` automaticamente; o Copilot lê `.github/instructions/`; o Kiro lê `.kiro/steering/`. Escolha a via:
+"Instalar" = colocar os arquivos do pack na **raiz** do repo do serviço. O Amazon Q lê `.amazonq/rules/` automaticamente; o Copilot lê `.github/instructions/`; o Kiro lê `.kiro/steering/`; o Junie lê `.junie/guidelines.md`. Escolha a via:
 
 **Via assistente de IA (qualquer plataforma):** aponte o seu assistente (Amazon Q, Copilot,
 Claude...) para o arquivo [`INSTALAR.md`](INSTALAR.md) do pack e diga:
@@ -189,6 +190,8 @@ arquitetura/
 │   ├── steering/                                ← gerado por sync-kiro.sh — 5 rules (inclusion: always); contexto por-projeto e foundation files são gerados aqui por-serviço
 │   ├── skills/                                  ← gerado por sync-kiro.sh — Agent Skills (64: 32 wrappers + 32 importadas)
 │   └── hooks/                                   ← canônico (não gerado): controle-prompt.kiro.hook (promptSubmit do controle)
+├── .junie/                                      ← gerado por sync-junie.sh — não editar
+│   └── guidelines.md                            ← arquivo único que o Junie lê e injeta em toda task
 ├── ia/                                          ← MÁQUINA do pack (prompts, skills, tools, templates, design-system)
 │   ├── skills/                                  ← biblioteca importada (FONTE das cópias verbatim — 14 categorias, 32 skills; ver ia/skills/README.md)
 │   ├── prompts/
@@ -200,6 +203,7 @@ arquitetura/
 │   │   ├── manifest.tsv                         ← slug → trilha → descrição (gera 32 wrappers Copilot + 32 wrappers Kiro = 64 wrappers)
 │   │   ├── sync-copilot.sh                      ← gera/valida a camada .github/
 │   │   ├── sync-kiro.sh                         ← gera/valida a camada .kiro/
+│   │   ├── sync-junie.sh                        ← gera/valida a camada .junie/ (guidelines.md)
 │   │   ├── sync-como-usar.sh                    ← gera/valida ia/COMO-USAR.md a partir do .html
 │   │   ├── validar-doc.sh                       ← lint estrutural opcional dos validadores #6/#7 (--front | --mermaid | --all)
 │   │   ├── lib/                                 ← Source of Truth dos validadores (design-system-classes, mermaid-classdefs, forbidden-terms)
@@ -279,11 +283,11 @@ Para gerar PDF, `Cmd+P` → Salvar como PDF → marcar "Gráficos de fundo". Pri
 ## Para mantenedores do pack
 
 `.amazonq/rules/` é a fonte canônica (e `COMO-USAR.html` é o canônico do guia). As camadas
-`.github/`, `.kiro/` e o `COMO-USAR.md` são GERADOS — não edite à mão.
+`.github/`, `.kiro/`, `.junie/` e o `COMO-USAR.md` são GERADOS — não edite à mão.
 Depois de editar qualquer rule, o `ia/tools/manifest.tsv` ou o `COMO-USAR.html`:
 
-    bash ia/tools/sync-copilot.sh && bash ia/tools/sync-kiro.sh && bash ia/tools/sync-como-usar.sh     # regenera tudo
-    bash ia/tools/sync-copilot.sh --check && bash ia/tools/sync-kiro.sh --check && bash ia/tools/sync-como-usar.sh --check   # antes de commitar
+    bash ia/tools/sync-copilot.sh && bash ia/tools/sync-kiro.sh && bash ia/tools/sync-junie.sh && bash ia/tools/sync-como-usar.sh     # regenera tudo
+    bash ia/tools/sync-copilot.sh --check && bash ia/tools/sync-kiro.sh --check && bash ia/tools/sync-junie.sh --check && bash ia/tools/sync-como-usar.sh --check   # antes de commitar
 
 Commite o gerado junto com a mudança canônica.
 
